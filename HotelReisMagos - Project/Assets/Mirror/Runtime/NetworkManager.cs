@@ -1489,5 +1489,7 @@ namespace Mirror
         public virtual void OnStopHost() { }
 
         #endregion
+
+
     }
 }
