@@ -9,14 +9,11 @@ public class NetworkManagerCardGame : NetworkManager
 {
     [Header("The below variables refer to the game's variables.")] 
     [SerializeField] private int maxNumOfRounds;
-
-    [SerializeField] private PlayerListEntry playerListEntryPrefab;
-    [SerializeField] private List<PlayerListEntry> entries;
-    
-    [SerializeField] private RectTransform playerListGroup;
     [SerializeField] private GameObject loginPanel, lobbyPanel;
+    [SerializeField] private NetworLobbyUI lobbyUi;
 
-    public List<PlayerListEntry> Entries => entries;
+    public List<PlayerSetup> players = new List<PlayerSetup>();
+    public List<NetworkIdentity> identities = new List<NetworkIdentity>();
 
     public override void OnClientConnect(NetworkConnection conn)
     {
@@ -38,13 +35,24 @@ public class NetworkManagerCardGame : NetworkManager
     {
         base.OnServerAddPlayer(conn);
         Debug.Log("A player was added");
-        
         var player = conn.identity.gameObject.GetComponent<PlayerSetup>();
+        players.Add(player);
+        identities.Add(conn.identity);
+
+        lobbyUi.RpcSpawnPlayerEntry(conn.identity, identities);
+
+        /*var newEntry = Instantiate(playerListEntryPrefab, playerListGroup);
+        NetworkServer.Spawn(newEntry.gameObject, conn.identity.connectionToClient);
+        entries.Add(newEntry);
         
-        player.SetEntryIndex(numPlayers-1);
         
-        player.SetDisplayName($"Player {numPlayers}");
-        player.RpcTrackEntry(numPlayers - 1);
+        player.RpcSetEntryIndex(numPlayers-1);
+        player.RpcTrackEntry(newEntry);*/
+        //player.SetDisplayName($"Player {numPlayers}");
     }
 
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        base.OnServerDisconnect(conn);
+    }
 }

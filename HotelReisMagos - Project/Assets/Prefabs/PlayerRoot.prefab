@@ -63,4 +63,4 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   playerName: Player
-  playerEntry: -2
+  playerEntry: 0

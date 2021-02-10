@@ -655,7 +655,6 @@ MonoBehaviour:
   nameInputField: {fileID: 9162229054251653054}
   nameLabel: {fileID: 9162229056050971117}
   view: {fileID: 9080309670630648035}
-  isViewEnabled: 0
 --- !u!114 &-648033541190411163
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using Mirror.Examples.Chat;
 using TMPro;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ public class PlayerSetup : NetworkBehaviour
 {
     [SyncVar(hook = nameof(HandleNameChange))] [SerializeField] private string playerName = "Player";
     [SyncVar(hook = nameof(HandleEntryChange))] [SerializeField] private int playerEntry;
+    [SerializeField] private PlayerListEntry myEntry;
+    
+    public Action<string, string, PlayerSetup> onChangeName;
 
     public string PlayerName
     {
@@ -16,42 +20,31 @@ public class PlayerSetup : NetworkBehaviour
         set => playerName = value;
     }
     
-    public int PlayerEntry
+    public PlayerListEntry PlayerEntry
     {
-        get => playerEntry;
-        set => playerEntry = value;
+        get => myEntry;
+        set => myEntry = value;
     }
 
     public void HandleNameChange(string old, string newName)
     {
         Debug.Log($"My entry is {playerEntry}", gameObject);
-        (NetworkManager.singleton as NetworkManagerCardGame).Entries[playerEntry].ForceChangeDisplayName(newName);
+        myEntry.ForceChangeDisplayName(newName);
+        RpcChangeNameEvent(old, newName, this);
     }
 
     public void HandleEntryChange(int old, int newVal)
     {
         
     }
-
-    private void Update()
+    
+    /*[ClientRpc]
+    public void RpcTrackEntry(PlayerListEntry entry)
     {
-        Debug.Log("Authority-not.", gameObject);
-        if (hasAuthority)
-        {
-            Debug.Log("Authority!", gameObject);
-            CmdSetDisplayName($"Player {playerEntry + Time.deltaTime}");
-        }
-    }
-
-    //Called on OnServerAddPlayer
-    [Server]
-    public void RpcTrackEntry(int newEntry)
-    {
-        //(NetworkManager.singleton as NetworkManagerCardGame).Entries[playerEntry].Enable();
-        
-        (NetworkManager.singleton as NetworkManagerCardGame).Entries[playerEntry].Track(this);
+        myEntry = entry;
+        myEntry.Track(this);
         Debug.Log("Spawning entry2");
-    }
+    }*/
 
     [Server]
     public void SetDisplayName(string newVal)
@@ -65,10 +58,16 @@ public class PlayerSetup : NetworkBehaviour
         SetDisplayName(newVal);
     }
     
-    [Server]
-    public void SetEntryIndex(int newEntry)
+    [ClientRpc]
+    public void RpcSetEntryIndex(int newEntry)
     {
         playerEntry = newEntry;
+    }
+    
+    [ClientRpc]
+    public void RpcChangeNameEvent(string old, string newVal, PlayerSetup player)
+    {
+        onChangeName?.Invoke(old, newVal, player);
     }
 
 }
