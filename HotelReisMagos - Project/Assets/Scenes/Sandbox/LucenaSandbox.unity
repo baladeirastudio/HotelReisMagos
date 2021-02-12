@@ -156,6 +156,7 @@ MonoBehaviour:
   playerListGroup: {fileID: 332106698}
   playerListEntryPrefab: {fileID: 9162229055035484892, guid: c5c5e5808cd4f4c43a2fc969b5e938fe,
     type: 3}
+  players: []
 --- !u!114 &113311582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,18 +331,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5c5e5808cd4f4c43a2fc969b5e938fe, type: 3}
---- !u!114 &122565973 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9162229055035484892, guid: c5c5e5808cd4f4c43a2fc969b5e938fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 122565971}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ee94551be1c420ba3c7e8020fefefe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &162369726
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -486,18 +475,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5c5e5808cd4f4c43a2fc969b5e938fe, type: 3}
---- !u!114 &162369728 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9162229055035484892, guid: c5c5e5808cd4f4c43a2fc969b5e938fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 162369726}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ee94551be1c420ba3c7e8020fefefe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &281928505
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -642,18 +619,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5c5e5808cd4f4c43a2fc969b5e938fe, type: 3}
---- !u!114 &281928507 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9162229055035484892, guid: c5c5e5808cd4f4c43a2fc969b5e938fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 281928505}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ee94551be1c420ba3c7e8020fefefe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &332106697
 GameObject:
   m_ObjectHideFlags: 0
@@ -825,7 +790,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 401298995}
-        m_MethodName: UpdatePlayerName
+        m_MethodName: UpdateSteamID
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -922,6 +887,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerName: 
   nameInput: {fileID: 401298992}
+  useSteam: 1
+  steamID: 
 --- !u!1001 &409218292
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1066,18 +1033,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5c5e5808cd4f4c43a2fc969b5e938fe, type: 3}
---- !u!114 &409218294 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9162229055035484892, guid: c5c5e5808cd4f4c43a2fc969b5e938fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 409218292}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ee94551be1c420ba3c7e8020fefefe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &470462330
 GameObject:
   m_ObjectHideFlags: 0
@@ -1288,18 +1243,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5c5e5808cd4f4c43a2fc969b5e938fe, type: 3}
---- !u!114 &663044971 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9162229055035484892, guid: c5c5e5808cd4f4c43a2fc969b5e938fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 663044969}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ee94551be1c420ba3c7e8020fefefe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1081321445
 GameObject:
   m_ObjectHideFlags: 0
@@ -1335,7 +1278,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 209}
-  m_SizeDelta: {x: 1200, y: 150}
+  m_SizeDelta: {x: 2000, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1081321447
 MonoBehaviour:
@@ -1356,7 +1299,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter your username.
+  m_text: Enter the host's SteamID.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2531,18 +2474,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5c5e5808cd4f4c43a2fc969b5e938fe, type: 3}
---- !u!114 &1844630810 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9162229055035484892, guid: c5c5e5808cd4f4c43a2fc969b5e938fe,
-    type: 3}
-  m_PrefabInstance: {fileID: 1844630808}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ee94551be1c420ba3c7e8020fefefe4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1897471935
 GameObject:
   m_ObjectHideFlags: 0
@@ -2555,6 +2486,8 @@ GameObject:
   - component: {fileID: 1897471938}
   - component: {fileID: 1897471937}
   - component: {fileID: 1897471936}
+  - component: {fileID: 1897471941}
+  - component: {fileID: 1897471940}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -2584,7 +2517,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1897471935}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
@@ -2617,9 +2550,9 @@ MonoBehaviour:
   serverTickRate: 30
   offlineScene: 
   onlineScene: 
-  transport: {fileID: 1897471937}
+  transport: {fileID: 1897471940}
   networkAddress: localhost
-  maxConnections: 2
+  maxConnections: 5
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
@@ -2630,16 +2563,11 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 9162229055035484888, guid: c5c5e5808cd4f4c43a2fc969b5e938fe, type: 3}
   maxNumOfRounds: 0
-  entries:
-  - {fileID: 409218294}
-  - {fileID: 162369728}
-  - {fileID: 1844630810}
-  - {fileID: 281928507}
-  - {fileID: 663044971}
-  - {fileID: 122565973}
   loginPanel: {fileID: 1196899543}
   lobbyPanel: {fileID: 332106697}
   lobbyUi: {fileID: 113311581}
+  players: []
+  identities: []
 --- !u!4 &1897471939
 Transform:
   m_ObjectHideFlags: 0
@@ -2654,6 +2582,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1897471940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897471935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Channels: 02000000
+  Timeout: 25
+  SteamAppID: 480
+  AllowSteamRelay: 1
+  SteamUserID: 0
+--- !u!114 &1897471941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897471935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2102355748
 GameObject:
   m_ObjectHideFlags: 0
