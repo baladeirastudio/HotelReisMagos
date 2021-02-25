@@ -6,6 +6,7 @@ using Mirror.Examples.Chat;
 using Steamworks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 public class PlayerSetup : NetworkBehaviour
 {
@@ -14,6 +15,16 @@ public class PlayerSetup : NetworkBehaviour
     [SerializeField] private PlayerListEntry myEntry;
     
     public Action<string, string, PlayerSetup> onChangeName;
+    [SerializeField] private Texture2D profilePicture = null;
+    [SerializeField] private Sprite steamAvatar = null;
+
+    public Sprite SteamAvatar => steamAvatar;
+    
+    public Texture2D ProfilePicture
+    {
+        get => profilePicture;
+        set => profilePicture = value;
+    }
 
     public string PlayerName
     {
@@ -73,8 +84,29 @@ public class PlayerSetup : NetworkBehaviour
     }
     
     
-    public void SetupSteamUserName()
+    public void FetchSteamData()
     {
         playerName = SteamFriends.GetPersonaName();
+        
+        
+        int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());
+        SteamUtils.GetImageSize(iAvatar, out uint imgWidth, out uint imgHeight);
+        byte[] data = new byte[imgHeight * imgWidth * 4];
+        var isValid = SteamUtils.GetImageRGBA(iAvatar, data, (int)( 4 * imgHeight * imgWidth));
+        if (isValid)
+        {
+            profilePicture = new Texture2D((int)imgWidth, (int)imgHeight, TextureFormat.RGBA32, false, true);
+            profilePicture.LoadRawTextureData(data);
+            profilePicture.Apply();
+            
+            //steamAvatar = Sprite.Create(profilePicture, new Rect(0, 0, imgWidth, imgHeight), Vector2.one/2 );
+            
+            //Destroy(profilePicture);
+        }
+        else
+        {
+            Debug.LogError("Could not fetch Steam PFP.");
+        }
+        
     }
 }

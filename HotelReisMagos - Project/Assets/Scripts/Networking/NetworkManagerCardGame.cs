@@ -36,7 +36,7 @@ public class NetworkManagerCardGame : NetworkManager
         base.OnServerAddPlayer(conn);
         Debug.Log("A player was added");
         var player = conn.identity.gameObject.GetComponent<PlayerSetup>();
-        player.SetupSteamUserName();
+        player.FetchSteamData();
         players.Add(player);
         identities.Add(conn.identity);
 
