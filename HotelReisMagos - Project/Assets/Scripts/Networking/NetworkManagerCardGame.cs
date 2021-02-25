@@ -10,7 +10,7 @@ public class NetworkManagerCardGame : NetworkManager
     [Header("The below variables refer to the game's variables.")] 
     [SerializeField] private int maxNumOfRounds;
     [SerializeField] private GameObject loginPanel, lobbyPanel;
-    [SerializeField] private NetworLobbyUI lobbyUi;
+    [SerializeField] private NetworkLobbyUI lobbyUi;
 
     public List<PlayerSetup> players = new List<PlayerSetup>();
     public List<NetworkIdentity> identities = new List<NetworkIdentity>();
@@ -36,6 +36,7 @@ public class NetworkManagerCardGame : NetworkManager
         base.OnServerAddPlayer(conn);
         Debug.Log("A player was added");
         var player = conn.identity.gameObject.GetComponent<PlayerSetup>();
+        player.SetupSteamUserName();
         players.Add(player);
         identities.Add(conn.identity);
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using Mirror.Examples.Chat;
+using Steamworks;
 using TMPro;
 using UnityEngine;
 
@@ -29,7 +30,8 @@ public class PlayerSetup : NetworkBehaviour
     public void HandleNameChange(string old, string newName)
     {
         Debug.Log($"My entry is {playerEntry}", gameObject);
-        myEntry.ForceChangeDisplayName(newName);
+        if(myEntry)
+            myEntry.ForceChangeDisplayName(newName);
         RpcChangeNameEvent(old, newName, this);
     }
 
@@ -69,5 +71,10 @@ public class PlayerSetup : NetworkBehaviour
     {
         onChangeName?.Invoke(old, newVal, player);
     }
-
+    
+    
+    public void SetupSteamUserName()
+    {
+        playerName = SteamFriends.GetPersonaName();
+    }
 }

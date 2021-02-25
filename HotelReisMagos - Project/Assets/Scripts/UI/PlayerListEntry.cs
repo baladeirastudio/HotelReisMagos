@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using Steamworks;
 using TMPro;
 using UnityEngine;
 
@@ -13,8 +14,9 @@ public class PlayerListEntry : MonoBehaviour
     public void Track(PlayerSetup playerSetup)
     {
         myPlayer = playerSetup;
+        nameLabel.gameObject.SetActive(true);
 
-        if (playerSetup.hasAuthority)
+        /*if (playerSetup.hasAuthority)
         {
             nameLabel.gameObject.SetActive(false);
             nameInputField.gameObject.SetActive(true);
@@ -22,7 +24,8 @@ public class PlayerListEntry : MonoBehaviour
         else
         {
             nameLabel.gameObject.SetActive(true);
-        }
+        }*/
+        ForceChangeDisplayName(playerSetup.PlayerName);
     }
 
     public void ForceChangeDisplayName(string newName)

@@ -10,6 +10,7 @@ public class PlayerInfo : MonoBehaviour
     [SerializeField] private string playerName = "Player";
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private bool useSteam = false;
+    [SerializeField] private TextMeshProUGUI addressText;
 
     protected Callback<LobbyCreated_t> lobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequest;
@@ -22,9 +23,9 @@ public class PlayerInfo : MonoBehaviour
     {
         if (PlayerPrefs.HasKey("CurrentPlayerName"))
         {
-            playerName = PlayerPrefs.GetString("CurrentPlayerName");
-            clientName = playerName;
-            nameInput.SetTextWithoutNotify(playerName);
+            //playerName = PlayerPrefs.GetString("CurrentPlayerName");
+            //clientName = playerName;
+            //nameInput.SetTextWithoutNotify(playerName);
         }
     }
 
@@ -75,6 +76,7 @@ public class PlayerInfo : MonoBehaviour
             NetworkManager.singleton.StartHost();
             SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "HostAddress",
                 SteamUser.GetSteamID().ToString());
+            addressText.SetText(SteamUser.GetSteamID().ToString());
         }
     }
 
