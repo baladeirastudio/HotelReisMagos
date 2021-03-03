@@ -75,6 +75,14 @@ public class PlayerSetup : NetworkBehaviour
     public void RpcSetEntryIndex(int newEntry)
     {
         playerEntry = newEntry;
+
+        if (isServer && !isServerOnly)
+        {
+            if (hasAuthority)
+            {
+                
+            }
+        }
     }
     
     [ClientRpc]
@@ -87,6 +95,8 @@ public class PlayerSetup : NetworkBehaviour
     public void FetchSteamData()
     {
         playerName = SteamFriends.GetPersonaName();
+
+        (NetworkManager.singleton as NetworkManagerCardGame).PrintSomething();
         
         
         int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());

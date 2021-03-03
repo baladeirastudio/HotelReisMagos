@@ -52,6 +52,11 @@ public class NetworkManagerCardGame : NetworkManager
         //player.SetDisplayName($"Player {numPlayers}");
     }
 
+    public void PrintSomething()
+    {
+        Debug.Log("Something");
+    }
+
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
