@@ -17,6 +17,7 @@ public class PlayerInfo : MonoBehaviour
     protected Callback<LobbyEnter_t> lobbyEnter;
     
     public static string clientName;
+    public static Texture2D clientPfp;
     [SerializeField] private string steamID;
 
     private void Awake()
@@ -37,6 +38,32 @@ public class PlayerInfo : MonoBehaviour
         }
         else
         {
+            if (SteamManager.Initialized)
+            {
+                clientName = SteamFriends.GetPersonaName();
+                Debug.Log(clientName);
+                
+                int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());
+                SteamUtils.GetImageSize(iAvatar, out uint imgWidth, out uint imgHeight);
+                byte[] data = new byte[imgHeight * imgWidth * 4];
+                var isValid = SteamUtils.GetImageRGBA(iAvatar, data, (int)( 4 * imgHeight * imgWidth));
+                if (isValid)
+                {
+                    clientPfp = new Texture2D((int)imgWidth, (int)imgHeight, TextureFormat.RGBA32, false, true);
+                    clientPfp.LoadRawTextureData(data);
+                    clientPfp.Apply();
+            
+                    //steamAvatar = Sprite.Create(profilePicture, new Rect(0, 0, imgWidth, imgHeight), Vector2.one/2 );
+            
+                    //Destroy(profilePicture);
+                }
+                else
+                {
+                    Debug.LogError("Could not fetch Steam PFP.");
+                }
+                
+                
+            }
             lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
             gameLobbyJoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequest);
             lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);

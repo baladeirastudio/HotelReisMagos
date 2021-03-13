@@ -94,12 +94,14 @@ public class PlayerSetup : NetworkBehaviour
     
     public void FetchSteamData()
     {
-        playerName = SteamFriends.GetPersonaName();
+        //playerName = SteamFriends.GetPersonaName();
+        playerName = PlayerInfo.clientName;
+        profilePicture = PlayerInfo.clientPfp;
 
         (NetworkManager.singleton as NetworkManagerCardGame).PrintSomething();
         
         
-        int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());
+        /*int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());
         SteamUtils.GetImageSize(iAvatar, out uint imgWidth, out uint imgHeight);
         byte[] data = new byte[imgHeight * imgWidth * 4];
         var isValid = SteamUtils.GetImageRGBA(iAvatar, data, (int)( 4 * imgHeight * imgWidth));
@@ -116,7 +118,7 @@ public class PlayerSetup : NetworkBehaviour
         else
         {
             Debug.LogError("Could not fetch Steam PFP.");
-        }
+        }*/
         
     }
 }
