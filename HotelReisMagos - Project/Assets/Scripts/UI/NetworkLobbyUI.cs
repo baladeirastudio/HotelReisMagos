@@ -2,9 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using Steamworks;
 using UnityEngine;
 
-public class NetworLobbyUI : NetworkBehaviour
+public class NetworkLobbyUI : NetworkBehaviour
 {
     [SerializeField] private RectTransform playerListGroup;
     [SerializeField] private PlayerListEntry playerListEntryPrefab;
@@ -28,7 +29,6 @@ public class NetworLobbyUI : NetworkBehaviour
         }
 
         StartCoroutine(RefreshListCoroutine());
-        
     }
 
     private IEnumerator RefreshListCoroutine()

@@ -10,21 +10,23 @@ public class PlayerInfo : MonoBehaviour
     [SerializeField] private string playerName = "Player";
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private bool useSteam = false;
+    [SerializeField] private TextMeshProUGUI addressText;
 
     protected Callback<LobbyCreated_t> lobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequest;
     protected Callback<LobbyEnter_t> lobbyEnter;
     
     public static string clientName;
+    public static Texture2D clientPfp;
     [SerializeField] private string steamID;
 
     private void Awake()
     {
         if (PlayerPrefs.HasKey("CurrentPlayerName"))
         {
-            playerName = PlayerPrefs.GetString("CurrentPlayerName");
-            clientName = playerName;
-            nameInput.SetTextWithoutNotify(playerName);
+            //playerName = PlayerPrefs.GetString("CurrentPlayerName");
+            //clientName = playerName;
+            //nameInput.SetTextWithoutNotify(playerName);
         }
     }
 
@@ -36,6 +38,32 @@ public class PlayerInfo : MonoBehaviour
         }
         else
         {
+            if (SteamManager.Initialized)
+            {
+                clientName = SteamFriends.GetPersonaName();
+                Debug.Log(clientName);
+                
+                int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());
+                SteamUtils.GetImageSize(iAvatar, out uint imgWidth, out uint imgHeight);
+                byte[] data = new byte[imgHeight * imgWidth * 4];
+                var isValid = SteamUtils.GetImageRGBA(iAvatar, data, (int)( 4 * imgHeight * imgWidth));
+                if (isValid)
+                {
+                    clientPfp = new Texture2D((int)imgWidth, (int)imgHeight, TextureFormat.RGBA32, false, true);
+                    clientPfp.LoadRawTextureData(data);
+                    clientPfp.Apply();
+            
+                    //steamAvatar = Sprite.Create(profilePicture, new Rect(0, 0, imgWidth, imgHeight), Vector2.one/2 );
+            
+                    //Destroy(profilePicture);
+                }
+                else
+                {
+                    Debug.LogError("Could not fetch Steam PFP.");
+                }
+                
+                
+            }
             lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
             gameLobbyJoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequest);
             lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
@@ -75,6 +103,7 @@ public class PlayerInfo : MonoBehaviour
             NetworkManager.singleton.StartHost();
             SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "HostAddress",
                 SteamUser.GetSteamID().ToString());
+            addressText.SetText(SteamUser.GetSteamID().ToString());
         }
     }
 
