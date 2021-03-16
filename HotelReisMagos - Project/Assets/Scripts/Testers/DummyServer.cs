@@ -44,6 +44,7 @@ public class DummyServer : MonoBehaviour
         slots = new Dictionary<string, SlotController>();
 
         playerTurnID = 0;
+        turn = 1;
     }
 
     public void SetPlayerID(PlayerController player)
@@ -125,7 +126,7 @@ public class DummyServer : MonoBehaviour
         {
             playerTurnID = 0;
         }
-
+        turn ++;
         players[playerTurnID].StartYourTurn();
     }
 }

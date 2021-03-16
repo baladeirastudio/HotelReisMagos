@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour
 {
     static public GameController instance;
 
-    private DummyServer server;
+    public DummyServer server;
 
     private List<Color> playersColors;
 

@@ -29,19 +29,19 @@ public class SlotController : MonoBehaviour
 
     private void Start()
     {
-        DummyServer.instance.RegisterSlot(this);
+        var server = GameController.instance.server;
+        server.RegisterSlot(this);
     }
 
     public void OnClick()
     {
-        GameController gameController = GameController.instance;
-
-        DummyServer.instance.SelectSlot(this);
-
+        var server = GameController.instance.server;
+        server.SelectSlot(this);
     }
 
     public void SetSelectedSlot(Color color)
     {
+        isSelected = true;
         slotImage.color = color;
 
         slotImage.raycastTarget = false;
@@ -49,6 +49,7 @@ public class SlotController : MonoBehaviour
 
     public void resetButton()
     {
+        isSelected = false;
         slotImage.color = Color.white;
 
         slotImage.raycastTarget = true;
