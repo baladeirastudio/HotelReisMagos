@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Game_Lucena.unity
+    guid: 9858ca78186537b48a0b7100810ba9c8
+  - enabled: 1
     path: Assets/Scenes/Sandbox/LucenaSandbox.unity
     guid: dd018bfccfc76144590a5db1734a7fd4
   m_configObjects: {}

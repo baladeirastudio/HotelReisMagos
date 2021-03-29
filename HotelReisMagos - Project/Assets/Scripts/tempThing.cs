@@ -4,23 +4,12 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
-/*enum GameState
+public class tempThing : NetworkBehaviour
 {
-    OBJECTIVE_CARDS = 0,
-    GIVE_CHAR_OBJECTIVES = 1,
-    CHOOSE_SLOT = 2,
-    GIVE_RESOURCE = 3,
-    READ_CARD = 4,
-    USE_LUCKY_CARD = 5,
-    DEFEND_IDEA = 6,
-}*/
+    public static tempThing instance;
 
-public class GameController : MonoBehaviour
-{
-    static public GameController instance;
-
-    [SerializeField] private int playerTurnID;
-    [SerializeField] private int turn;
+    [SyncVar(hook =nameof(OnChangePlayerTurn)), SerializeField] private int playerTurnID;
+    [SyncVar, SerializeField] private int turn;
 
     public NetworkManagerCardGame server;
 
@@ -36,10 +25,12 @@ public class GameController : MonoBehaviour
         set => turn = value;
     }
     private List<Color> playersColors;
-    
+
     private void Awake()
     {
+        Debug.LogError("HELLOOOOOOOOOOOOO");
         Singleton();
+        Debug.LogError("hasllo?");
 
         Init();
         //server = NetworkManagerCardGame.singleton as NetworkManagerCardGame;
@@ -53,8 +44,15 @@ public class GameController : MonoBehaviour
     private void Singleton()
     {
         if (instance)
-            Destroy(gameObject);
+            if (instance != this)
+            {
+                Destroy(gameObject);
+                Debug.Log("Nope, already exists a game controller.");
+            }
+
         instance = this;
+        
+        Debug.LogError($"Set instance. New instance: {instance}");
     }
 
     private void Init()
@@ -84,16 +82,27 @@ public class GameController : MonoBehaviour
         return playersColors[playerID];
     }
     
+    //[ClientRpc]
     public void RpcNextTurn()
     {
-        PlayerSetup.playerControllers[playerTurnID].RpcEndYourTurn();
+        //PlayerSetup.playerControllers[playerTurnID].RpcEndYourTurn();
 
         playerTurnID++;
         if(playerTurnID >= PlayerSetup.playerControllers.Count)
         {
             playerTurnID = 0;
         }
-        turn ++;
-        PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
+        turn++;
+        //PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
+    }
+
+    private void OnDisable()
+    {
+        Debug.Log("lol");
+    }
+
+    private void OnChangePlayerTurn(int old, int val)
+    {
+        Debug.LogError($"Old val: {old} - New: {val}");
     }
 }

@@ -10,6 +10,9 @@ using UnityEngine.Experimental.Rendering;
 
 public class PlayerSetup : NetworkBehaviour
 {
+    
+    public static List<PlayerSetup> playerControllers;
+
     [SyncVar(hook = nameof(HandleNameChange))] [SerializeField] private string playerName = "Player";
     [SyncVar(hook = nameof(HandleEntryChange))] [SerializeField] private int playerEntry;
     [SerializeField] private PlayerListEntry myEntry;
@@ -120,5 +123,79 @@ public class PlayerSetup : NetworkBehaviour
             Debug.LogError("Could not fetch Steam PFP.");
         }*/
         
+    }
+    
+    
+    
+    
+    [SyncVar, SerializeField] private int playerNumber;
+
+    [SyncVar, SerializeField] private bool isMyTurn = false;
+
+    [SyncVar, SerializeField] private Color color;
+
+    public static PlayerSetup localPlayerSetup;
+
+    public int PlayerNumber { get => playerNumber; set => playerNumber = value; }
+
+    public Color MyColor { get => color; set => color = value; }
+
+    private void Start()
+    {
+        PlayerSetup.playerControllers.Add(this);
+
+        if (tempThing.instance)
+        {
+            //GameController.instance.RegisterPlayer(this);
+        }
+        else
+            Debug.LogError("Missing Game Controller Instance!");
+    }
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+        localPlayerSetup = this;
+
+    }
+
+    [ClientRpc]
+    public void RpcStartYourTurn()
+    {
+        if (hasAuthority)
+        {
+            isMyTurn = true;
+        }
+    }
+    
+    [ClientRpc]
+    public void RpcEndYourTurn()
+    {
+        if (hasAuthority)
+        {
+            isMyTurn = false;
+        }
+    }
+
+    public void CmdSelectSlot(SlotController slot)
+    {
+        var temp = NetworkManager.singleton as NetworkManagerCardGame;
+        string slotID = slot.ID;
+
+        if(temp.Slots[slotID].isSelected)
+        {
+            Debug.LogError("Slot ALREADY SELECTED!");
+            return;
+        }
+
+        temp.Slots[slotID].SetSelectedSlot(PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID].MyColor);
+
+        CmdNext();
+    }
+
+    [Command]
+    private void CmdNext()
+    {
+        tempThing.instance.RpcNextTurn();
     }
 }

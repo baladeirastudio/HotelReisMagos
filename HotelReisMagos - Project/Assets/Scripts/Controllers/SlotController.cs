@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SlotController : MonoBehaviour
 {
     [SerializeField] private string id;
+    [SerializeField] private int actNumber, actId;
+    
     public string ID { get => id; }
 
     public bool isSelected;
@@ -29,14 +32,21 @@ public class SlotController : MonoBehaviour
 
     private void Start()
     {
-        var server = GameController.instance.server;
+        var server = NetworkManager.singleton as NetworkManagerCardGame;
         server.RegisterSlot(this);
     }
 
     public void OnClick()
     {
-        var server = GameController.instance.server;
-        server.SelectSlot(this);
+        var server = NetworkManager.singleton as NetworkManagerCardGame;
+        //server.CmdSelectSlot(this);
+        
+        if(tempThing.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
+            PlayerSetup.localPlayerSetup.CmdSelectSlot(this);
+        else
+        {
+            Debug.LogError("Not your turn.");
+        }
     }
 
     public void SetSelectedSlot(Color color)

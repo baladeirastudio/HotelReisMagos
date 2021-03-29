@@ -18,8 +18,10 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        if (GameController.instance)
-            GameController.instance.RegisterPlayer(this);
+        if (tempThing.instance)
+        {
+            //GameController.instance.RegisterPlayer(this);
+        }
         else
             Debug.LogError("Missing Game Controller Instance!");
     }
