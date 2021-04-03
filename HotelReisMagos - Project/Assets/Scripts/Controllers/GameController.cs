@@ -9,15 +9,14 @@ enum GameState
     CHOOSE_SLOT = 2,
     GIVE_RESOURCE = 3,
     READ_CARD = 4,
-    USE_LUCKY_CARD = 5,
-    DEFEND_IDEA = 6,
+    CHANGE_ACTO = 5,
+    USE_LUCKY_CARD = 6,
+    DEFEND_IDEA = 7,
 }
 
 public class GameController : MonoBehaviour
 {
-    static public GameController instance;
-
-    public DummyServer server;
+    static public GameController Instance { get; set; }
 
     private List<Color> playersColors;
 
@@ -30,25 +29,25 @@ public class GameController : MonoBehaviour
 
     private void Singleton()
     {
-        if (instance)
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this);
+        }            
+        else
+        {
             Destroy(gameObject);
-        instance = this;
-    }
-
-    private void Start()
-    {
-        server = DummyServer.instance;
+        }        
     }
 
     private void Init()
-    {
-        DontDestroyOnLoad(this);
+    {        
         InitColors();
     }
 
     public void RegisterPlayer(PlayerController player)
     {
-        server.ConnectToSever(player);
+        DummyServer.Instance.ConnectToSever(player);
     }
 
     private void InitColors()
