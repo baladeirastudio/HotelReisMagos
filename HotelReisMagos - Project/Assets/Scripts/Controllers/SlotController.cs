@@ -33,7 +33,7 @@ public class SlotController : MonoBehaviour
 
     private void Start()
     {
-        GameController.Instance.server.RegisterSlot(this);
+        DummyServer.Instance.RegisterSlot(this);
 
     }
 
@@ -41,7 +41,7 @@ public class SlotController : MonoBehaviour
     {
         if(!button.interactable)
         {
-            GameController.Instance.server.SelectSlot(this);       
+            DummyServer.Instance.SelectSlot(this);       
         }
     }
 
