@@ -4,47 +4,45 @@ using UnityEngine;
 
 public class DummyServer : MonoBehaviour
 {
-    static public DummyServer instance;
+    static public DummyServer Instance { get; set; }
 
     private List<PlayerController> players;
 
     private Dictionary<string, SlotController> slots;
 
-    private GameController gameController;
-
     private int playerTurnID;
 
-    private int turn;
-
+    private int currentTurn;
 
     public int NumberOFPlayers { get => players.Count; }
 
     private void Awake()
     {
         Singleton();
-
         Init();
     }
 
     private void Singleton()
     {
-        if (instance)
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
             Destroy(gameObject);
-        instance = this;
+        }
     }
 
     private void Init()
     {
-        DontDestroyOnLoad(this);
-
-        gameController = GameController.instance;
-
         players = new List<PlayerController>();
 
         slots = new Dictionary<string, SlotController>();
 
         playerTurnID = 0;
-        turn = 1;
+        currentTurn = 1;
     }
 
     public void SetPlayerID(PlayerController player)
@@ -53,7 +51,7 @@ public class DummyServer : MonoBehaviour
 
         player.PlayerNumber = playerID; //Set the player number to match the index
 
-        player.MyColor = gameController.GetPlayerColor(playerID);
+        player.MyColor = GameController.Instance.GetPlayerColor(playerID);
     }
 
     public void SelectSlot(SlotController slot)
@@ -103,18 +101,22 @@ public class DummyServer : MonoBehaviour
 
     public void RegisterSlot(SlotController slot)
     {
-        SlotController value;
-        if (slots.TryGetValue(slot.ID, out value))
+        if (!slots.TryGetValue(slot.ID, out SlotController value))
         {
-            if(value == slot)
-                Debug.LogError("Slot ALREADY ADDED to the Dictionary!");
-            else
-                Debug.LogError("Slot with SAME ID!");
-
-            return;
+            slots.Add(slot.ID, slot);
         }
-
-        slots.Add(slot.ID, slot);
+        else
+        {
+            if (value == slot)
+            {
+                Debug.LogError("Slot ALREADY ADDED to the Dictionary!");
+            }
+            else
+            {
+                Debug.LogError("Slot with SAME ID!");
+                return;
+            }
+        }
     }
 
     public void NextTurn()
@@ -126,7 +128,7 @@ public class DummyServer : MonoBehaviour
         {
             playerTurnID = 0;
         }
-        turn ++;
+        currentTurn++;
         players[playerTurnID].StartYourTurn();
     }
 }

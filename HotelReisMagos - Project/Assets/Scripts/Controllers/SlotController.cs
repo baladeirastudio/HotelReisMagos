@@ -10,6 +10,8 @@ public class SlotController : MonoBehaviour
 
     public bool isSelected;
 
+    private Button button;
+
     private Image slotImage;
 
     private void Awake()
@@ -19,6 +21,8 @@ public class SlotController : MonoBehaviour
 
     private void Init()
     {
+        button = GetComponent<Button>();
+
         isSelected = false;
 
         slotImage = GetComponent<Image>();
@@ -29,14 +33,16 @@ public class SlotController : MonoBehaviour
 
     private void Start()
     {
-        var server = GameController.instance.server;
-        server.RegisterSlot(this);
+        DummyServer.Instance.RegisterSlot(this);
+
     }
 
     public void OnClick()
     {
-        var server = GameController.instance.server;
-        server.SelectSlot(this);
+        if(!button.interactable)
+        {
+            DummyServer.Instance.SelectSlot(this);       
+        }
     }
 
     public void SetSelectedSlot(Color color)
@@ -47,7 +53,7 @@ public class SlotController : MonoBehaviour
         slotImage.raycastTarget = false;
     }
 
-    public void resetButton()
+    public void ResetButton()
     {
         isSelected = false;
         slotImage.color = Color.white;
