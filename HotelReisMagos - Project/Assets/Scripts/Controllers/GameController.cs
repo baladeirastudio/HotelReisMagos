@@ -18,12 +18,17 @@ public class GameController : MonoBehaviour
 {
     static public GameController Instance { get; set; }
 
-    private List<Color> playersColors;
+    private List<Color> playersColors = new List<Color>();
+    [SerializeField]
+    private ActoController[] actos;
 
     private void Awake()
     {
-        Singleton();
+        Singleton();        
+    }
 
+    private void Start()
+    {
         Init();
     }
 
@@ -43,6 +48,7 @@ public class GameController : MonoBehaviour
     private void Init()
     {        
         InitColors();
+        InitSlots();
     }
 
     public void RegisterPlayer(PlayerController player)
@@ -52,8 +58,6 @@ public class GameController : MonoBehaviour
 
     private void InitColors()
     {
-        playersColors = new List<Color>();
-
         playersColors.Add(new Color(0, 1, 1, 1));
         playersColors.Add(new Color(1, 0, 1, 1));
         playersColors.Add(new Color(1, 1, 0, 1));
@@ -61,8 +65,29 @@ public class GameController : MonoBehaviour
         playersColors.Add(new Color(0, 1, 0, 1));
     }
 
+    public void InitSlots()
+    {
+        foreach (var item in actos)
+        {
+            if (item.GetID() <= DummyServer.Instance.GetActo())
+            {
+                item.ResetBoard();
+                item.UnlockSlots();
+            }
+            else
+            {
+                item.LockSlots();
+            }
+        }
+    }
+
     public Color GetPlayerColor(int playerID)
     {
         return playersColors[playerID];
+    }
+
+    public int NextActo()
+    {
+        return DummyServer.Instance.GetActo();
     }
 }

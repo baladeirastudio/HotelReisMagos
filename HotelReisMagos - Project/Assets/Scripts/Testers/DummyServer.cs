@@ -12,7 +12,8 @@ public class DummyServer : MonoBehaviour
 
     private int playerTurnID;
 
-    private int currentTurn;
+    private int currentTurn = 1;
+    public int currentActo = 1;
 
     public int NumberOFPlayers { get => players.Count; }
 
@@ -43,6 +44,7 @@ public class DummyServer : MonoBehaviour
 
         playerTurnID = 0;
         currentTurn = 1;
+        currentActo = 1;
     }
 
     public void SetPlayerID(PlayerController player)
@@ -130,5 +132,17 @@ public class DummyServer : MonoBehaviour
         }
         currentTurn++;
         players[playerTurnID].StartYourTurn();
+    }
+
+    public void NextActo()
+    {
+        //TODO: Criar limite de atos
+        currentActo += 1;
+        GameController.Instance.InitSlots();
+    }
+
+    public int GetActo()
+    {
+        return currentActo;
     }
 }
