@@ -43,6 +43,7 @@ public class NetworkManagerCardGame : NetworkManager
         Debug.Log("A player was added");
         var player = conn.identity.gameObject.GetComponent<PlayerSetup>();
         //player.FetchSteamData();
+        //PlayerSetup.playerControllers.Add(player);
         players.Add(player);
         identities.Add(conn.identity);
         player.PlayerNumber = numPlayers;
@@ -95,7 +96,7 @@ public class NetworkManagerCardGame : NetworkManager
         
         //Singleton();
         
-        PlayerSetup.playerControllers = new List<PlayerSetup>();
+        //PlayerSetup.playerControllers = new List<PlayerSetup>();
 
         slots = new Dictionary<string, SlotController>(); 
     }
@@ -175,7 +176,7 @@ public class NetworkManagerCardGame : NetworkManager
             return;
         }
 
-        slots[slotID].SetSelectedSlot(PlayerSetup.playerControllers[gameController.PlayerTurnID].MyColor);
+        //slots[slotID].SetSelectedSlot(PlayerSetup.playerControllers[gameController.PlayerTurnID].MyColor);
 
         //RpcNextTurn();
     }
@@ -216,5 +217,11 @@ public class NetworkManagerCardGame : NetworkManager
         }
 
         slots.Add(slot.ID, slot);
+    }
+
+    public bool IsSlotSelected(string id)
+    {
+        return SlotController.slots[id].isSelected;
+        //return slots[id].isSelected;
     }
 }

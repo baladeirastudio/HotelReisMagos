@@ -7,11 +7,12 @@ using Steamworks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.InputSystem;
 
 public class PlayerSetup : NetworkBehaviour
 {
     
-    public static List<PlayerSetup> playerControllers;
+    public static List<PlayerSetup> playerControllers = new List<PlayerSetup>();
 
     [SyncVar(hook = nameof(HandleNameChange))] [SerializeField] private string playerName = "Player";
     [SyncVar(hook = nameof(HandleEntryChange))] [SerializeField] private int playerEntry;
@@ -135,6 +136,7 @@ public class PlayerSetup : NetworkBehaviour
     [SyncVar, SerializeField] private Color color;
 
     public static PlayerSetup localPlayerSetup;
+    private string PERMAslotId;
 
     public int PlayerNumber { get => playerNumber; set => playerNumber = value; }
 
@@ -143,6 +145,7 @@ public class PlayerSetup : NetworkBehaviour
     private void Start()
     {
         PlayerSetup.playerControllers.Add(this);
+        Debug.LogError("Adding self.");
 
         if (tempThing.instance)
         {
@@ -179,21 +182,45 @@ public class PlayerSetup : NetworkBehaviour
 
     public void CmdSelectSlot(SlotController slot)
     {
-        var temp = NetworkManager.singleton as NetworkManagerCardGame;
-        string slotID = slot.ID;
+        PERMAslotId = slot.ID;
+        CmdCheckSelectedSlot(PERMAslotId);
+    }
 
-        if(temp.Slots[slotID].isSelected)
+    [Command]
+    private void CmdCheckSelectedSlot(string slotID)
+    {
+        var temp = NetworkManager.singleton as NetworkManagerCardGame;
+        
+        if(temp.IsSlotSelected(slotID))
         {
             Debug.LogError("Slot ALREADY SELECTED!");
             return;
         }
 
-        temp.Slots[slotID].SetSelectedSlot(PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID].MyColor);
+        Debug.LogError("Testing.");
+        try
+        {
+            Debug.LogError($"Key: {slotID} - Value: {SlotController.slots[slotID]}");
+            var tempSlot = SlotController.slots[slotID];
+            var tempPlayer = PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID];
+            var tempColor = tempPlayer.MyColor;
+            tempSlot.SetSelectedSlot(MyColor);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("This shit won't fucking work");
+            Debug.LogException(e);
+            Debug.LogError($"Player controllers amount: {PlayerSetup.playerControllers.Count} - Player turn ID: {tempThing.instance.PlayerTurnID}");
+            Debug.LogError($"Player at previously stated index: {PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID]}");
+            Debug.LogError($"Player color: {PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID].MyColor}");
+            Debug.LogError($"Slots: {SlotController.slots}");
+            Debug.LogError($"Slot ID: {SlotController.slots[slotID]}");
+        }
 
         CmdNext();
     }
 
-    [Command]
+    //[Command]
     private void CmdNext()
     {
         tempThing.instance.RpcNextTurn();

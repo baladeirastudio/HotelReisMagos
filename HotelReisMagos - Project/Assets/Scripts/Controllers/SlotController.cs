@@ -8,6 +8,8 @@ public class SlotController : MonoBehaviour
 {
     [SerializeField] private string id;
     [SerializeField] private int actNumber, actId;
+
+    public static Dictionary<string, SlotController> slots = new Dictionary<string, SlotController>();
     
     public string ID { get => id; }
 
@@ -20,6 +22,22 @@ public class SlotController : MonoBehaviour
         Init();
     }
 
+    public void RegisterSlot(SlotController slot)
+    {
+        SlotController value;
+        if (slots.TryGetValue(slot.ID, out value))
+        {
+            if(value == slot)
+                Debug.LogError("Slot ALREADY ADDED to the Dictionary!");
+            else
+                Debug.LogError("Slot with SAME ID!");
+
+            return;
+        }
+
+        slots.Add(slot.ID, slot);
+    }
+    
     private void Init()
     {
         isSelected = false;
@@ -32,8 +50,9 @@ public class SlotController : MonoBehaviour
 
     private void Start()
     {
-        var server = NetworkManager.singleton as NetworkManagerCardGame;
-        server.RegisterSlot(this);
+        //var server = NetworkManager.singleton as NetworkManagerCardGame;
+        //server.RegisterSlot(this);
+        RegisterSlot(this);
     }
 
     public void OnClick()
@@ -55,6 +74,7 @@ public class SlotController : MonoBehaviour
         slotImage.color = color;
 
         slotImage.raycastTarget = false;
+        tempThing.instance.RpcUpdateSlots(id, color);
     }
 
     public void resetButton()

@@ -73,7 +73,7 @@ public class DummyServer : MonoBehaviour
             return;
         }
 
-        slots[slotID].SetSelectedSlot(players[playerTurnID].MyColor);
+        //slots[slotID].SetSelectedSlot(players[playerTurnID].MyColor);
 
         NextTurn();
     }

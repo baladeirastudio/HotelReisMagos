@@ -57,7 +57,7 @@ public class tempThing : NetworkBehaviour
 
     private void Init()
     {
-        DontDestroyOnLoad(this);
+        //DontDestroyOnLoad(this);
         InitColors();
     }
 
@@ -75,6 +75,7 @@ public class tempThing : NetworkBehaviour
         playersColors.Add(new Color(1, 1, 0, 1));
         playersColors.Add(new Color(0, 0, 1, 1));
         playersColors.Add(new Color(0, 1, 0, 1));
+        playersColors.Add(new Color(1, 0, 0, 1));
     }
 
     public Color GetPlayerColor(int playerID)
@@ -104,5 +105,12 @@ public class tempThing : NetworkBehaviour
     private void OnChangePlayerTurn(int old, int val)
     {
         Debug.LogError($"Old val: {old} - New: {val}");
+    }
+
+    [ClientRpc]
+    public void RpcUpdateSlots(string slotId, Color slotColor)
+    {
+        if(!SlotController.slots[slotId].isSelected)
+            SlotController.slots[slotId].SetSelectedSlot(slotColor);
     }
 }
