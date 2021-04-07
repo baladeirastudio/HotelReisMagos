@@ -22,6 +22,10 @@ public class PlayerController : MonoBehaviour
         {
             //GameController.instance.RegisterPlayer(this);
         }
+        /*
+        if (GameController.Instance)
+            GameController.Instance.RegisterPlayer(this);
+            */
         else
             Debug.LogError("Missing Game Controller Instance!");
     }

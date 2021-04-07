@@ -40,8 +40,6 @@ public class SlotController : MonoBehaviour
     
     private void Init()
     {
-        isSelected = false;
-
         slotImage = GetComponent<Image>();
 
         if (!slotImage)
@@ -53,6 +51,8 @@ public class SlotController : MonoBehaviour
         //var server = NetworkManager.singleton as NetworkManagerCardGame;
         //server.RegisterSlot(this);
         RegisterSlot(this);
+        //DummyServer.Instance.RegisterSlot(this);
+
     }
 
     public void OnClick()
@@ -66,6 +66,7 @@ public class SlotController : MonoBehaviour
         {
             Debug.LogError("Not your turn.");
         }
+        //DummyServer.Instance.SelectSlot(this);  
     }
 
     public void SetSelectedSlot(Color color)
@@ -77,7 +78,7 @@ public class SlotController : MonoBehaviour
         tempThing.instance.RpcUpdateSlots(id, color);
     }
 
-    public void resetButton()
+    public void ResetSlot()
     {
         isSelected = false;
         slotImage.color = Color.white;
