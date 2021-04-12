@@ -83,6 +83,12 @@ public class GameController : MonoBehaviour
         server.RegisterOnPlayerList(player);
         //DummyServer.Instance.ConnectToSever(player);
     }
+    
+    public void RegisterPlayer(PlayerController player)
+    {
+        //server.RegisterOnPlayerList(player);
+        DummyServer.Instance.ConnectToSever(player);
+    }
 
     private void InitColors()
     {

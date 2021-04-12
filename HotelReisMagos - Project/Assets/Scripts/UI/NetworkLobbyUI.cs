@@ -14,7 +14,6 @@ public class NetworkLobbyUI : NetworkBehaviour
     [ClientRpc]
     public void RpcSpawnPlayerEntry(NetworkIdentity conn, List<NetworkIdentity> newPlayers)
     {
-        var player = conn.GetComponent<PlayerSetup>();
         players.Clear();
         
         for (int i = 0; i < newPlayers.Count; i++)

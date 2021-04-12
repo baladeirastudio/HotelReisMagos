@@ -11,6 +11,7 @@ public class NetworkManagerCardGame : NetworkManager
     [SerializeField] private int maxNumOfRounds;
     [SerializeField] private GameObject loginPanel, lobbyPanel;
     [SerializeField] private NetworkLobbyUI lobbyUi;
+    [SerializeField] private NetworkGameUI gameUi;
 
     public List<PlayerSetup> players = new List<PlayerSetup>();
     public List<NetworkIdentity> identities = new List<NetworkIdentity>();
@@ -55,6 +56,15 @@ public class NetworkManagerCardGame : NetworkManager
             lobbyUi.RpcSpawnPlayerEntry(conn.identity, identities);
         }
 
+        if (gameUi)
+        {
+            gameUi.RpcSpawnPlayer(identities);
+        }
+        else
+        {
+            NetworkGameUI.Instance.RpcSpawnPlayer(identities);
+        }
+
         /*var newEntry = Instantiate(playerListEntryPrefab, playerListGroup);
         NetworkServer.Spawn(newEntry.gameObject, conn.identity.connectionToClient);
         entries.Add(newEntry);
@@ -84,7 +94,7 @@ public class NetworkManagerCardGame : NetworkManager
 
     private Dictionary<string, SlotController> slots;
 
-    public tempThing gameController;
+    public NetworkGameController gameController;
     
     public Dictionary<string, SlotController> Slots => slots;
 
@@ -126,8 +136,8 @@ public class NetworkManagerCardGame : NetworkManager
         //yield return new WaitForEndOfFrame();
         try
         {
-            gameController = tempThing.instance;
-            //gameController = FindObjectOfType<tempThing>();
+            gameController = NetworkGameController.instance;
+            //gameController = FindObjectOfType<NetworkGameController>();
             gameController.PlayerTurnID = 0;
             gameController.Turn = 1;
             Debug.Log("SUCCESSSSSSSSSS!!!!!!!");
