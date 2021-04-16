@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class PlayerCard : MonoBehaviour
@@ -9,6 +10,25 @@ public class PlayerCard : MonoBehaviour
     
     public void RefreshInfo()
     {
+        StartCoroutine(RefreshInfoDelayed());
+    }
+
+    private IEnumerator RefreshInfoDelayed()
+    {
+
+        Debug.LogError($"Updating UI for player {trackedPlayer.PlayerNumber} - " +
+                       $"Pol: {trackedPlayer.PoliticalResources} - " +
+                       $"Eco: {trackedPlayer.EconomicResources} - " +
+                       $"Soc: {trackedPlayer.SocialResources} - " +
+                       $"Med: {trackedPlayer.MediaResources}");
+        yield return new WaitForSeconds(0.5f);
+        
+        Debug.LogError($"New update for player {trackedPlayer.PlayerNumber} - " +
+                       $"Pol: {trackedPlayer.PoliticalResources} - " +
+                       $"Eco: {trackedPlayer.EconomicResources} - " +
+                       $"Soc: {trackedPlayer.SocialResources} - " +
+                       $"Med: {trackedPlayer.MediaResources}");
+        
         politicalText.SetText($"{trackedPlayer.PoliticalResources}");
         economicText.SetText($"{trackedPlayer.EconomicResources}");
         socialText.SetText($"{trackedPlayer.SocialResources}");
