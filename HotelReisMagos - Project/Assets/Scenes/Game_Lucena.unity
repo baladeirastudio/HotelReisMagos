@@ -2974,8 +2974,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab2e78c3048744c42a75b20a61c1ef92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  card: []
-  exempleCards: {fileID: 0}
+  cardsCSV: {fileID: 4900000, guid: 7d05c24837a4bdd468d3d190152cf685, type: 3}
+  totalColumns: 4
 --- !u!1001 &1569889463
 PrefabInstance:
   m_ObjectHideFlags: 0
