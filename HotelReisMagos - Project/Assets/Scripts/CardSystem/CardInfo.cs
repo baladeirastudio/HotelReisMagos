@@ -5,37 +5,19 @@ using UnityEngine;
 [System.Serializable]
 public class CardInfo 
 {
-    public string id1;
-    public string name1;
-    public string classe1;
+    [SerializeField]
+    private string type;
+    public string Type { get => type; set => type = value; }
 
-    public string Getid()
-    {
-        return id1;
-    }
+    [SerializeField]
+    private string id;
+    public string ID { get => id; set => id = value; }
 
-    public void Setid(string value)
-    {
-        id1 = value;
-    }
+    [SerializeField]
+    private string name;
+    public string Name { get => name; set => name = value; }
 
-    public string Getname()
-    {
-        return name1;
-    }
-
-    public void Setname(string value)
-    {
-        name1 = value;
-    }        
-
-    public string Getclasse()
-    {
-        return classe1;
-    }
-
-    public void Setclasse(string value)
-    {
-        classe1 = value;
-    }
+    [SerializeField]
+    private string classe;
+    public string Classe { get => classe; set => classe = value; }
 }

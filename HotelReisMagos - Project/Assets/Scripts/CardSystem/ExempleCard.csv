@@ -1,4 +1,7 @@
-ID ,NOME,DESCRICAO
-1,Joao,Mago
-2,Samir,Assassino
-3,Felipe,Paladino
+TIPO,ID ,NOME,DESCRIÇÃO
+Personagem,1,João,Mago
+Personagem,2,Samir,Assassino
+Personagem,3,Felipe,Paladino
+Monstro,4,Goblin,Minion
+Monstro,5,Lobo,Minion
+Monstro,6,Orc,Boss
