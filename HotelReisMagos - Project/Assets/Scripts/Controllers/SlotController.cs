@@ -8,10 +8,24 @@ public class SlotController : MonoBehaviour
 {
     [SerializeField] private string id;
     [SerializeField] private int actNumber, actId;
+    [SerializeField] private int minReward = 10, maxReward = 16;
+    
 
     public static Dictionary<string, SlotController> slots = new Dictionary<string, SlotController>();
     
     public string ID { get => id; }
+
+    public int MinReward
+    {
+        get => minReward;
+        set => minReward = value;
+    }
+
+    public int MaxReward
+    {
+        get => maxReward;
+        set => maxReward = value;
+    }
 
     public bool isSelected;
 
@@ -60,7 +74,7 @@ public class SlotController : MonoBehaviour
         var server = NetworkManager.singleton as NetworkManagerCardGame;
         //server.CmdSelectSlot(this);
         
-        if(tempThing.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
+        if(NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
             PlayerSetup.localPlayerSetup.CmdSelectSlot(this);
         else
         {
@@ -75,7 +89,7 @@ public class SlotController : MonoBehaviour
         slotImage.color = color;
 
         slotImage.raycastTarget = false;
-        tempThing.instance.RpcUpdateSlots(id, color);
+        NetworkGameController.instance.RpcUpdateSlots(id, color);
     }
 
     public void ResetSlot()

@@ -8,6 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 public class PlayerSetup : NetworkBehaviour
 {
@@ -22,6 +23,35 @@ public class PlayerSetup : NetworkBehaviour
     [SerializeField] private Texture2D profilePicture = null;
     [SerializeField] private Sprite steamAvatar = null;
 
+    [SyncVar, SerializeField] private int politicalResources = 0;
+    [SyncVar, SerializeField] private int economicResources = 0;
+    [SyncVar, SerializeField] private int socialResources = 0;
+    [SyncVar, SerializeField] private int mediaResources = 0;
+
+    public int PoliticalResources
+    {
+        get => politicalResources;
+        set => politicalResources = value;
+    }
+
+    public int EconomicResources
+    {
+        get => economicResources;
+        set => economicResources = value;
+    }
+
+    public int SocialResources
+    {
+        get => socialResources;
+        set => socialResources = value;
+    }
+
+    public int MediaResources
+    {
+        get => mediaResources;
+        set => mediaResources = value;
+    }
+    
     public Sprite SteamAvatar => steamAvatar;
     
     public Texture2D ProfilePicture
@@ -147,7 +177,7 @@ public class PlayerSetup : NetworkBehaviour
         PlayerSetup.playerControllers.Add(this);
         Debug.LogError("Adding self.");
 
-        if (tempThing.instance)
+        if (NetworkGameController.instance)
         {
             //GameController.instance.RegisterPlayer(this);
         }
@@ -183,6 +213,7 @@ public class PlayerSetup : NetworkBehaviour
     public void CmdSelectSlot(SlotController slot)
     {
         PERMAslotId = slot.ID;
+        
         CmdCheckSelectedSlot(PERMAslotId);
     }
 
@@ -202,17 +233,38 @@ public class PlayerSetup : NetworkBehaviour
         {
             Debug.LogError($"Key: {slotID} - Value: {SlotController.slots[slotID]}");
             var tempSlot = SlotController.slots[slotID];
-            var tempPlayer = PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID];
+            var tempPlayer = PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID];
             var tempColor = tempPlayer.MyColor;
             tempSlot.SetSelectedSlot(MyColor);
+
+            int rewardType = Random.Range(0, 4);
+            int reward = Random.Range(tempSlot.MinReward, tempSlot.MaxReward);
+
+            switch (rewardType)
+            {
+                case 0: //Political
+                    politicalResources += reward;
+                    break;
+                case 1: //Economical
+                    economicResources += reward;
+                    break;
+                case 2: //Social
+                    socialResources += reward;
+                    break;
+                case 3: //Media
+                    mediaResources += reward;
+                    break;
+            }
+
+            NetworkGameUI.Instance.RpcRefreshPlayerCards();
         }
         catch (Exception e)
         {
             Debug.LogError("This shit won't fucking work");
             Debug.LogException(e);
-            Debug.LogError($"Player controllers amount: {PlayerSetup.playerControllers.Count} - Player turn ID: {tempThing.instance.PlayerTurnID}");
-            Debug.LogError($"Player at previously stated index: {PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID]}");
-            Debug.LogError($"Player color: {PlayerSetup.playerControllers[tempThing.instance.PlayerTurnID].MyColor}");
+            Debug.LogError($"Player controllers amount: {PlayerSetup.playerControllers.Count} - Player turn ID: {NetworkGameController.instance.PlayerTurnID}");
+            Debug.LogError($"Player at previously stated index: {PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID]}");
+            Debug.LogError($"Player color: {PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID].MyColor}");
             Debug.LogError($"Slots: {SlotController.slots}");
             Debug.LogError($"Slot ID: {SlotController.slots[slotID]}");
         }
@@ -223,6 +275,6 @@ public class PlayerSetup : NetworkBehaviour
     //[Command]
     private void CmdNext()
     {
-        tempThing.instance.RpcNextTurn();
+        NetworkGameController.instance.RpcNextTurn();
     }
 }

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
-public class tempThing : NetworkBehaviour
+public class NetworkGameController : NetworkBehaviour
 {
-    public static tempThing instance;
+    public static NetworkGameController instance;
 
     [SyncVar(hook =nameof(OnChangePlayerTurn)), SerializeField] private int playerTurnID;
     [SyncVar, SerializeField] private int turn;
