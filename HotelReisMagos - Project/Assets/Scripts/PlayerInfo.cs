@@ -18,7 +18,7 @@ public class PlayerInfo : MonoBehaviour
     
     public static string clientName;
     public static Texture2D clientPfp;
-    [SerializeField] private string steamID;
+    [SerializeField] private string connectionAddress;
 
     private void Awake()
     {
@@ -32,44 +32,60 @@ public class PlayerInfo : MonoBehaviour
 
     private void Start()
     {
-        if (!useSteam)
-        {
-            return;
-        }
-        else
-        {
-            if (SteamManager.Initialized)
-            {
-                clientName = SteamFriends.GetPersonaName();
-                Debug.Log(clientName);
-                
-                int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());
-                SteamUtils.GetImageSize(iAvatar, out uint imgWidth, out uint imgHeight);
-                byte[] data = new byte[imgHeight * imgWidth * 4];
-                var isValid = SteamUtils.GetImageRGBA(iAvatar, data, (int)( 4 * imgHeight * imgWidth));
-                if (isValid)
-                {
-                    clientPfp = new Texture2D((int)imgWidth, (int)imgHeight, TextureFormat.RGBA32, false, true);
-                    clientPfp.LoadRawTextureData(data);
-                    clientPfp.Apply();
-            
-                    //steamAvatar = Sprite.Create(profilePicture, new Rect(0, 0, imgWidth, imgHeight), Vector2.one/2 );
-            
-                    //Destroy(profilePicture);
-                }
-                else
-                {
-                    Debug.LogError("Could not fetch Steam PFP.");
-                }
-                
-                
-            }
-            lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
-            gameLobbyJoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequest);
-            lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
-        }
+
     }
 
+    public void EnableSteam()
+    {
+        if (SteamManager.Initialized)
+        {
+            clientName = SteamFriends.GetPersonaName();
+            Debug.Log(clientName);
+            
+            int iAvatar = SteamFriends.GetLargeFriendAvatar(SteamUser.GetSteamID());
+            SteamUtils.GetImageSize(iAvatar, out uint imgWidth, out uint imgHeight);
+            byte[] data = new byte[imgHeight * imgWidth * 4];
+            var isValid = SteamUtils.GetImageRGBA(iAvatar, data, (int)( 4 * imgHeight * imgWidth));
+            if (isValid)
+            {
+                clientPfp = new Texture2D((int)imgWidth, (int)imgHeight, TextureFormat.RGBA32, false, true);
+                clientPfp.LoadRawTextureData(data);
+                clientPfp.Apply();
+        
+                //steamAvatar = Sprite.Create(profilePicture, new Rect(0, 0, imgWidth, imgHeight), Vector2.one/2 );
+        
+                //Destroy(profilePicture);
+            }
+            else
+            {
+                Debug.LogError("Could not fetch Steam PFP.");
+            }
+            
+        }
+        (NetworkManager.singleton as NetworkManagerCardGame).EnableSteamTransport();
+        useSteam = true;
+        lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
+        gameLobbyJoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequest);
+        lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
+    }
+
+    public void EnableKcp()
+    {
+        try
+        {
+            lobbyCreated.Dispose();
+            gameLobbyJoinRequest.Dispose();
+            lobbyEnter.Dispose();
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+
+        useSteam = false;
+        (NetworkManager.singleton as NetworkManagerCardGame).EnableKcpTransport();
+    }
+    
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
         if (NetworkServer.active) //Means the executing client is the host.
@@ -115,9 +131,9 @@ public class PlayerInfo : MonoBehaviour
         PlayerPrefs.Save();
     }
     
-    public void UpdateSteamID (string newID)
+    public void UpdateConnectionAddress (string newID)
     {
-        steamID = newID;
+        connectionAddress = newID;
 
         /*playerName = newName;
         clientName = playerName;
@@ -127,7 +143,7 @@ public class PlayerInfo : MonoBehaviour
 
     public void Connect()
     {
-        NetworkManager.singleton.networkAddress = steamID;
+        NetworkManager.singleton.networkAddress = connectionAddress;
         NetworkManager.singleton.StartClient();
     }
     
@@ -137,11 +153,15 @@ public class PlayerInfo : MonoBehaviour
         {
             Debug.Log("USING STEAM");
             SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 4);
-            return;
         }
         else
         {
             NetworkManager.singleton.StartHost();
         }
+    }
+
+    public void CloseGame()
+    {
+        Application.Quit();
     }
 }

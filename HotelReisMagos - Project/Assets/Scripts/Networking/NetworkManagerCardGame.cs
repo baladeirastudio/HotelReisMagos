@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using kcp2k;
 using Mirror;
 using Mirror.Authenticators;
+using Mirror.FizzySteam;
 using UnityEngine;
 
 public class NetworkManagerCardGame : NetworkManager
@@ -12,6 +14,8 @@ public class NetworkManagerCardGame : NetworkManager
     [SerializeField] private GameObject loginPanel, lobbyPanel;
     [SerializeField] private NetworkLobbyUI lobbyUi;
     [SerializeField] private NetworkGameUI gameUi;
+    [SerializeField] private KcpTransport kcpTransport;
+    [SerializeField] private FizzySteamworks steamTransport;
 
     public List<PlayerSetup> players = new List<PlayerSetup>();
     public List<NetworkIdentity> identities = new List<NetworkIdentity>();
@@ -103,10 +107,8 @@ public class NetworkManagerCardGame : NetworkManager
     public override void Awake()
     {
         base.Awake();
-        
-        //Singleton();
-        
-        //PlayerSetup.playerControllers = new List<PlayerSetup>();
+        steamTransport = GetComponent<FizzySteamworks>();
+        kcpTransport = GetComponent<KcpTransport>();
 
         slots = new Dictionary<string, SlotController>(); 
     }
@@ -167,6 +169,18 @@ public class NetworkManagerCardGame : NetworkManager
             Debug.Log("catch!");
             Debug.LogException(e);
         }
+    }
+
+    public void EnableSteamTransport()
+    {
+        kcpTransport.enabled = false;
+        steamTransport.enabled = true;
+    }
+
+    public void EnableKcpTransport()
+    {
+        steamTransport.enabled = false;
+        kcpTransport.enabled = true;
     }
 
     public void SelectSlot(SlotController slot)
