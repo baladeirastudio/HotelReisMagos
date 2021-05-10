@@ -175,14 +175,16 @@ public class PlayerSetup : NetworkBehaviour
     private void Start()
     {
         PlayerSetup.playerControllers.Add(this);
-        Debug.LogError("Adding self.");
+        //Debug.LogError("Adding self.");
 
         if (NetworkGameController.instance)
         {
             //GameController.instance.RegisterPlayer(this);
         }
         else
-            Debug.LogError("Missing Game Controller Instance!");
+        {
+            //Debug.LogError("Missing Game Controller Instance!");
+        }
     }
 
     public override void OnStartAuthority()
@@ -276,5 +278,11 @@ public class PlayerSetup : NetworkBehaviour
     private void CmdNext()
     {
         NetworkGameController.instance.RpcNextTurn();
+    }
+
+    [Command]
+    public void CmdStartMatch()
+    {
+        (NetworkManagerCardGame.singleton as NetworkManagerCardGame).ServerChangeScene("Game_Lucena"); //TODO: Don't use constants
     }
 }

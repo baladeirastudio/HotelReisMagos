@@ -40,12 +40,23 @@ public class NetworkGameUI : NetworkBehaviour
     {
         players.Clear();
         playerCards.Clear();
+        Debug.LogError(players);
         for (int i = 0; i < newPlayers.Count; i++)
         {
-            players.Add(newPlayers[i].GetComponent<PlayerSetup>());
+            try
+            {
+                if(newPlayers[i])
+                    Debug.LogError($"There is no player at index {i}. This will fail.");
+                players.Add(newPlayers[i].GetComponent<PlayerSetup>());
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            //CmdPlayersAddPlayer(player);
         }
-        //CmdPlayersAddPlayer(player);
-        
+
         for (int i = 0; i < playerListGroup.childCount; i++)
         {
             Destroy(playerListGroup.GetChild(i).gameObject);

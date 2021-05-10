@@ -89,7 +89,7 @@ public class NetworkGameController : NetworkBehaviour
         //PlayerSetup.playerControllers[playerTurnID].RpcEndYourTurn();
 
         playerTurnID++;
-        if(playerTurnID >= PlayerSetup.playerControllers.Count)
+        if(playerTurnID >= NetworkManager.singleton.numPlayers)
         {
             playerTurnID = 0;
         }

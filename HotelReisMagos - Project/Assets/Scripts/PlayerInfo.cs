@@ -73,9 +73,12 @@ public class PlayerInfo : MonoBehaviour
     {
         try
         {
-            lobbyCreated.Dispose();
-            gameLobbyJoinRequest.Dispose();
-            lobbyEnter.Dispose();
+            if(!(lobbyCreated is null))
+                lobbyCreated.Dispose();
+            if(!(gameLobbyJoinRequest is null))
+                gameLobbyJoinRequest.Dispose();
+            if(!(lobbyEnter is null))
+                lobbyEnter.Dispose();
         }
         catch (Exception e)
         {
@@ -163,5 +166,10 @@ public class PlayerInfo : MonoBehaviour
     public void CloseGame()
     {
         Application.Quit();
+    }
+
+    public void StartMatch()
+    {
+        PlayerSetup.localPlayerSetup.CmdStartMatch();
     }
 }
