@@ -18,6 +18,22 @@ public class CardInfo
     public string Name { get => name; set => name = value; }
 
     [SerializeField]
-    private string classe;
-    public string Classe { get => classe; set => classe = value; }
+    private string description;
+    public string Description { get => description; set => description = value; }
+    
+    [SerializeField]
+    private string social;
+    public string SocialValue { get => social; set => social = value; }
+
+    [SerializeField]
+    private string politico;
+    public string PoliticoValue { get => politico; set => politico = value; }
+
+    [SerializeField]
+    private string economico;
+    public string EconomicoValue { get => economico; set => economico = value; }
+
+    [SerializeField]
+    private string midiatico;
+    public string MidiaticoValue { get => midiatico; set => midiatico = value; }
 }
