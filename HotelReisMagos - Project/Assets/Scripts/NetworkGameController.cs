@@ -61,11 +61,6 @@ public class NetworkGameController : NetworkBehaviour
         InitColors();
     }
 
-    public void RegisterPlayer(PlayerSetup player)
-    {
-        server.RegisterOnPlayerList(player);
-    }
-
     private void InitColors()
     {
         playersColors = new List<Color>();

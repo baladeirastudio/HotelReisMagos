@@ -6919,8 +6919,8 @@ MonoBehaviour:
   lobbyPanel: {fileID: 64049416}
   lobbyUi: {fileID: 113311581}
   gameUi: {fileID: 0}
-  kcpTransportPrefab: {fileID: 0}
-  steamTransportPrefab: {fileID: 0}
+  kcpTransportPrefab: {fileID: 1897471937}
+  steamTransportPrefab: {fileID: 1897471940}
   players: []
   identities: []
   __playerControllers: []
@@ -6954,7 +6954,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Channels: 02000000
   Timeout: 25
-  SteamAppID: 105600
+  SteamAppID: 480
   AllowSteamRelay: 1
   SteamUserID: 0
 --- !u!114 &1897471941

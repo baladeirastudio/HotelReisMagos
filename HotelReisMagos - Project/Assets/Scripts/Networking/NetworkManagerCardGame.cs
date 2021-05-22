@@ -54,6 +54,8 @@ public class NetworkManagerCardGame : NetworkManager
         player.PlayerNumber = numPlayers - 1;
 
         RegisterOnPlayerList(player);
+        
+        player.MyColor = GetPlayerColor(player.PlayerNumber);
 
         if (lobbyUi)
         {
@@ -68,7 +70,7 @@ public class NetworkManagerCardGame : NetworkManager
         {
             try
             {
-                NetworkGameUI.Instance.RpcSpawnPlayer(identities);
+                //NetworkGameUI.Instance.RpcSpawnPlayer(identities);
             }
             catch (Exception e)
             {
@@ -92,16 +94,31 @@ public class NetworkManagerCardGame : NetworkManager
         Debug.Log("Something");
     }
 
-    public override void OnServerChangeScene(string newSceneName)
-    {
-        base.OnServerChangeScene(newSceneName);
+    
+    
+    
+    private List<Color> playersColors;
 
-        if (NetworkGameController.instance)
-        {
-            StartCoroutine(InitGameController());
-        }
+    private void InitColors()
+    {
+        playersColors = new List<Color>();
+
+        playersColors.Add(new Color(0, 1, 1, 1));
+        playersColors.Add(new Color(1, 0, 1, 1));
+        playersColors.Add(new Color(1, 1, 0, 1));
+        playersColors.Add(new Color(0, 0, 1, 1));
+        playersColors.Add(new Color(0, 1, 0, 1));
+        playersColors.Add(new Color(1, 0, 0, 1));
     }
 
+    public Color GetPlayerColor(int playerID)
+    {
+        return playersColors[playerID];
+    }
+    
+    
+    
+    
 
     //static public DummyServer instance;
 
@@ -122,7 +139,8 @@ public class NetworkManagerCardGame : NetworkManager
         steamTransportPrefab = GetComponent<FizzySteamworks>();
         kcpTransportPrefab = GetComponent<KcpTransport>();
 
-        slots = new Dictionary<string, SlotController>(); 
+        slots = new Dictionary<string, SlotController>();
+        InitColors();
     }
 
     public override void OnStartServer()
@@ -137,6 +155,7 @@ public class NetworkManagerCardGame : NetworkManager
     {
         base.OnStartClient();
         StartCoroutine(InitGameController());
+
     }
 
     private IEnumerator InitGameController()
@@ -152,6 +171,8 @@ public class NetworkManagerCardGame : NetworkManager
                 //gameController = FindObjectOfType<NetworkGameController>();
                 gameController.PlayerTurnID = 0;
                 gameController.Turn = 1;
+                
+                gameUi = NetworkGameUI.Instance;
                 Debug.Log("SUCCESSSSSSSSSS!!!!!!!");
             }
             catch (Exception e)
@@ -171,6 +192,8 @@ public class NetworkManagerCardGame : NetworkManager
 
         yield return new WaitUntil(() => gameController);
         
+        player.MyColor = GetPlayerColor(player.PlayerNumber);
+
         try
         {
             player.MyColor = gameController.GetPlayerColor(player.PlayerNumber);
