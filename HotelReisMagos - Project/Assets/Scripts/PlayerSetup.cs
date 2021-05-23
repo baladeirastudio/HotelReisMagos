@@ -12,11 +12,9 @@ using Random = UnityEngine.Random;
 
 public class PlayerSetup : NetworkBehaviour
 {
-    
     public static List<PlayerSetup> playerControllers = new List<PlayerSetup>();
 
     [SyncVar(hook = nameof(HandleNameChange))] [SerializeField] private string playerName = "Player";
-    [SyncVar(hook = nameof(HandleEntryChange))] [SerializeField] private int playerEntry;
     [SerializeField] private PlayerListEntry myEntry;
     
     public Action<string, string, PlayerSetup> onChangeName;
@@ -27,7 +25,14 @@ public class PlayerSetup : NetworkBehaviour
     [SyncVar, SerializeField] private int economicResources = 0;
     [SyncVar, SerializeField] private int socialResources = 0;
     [SyncVar, SerializeField] private int mediaResources = 0;
+    [SyncVar, SerializeField] private int luckCardAmount = 0;
 
+    public int LuckCardAmount
+    {
+        get => luckCardAmount;
+        set => luckCardAmount = value;
+    }
+    
     public int PoliticalResources
     {
         get => politicalResources;
@@ -74,7 +79,7 @@ public class PlayerSetup : NetworkBehaviour
 
     public void HandleNameChange(string old, string newName)
     {
-        Debug.Log($"My entry is {playerEntry}", gameObject);
+        Debug.Log($"My number is {playerNumber}", gameObject);
         if(myEntry)
             myEntry.ForceChangeDisplayName(newName);
         RpcChangeNameEvent(old, newName, this);
@@ -105,7 +110,7 @@ public class PlayerSetup : NetworkBehaviour
         SetDisplayName(newVal);
     }
     
-    [ClientRpc]
+    /*[ClientRpc]
     public void RpcSetEntryIndex(int newEntry)
     {
         playerEntry = newEntry;
@@ -117,7 +122,7 @@ public class PlayerSetup : NetworkBehaviour
                 
             }
         }
-    }
+    }*/
     
     [ClientRpc]
     public void RpcChangeNameEvent(string old, string newVal, PlayerSetup player)
@@ -167,6 +172,13 @@ public class PlayerSetup : NetworkBehaviour
 
     public static PlayerSetup localPlayerSetup;
     private string PERMAslotId;
+    private bool choseSlot = false;
+
+    public bool ChoseSlot
+    {
+        get => choseSlot;
+        set => choseSlot = value;
+    }
 
     public int PlayerNumber { get => playerNumber; set => playerNumber = value; }
 
@@ -239,23 +251,30 @@ public class PlayerSetup : NetworkBehaviour
             var tempColor = tempPlayer.MyColor;
             tempSlot.SetSelectedSlot(MyColor);
 
-            int rewardType = Random.Range(0, 4);
             int reward = Random.Range(tempSlot.MinReward, tempSlot.MaxReward);
 
-            switch (rewardType)
+            switch (tempSlot.RewardType)
             {
-                case 0: //Political
+                case SlotReward.PoliticalResource: //Political
                     politicalResources += reward;
                     break;
-                case 1: //Economical
+                case SlotReward.EconomicalResource: //Economical
                     economicResources += reward;
                     break;
-                case 2: //Social
+                case SlotReward.SocialResource: //Social
                     socialResources += reward;
                     break;
-                case 3: //Media
+                case SlotReward.MediaResource: //Media
                     mediaResources += reward;
                     break;
+                case SlotReward.LuckCard:
+                    luckCardAmount++;
+                    break;
+            }
+
+            if (tempSlot.GiveLuckCard)
+            {
+                luckCardAmount++;
             }
 
             NetworkGameUI.Instance.RpcRefreshPlayerCards();
@@ -271,10 +290,16 @@ public class PlayerSetup : NetworkBehaviour
             Debug.LogError($"Slot ID: {SlotController.slots[slotID]}");
         }
 
+        NetworkGameUI.Instance.RpcEnableFinishRound();
+        choseSlot = true;
+    }
+
+    public void AdvanceTurn()
+    {
         CmdNext();
     }
 
-    //[Command]
+    [Command]
     private void CmdNext()
     {
         NetworkGameController.instance.RpcNextTurn();

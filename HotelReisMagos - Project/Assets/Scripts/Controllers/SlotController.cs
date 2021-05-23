@@ -4,16 +4,30 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum SlotReward
+{
+    MediaResource, SocialResource, EconomicalResource, PoliticalResource,
+    LuckCard
+}
+
 public class SlotController : MonoBehaviour
 {
     [SerializeField] private string id;
+    [SerializeField] private int actToUnlock;
     [SerializeField] private int actNumber, actId;
+    [SerializeField] private SlotReward rewardType;
+    [Tooltip("Set to true and the slot will give a luck card as well as the resource.")]
+    [SerializeField] private bool giveLuckCard;
     [SerializeField] private int minReward = 10, maxReward = 16;
     
 
     public static Dictionary<string, SlotController> slots = new Dictionary<string, SlotController>();
     
     public string ID { get => id; }
+
+    public SlotReward RewardType => rewardType;
+
+    public bool GiveLuckCard => giveLuckCard;
 
     public int MinReward
     {
@@ -73,6 +87,18 @@ public class SlotController : MonoBehaviour
     {
         var server = NetworkManager.singleton as NetworkManagerCardGame;
         //server.CmdSelectSlot(this);
+
+        if (NetworkGameController.instance.CurrentAct < actToUnlock)
+        {
+            Debug.LogError($"Wrong act. This slot only opens on act {actToUnlock}. " +
+                           $"Current act: {NetworkGameController.instance.CurrentAct}");
+            return;
+        }
+        else if (PlayerSetup.localPlayerSetup.ChoseSlot)
+        {
+            Debug.LogError("You already chose a slot.");
+            return;
+        }
         
         if(NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
             PlayerSetup.localPlayerSetup.CmdSelectSlot(this);

@@ -62,9 +62,9 @@ public class NetworkManagerCardGame : NetworkManager
             lobbyUi.RpcSpawnPlayerEntry(conn.identity, identities);
         }
 
-        if (gameUi)
+        if (NetworkGameUI.Instance)
         {
-            gameUi.RpcSpawnPlayer(identities);
+            NetworkGameUI.Instance.RpcSpawnPlayer(identities);
         }
         else
         {

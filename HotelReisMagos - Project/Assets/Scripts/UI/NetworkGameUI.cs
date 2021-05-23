@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NetworkGameUI : NetworkBehaviour
 {
@@ -11,6 +13,10 @@ public class NetworkGameUI : NetworkBehaviour
     
     [SerializeField] private PlayerCard playerCardPrefab;
     [SerializeField] private Transform playerListGroup;
+    [SerializeField] private GameObject actionMenu;
+    [SerializeField] private Button useLuckCard;
+    [SerializeField] private Button finishTurn;
+    [SerializeField] private Button tradeCard;
     [SerializeField] private List<PlayerCard> playerCards;
     
     [SerializeField] private List<PlayerSetup> players = new List<PlayerSetup>();
@@ -18,6 +24,41 @@ public class NetworkGameUI : NetworkBehaviour
     private void Awake()
     {
         instance = this;
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        StartCoroutine(SetupActionsMenu());
+    }
+
+    private IEnumerator SetupActionsMenu()
+    {
+        yield return new WaitUntil( () => { return NetworkGameController.instance && PlayerSetup.localPlayerSetup; });
+        if (NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
+        {
+            if (PlayerSetup.localPlayerSetup.hasAuthority)
+            {
+                actionMenu.SetActive(true);
+                EnableActions();
+            }
+        }
+        else
+        {
+            actionMenu.SetActive(false);
+        }
+    }
+
+    private void EnableActions()
+    {
+        useLuckCard.interactable = PlayerSetup.localPlayerSetup.LuckCardAmount > 0 ;
+        if (NetworkGameController.instance.CurrentAct >= 2)
+        {
+            tradeCard.interactable = true;
+        }
+
+        //if(PlayerSetup.localPlayerSetup)
     }
 
     [ClientRpc]
@@ -76,6 +117,38 @@ public class NetworkGameUI : NetworkBehaviour
             newEntry.Track(players[index]);
             playerCards.Add(newEntry);
             //PlayerSetup.playerControllers[index].onChangeName += UpdatePlayerName;
+        }
+    }
+
+    [ClientRpc]
+    public void RpcEnableFinishRound()
+    {
+        if (PlayerSetup.localPlayerSetup.hasAuthority)
+        {
+            finishTurn.interactable = true;
+            useLuckCard.interactable = false;
+        }
+    }
+
+    public void FinishTurn()
+    {
+        finishTurn.interactable = false;
+        PlayerSetup.localPlayerSetup.AdvanceTurn();
+    }
+
+    public void UpdateActionsMenu()
+    {
+        if (NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
+        {
+            if (PlayerSetup.localPlayerSetup.hasAuthority)
+            {
+                actionMenu.SetActive(true);
+                EnableActions();
+            }
+        }
+        else
+        {
+            actionMenu.SetActive(false);
         }
     }
 }

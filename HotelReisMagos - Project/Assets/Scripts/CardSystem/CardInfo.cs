@@ -12,6 +12,10 @@ public class CardInfo
     [SerializeField]
     private string id;
     public string ID { get => id; set => id = value; }
+    
+    [SerializeField]
+    private string classe;
+    public string Classe { get => classe; set => classe = value; }
 
     [SerializeField]
     private string name;

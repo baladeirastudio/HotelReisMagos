@@ -10,8 +10,16 @@ public class NetworkGameController : NetworkBehaviour
 
     [SyncVar(hook =nameof(OnChangePlayerTurn)), SerializeField] private int playerTurnID;
     [SyncVar, SerializeField] private int turn;
+    [Tooltip("Starts with 1.")]
+    [SyncVar, SerializeField] private int currentAct;
 
     public NetworkManagerCardGame server;
+
+    public int CurrentAct
+    {
+        get => currentAct;
+        set => currentAct = value;
+    }
 
     public int PlayerTurnID
     {
@@ -87,8 +95,35 @@ public class NetworkGameController : NetworkBehaviour
         if(playerTurnID >= NetworkManager.singleton.numPlayers)
         {
             playerTurnID = 0;
+            turn++;
+            for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+            {
+                PlayerSetup.playerControllers[i].ChoseSlot = false;
+            }
         }
-        turn++;
+
+        switch (currentAct)
+        {
+            case 1: //Avanço do ato 1.
+                if (turn >= 3)
+                {
+                    turn = 1;
+                    currentAct++;
+                }
+                break;
+            case 2: //Avanço do ato 2.
+                if (turn >= 4)
+                {
+                    turn = 1;
+                    currentAct++;
+                }
+                break;
+            case 3: //Avanço do ato 3.
+                
+                break;
+        }
+
+        NetworkGameUI.Instance.UpdateActionsMenu();
         //PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
     }
 
