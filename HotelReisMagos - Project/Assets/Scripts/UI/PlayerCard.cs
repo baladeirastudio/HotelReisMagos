@@ -16,19 +16,19 @@ public class PlayerCard : MonoBehaviour
     private IEnumerator RefreshInfoDelayed()
     {
 
-        Debug.LogError($"Updating UI for player {trackedPlayer.PlayerNumber} - " +
+        /*Debug.LogError($"Updating UI for player {trackedPlayer.PlayerNumber} - " +
                        $"Pol: {trackedPlayer.PoliticalResources} - " +
                        $"Eco: {trackedPlayer.EconomicResources} - " +
                        $"Soc: {trackedPlayer.SocialResources} - " +
                        $"Med: {trackedPlayer.MediaResources}");
-        yield return new WaitForSeconds(0.5f);
         
         Debug.LogError($"New update for player {trackedPlayer.PlayerNumber} - " +
                        $"Pol: {trackedPlayer.PoliticalResources} - " +
                        $"Eco: {trackedPlayer.EconomicResources} - " +
                        $"Soc: {trackedPlayer.SocialResources} - " +
-                       $"Med: {trackedPlayer.MediaResources}");
-        
+                       $"Med: {trackedPlayer.MediaResources}");*/
+        yield return new WaitForSeconds(0.5f);
+
         politicalText.SetText($"{trackedPlayer.PoliticalResources}");
         economicText.SetText($"{trackedPlayer.EconomicResources}");
         socialText.SetText($"{trackedPlayer.SocialResources}");

@@ -18,6 +18,7 @@ public class SlotController : MonoBehaviour
     [SerializeField] private SlotReward rewardType;
     [Tooltip("Set to true and the slot will give a luck card as well as the resource.")]
     [SerializeField] private bool giveLuckCard;
+    [Tooltip("Minimum and max reward, inclusive and exclusive, respectively.")]
     [SerializeField] private int minReward = 10, maxReward = 16;
     
 
@@ -94,7 +95,7 @@ public class SlotController : MonoBehaviour
                            $"Current act: {NetworkGameController.instance.CurrentAct}");
             return;
         }
-        else if (PlayerSetup.localPlayerSetup.ChoseSlot)
+        if (PlayerSetup.localPlayerSetup.ChoseSlot)
         {
             Debug.LogError("You already chose a slot.");
             return;
@@ -115,7 +116,7 @@ public class SlotController : MonoBehaviour
         slotImage.color = color;
 
         slotImage.raycastTarget = false;
-        NetworkGameController.instance.RpcUpdateSlots(id, color);
+        PlayerSetup.localPlayerSetup.UpdateSlots(id);
     }
 
     public void ResetSlot()

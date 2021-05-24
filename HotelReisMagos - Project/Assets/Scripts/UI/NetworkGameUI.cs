@@ -24,6 +24,11 @@ public class NetworkGameUI : NetworkBehaviour
     private void Awake()
     {
         instance = this;
+
+        NetworkGameController.OnChangePlayerTurnId += (old, val) =>
+        {
+            RpcUpdateActionsMenu();
+        };
     }
 
     public override void OnStartClient()
@@ -53,6 +58,7 @@ public class NetworkGameUI : NetworkBehaviour
     private void EnableActions()
     {
         useLuckCard.interactable = PlayerSetup.localPlayerSetup.LuckCardAmount > 0 ;
+        finishTurn.interactable = false;
         if (NetworkGameController.instance.CurrentAct >= 2)
         {
             tradeCard.interactable = true;
@@ -81,18 +87,18 @@ public class NetworkGameUI : NetworkBehaviour
     {
         players.Clear();
         playerCards.Clear();
-        Debug.LogError(players);
+        //Debug.LogError(players);
         for (int i = 0; i < newPlayers.Count; i++)
         {
             try
             {
                 if(newPlayers[i])
-                    Debug.LogError($"There is no player at index {i}. This will fail.");
+                    //Debug.LogError($"There is no player at index {i}. This will fail.");
                 players.Add(newPlayers[i].GetComponent<PlayerSetup>());
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                //Debug.LogException(e);
             }
 
             //CmdPlayersAddPlayer(player);
@@ -127,6 +133,11 @@ public class NetworkGameUI : NetworkBehaviour
         {
             finishTurn.interactable = true;
             useLuckCard.interactable = false;
+            Debug.LogError("Has auth.");
+        }
+        else
+        {
+            Debug.LogError("Not reaLLY THE CASEEEEE");    
         }
     }
 
@@ -136,8 +147,11 @@ public class NetworkGameUI : NetworkBehaviour
         PlayerSetup.localPlayerSetup.AdvanceTurn();
     }
 
-    public void UpdateActionsMenu()
+    //[ClientRpc]
+    public void RpcUpdateActionsMenu()
     {
+        /*Debug.LogError($"Current playerturn: {NetworkGameController.instance.PlayerTurnID} - " +
+                       $"Player number: {PlayerSetup.localPlayerSetup.PlayerNumber}");*/
         if (NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
         {
             if (PlayerSetup.localPlayerSetup.hasAuthority)
@@ -150,5 +164,11 @@ public class NetworkGameUI : NetworkBehaviour
         {
             actionMenu.SetActive(false);
         }
+    }
+
+    public void UseLuckCard()
+    {
+        useLuckCard.interactable = false;
+        PlayerSetup.localPlayerSetup.UseLuckCard();
     }
 }

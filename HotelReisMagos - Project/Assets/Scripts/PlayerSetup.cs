@@ -26,6 +26,8 @@ public class PlayerSetup : NetworkBehaviour
     [SyncVar, SerializeField] private int socialResources = 0;
     [SyncVar, SerializeField] private int mediaResources = 0;
     [SyncVar, SerializeField] private int luckCardAmount = 0;
+    [Tooltip("Minimum and max value to be used in the luck card, inclusive and exclusive.")]
+    [SerializeField] private int minLuck = 3, maxLuck = 5;
 
     public int LuckCardAmount
     {
@@ -164,6 +166,11 @@ public class PlayerSetup : NetworkBehaviour
     
     
     
+    
+    
+    
+    
+    
     [SyncVar, SerializeField] private int playerNumber;
 
     [SyncVar, SerializeField] private bool isMyTurn = false;
@@ -172,8 +179,15 @@ public class PlayerSetup : NetworkBehaviour
 
     public static PlayerSetup localPlayerSetup;
     private string PERMAslotId;
-    private bool choseSlot = false;
+    [SyncVar, SerializeField] private bool choseSlot = false;
+    [SyncVar, SerializeField] private bool usedLuckCard = false;
 
+    public bool UsedLuckCard
+    {
+        get => usedLuckCard;
+        set => usedLuckCard = value;
+    }
+    
     public bool ChoseSlot
     {
         get => choseSlot;
@@ -242,10 +256,10 @@ public class PlayerSetup : NetworkBehaviour
             return;
         }
 
-        Debug.LogError("Testing.");
+        //Debug.LogError("Testing.");
         try
         {
-            Debug.LogError($"Key: {slotID} - Value: {SlotController.slots[slotID]}");
+            //Debug.LogError($"Key: {slotID} - Value: {SlotController.slots[slotID]}");
             var tempSlot = SlotController.slots[slotID];
             var tempPlayer = PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID];
             var tempColor = tempPlayer.MyColor;
@@ -290,6 +304,7 @@ public class PlayerSetup : NetworkBehaviour
             Debug.LogError($"Slot ID: {SlotController.slots[slotID]}");
         }
 
+        Debug.LogError("Enabling finish round");
         NetworkGameUI.Instance.RpcEnableFinishRound();
         choseSlot = true;
     }
@@ -306,8 +321,60 @@ public class PlayerSetup : NetworkBehaviour
     }
 
     [Command]
+    private void CmdUseLuckCard()
+    {
+        bool isLuck = Random.Range(0, 2) > 0;
+
+        SlotReward rewardType = (SlotReward)Random.Range(0, 4);
+        int reward = Random.Range(minLuck, maxLuck);
+        ref int resourceToChange = ref economicResources;
+        
+        switch (rewardType)
+        {
+            case SlotReward.EconomicalResource:
+                resourceToChange = ref economicResources;
+                break;
+            case SlotReward.MediaResource:
+                resourceToChange = ref mediaResources;
+                break;
+            case SlotReward.PoliticalResource:
+                resourceToChange = ref politicalResources;
+                break;
+            case SlotReward.SocialResource:
+                resourceToChange = socialResources;
+                break;
+        }
+
+        if (isLuck)
+            resourceToChange += reward;
+        else
+            resourceToChange -= reward;
+
+        luckCardAmount--;
+        usedLuckCard = true;
+        
+        Debug.LogError($"Added {reward * (isLuck ? 1 : -1)}");
+    }
+
+    public void UseLuckCard()
+    {
+        CmdUseLuckCard();
+    }
+
+    [Command]
     public void CmdStartMatch()
     {
         (NetworkManagerCardGame.singleton as NetworkManagerCardGame).ServerChangeScene("Game_Lucena"); //TODO: Don't use constants
+    }
+
+    public void UpdateSlots(string id)
+    {
+        CmdUpdateSlots(id);
+    }
+    
+    [Command]
+    private void CmdUpdateSlots(string id)
+    {
+        NetworkGameController.instance.RpcUpdateSlots(id, color);
     }
 }

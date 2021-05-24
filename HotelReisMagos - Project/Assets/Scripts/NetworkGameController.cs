@@ -15,6 +15,10 @@ public class NetworkGameController : NetworkBehaviour
 
     public NetworkManagerCardGame server;
 
+    public delegate void DelegateIntInt(int old, int newVal);
+
+    public static event DelegateIntInt OnChangePlayerTurnId;
+    
     public int CurrentAct
     {
         get => currentAct;
@@ -36,9 +40,9 @@ public class NetworkGameController : NetworkBehaviour
 
     private void Awake()
     {
-        Debug.LogError("HELLOOOOOOOOOOOOO");
+        //Debug.LogError("HELLOOOOOOOOOOOOO");
         Singleton();
-        Debug.LogError("hasllo?");
+        //Debug.LogError("hasllo?");
 
         Init();
         //server = NetworkManagerCardGame.singleton as NetworkManagerCardGame;
@@ -60,7 +64,7 @@ public class NetworkGameController : NetworkBehaviour
 
         instance = this;
         
-        Debug.LogError($"Set instance. New instance: {instance}");
+        //Debug.LogError($"Set instance. New instance: {instance}");
     }
 
     private void Init()
@@ -99,6 +103,7 @@ public class NetworkGameController : NetworkBehaviour
             for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
             {
                 PlayerSetup.playerControllers[i].ChoseSlot = false;
+                PlayerSetup.playerControllers[i].UsedLuckCard = false;
             }
         }
 
@@ -123,18 +128,20 @@ public class NetworkGameController : NetworkBehaviour
                 break;
         }
 
-        NetworkGameUI.Instance.UpdateActionsMenu();
+        //NetworkGameUI.Instance.RpcUpdateActionsMenu();
         //PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
     }
 
     private void OnDisable()
     {
-        Debug.Log("lol");
+        //Debug.Log("lol");
     }
 
     private void OnChangePlayerTurn(int old, int val)
     {
-        Debug.LogError($"Old val: {old} - New: {val}");
+        //Debug.LogError($"Old val: {old} - New: {val}");
+        
+        OnChangePlayerTurnId?.Invoke(old, val);
     }
 
     [ClientRpc]
