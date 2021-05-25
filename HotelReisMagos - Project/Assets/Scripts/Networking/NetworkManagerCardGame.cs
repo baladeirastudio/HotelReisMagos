@@ -154,7 +154,7 @@ public class NetworkManagerCardGame : NetworkManager
     public override void OnStartClient()
     {
         base.OnStartClient();
-        StartCoroutine(InitGameController());
+        //StartCoroutine(InitGameController());
 
     }
 
@@ -203,6 +203,8 @@ public class NetworkManagerCardGame : NetworkManager
             Debug.Log("catch!");
             Debug.LogException(e);
         }
+        
+        yield return new WaitUntil(() => NetworkGameUI.Instance);
     }
 
     public void EnableSteamTransport()

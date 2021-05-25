@@ -40,14 +40,17 @@ public class CardDB : MonoBehaviour
     {
         if (instance)
             Destroy(gameObject);
-        instance = this;
+        else
+        {
+            instance = this;
+        }
     }
 
     private void ReadCSVFile(TextAsset Data)
     {
         try
         {
-            data = Data.text.Split(new string[] { ",", "\n" }, StringSplitOptions.None);
+            data = Data.text.Split(new string[] { "|", "\n" }, StringSplitOptions.None);
         }
         catch
         {
@@ -73,15 +76,39 @@ public class CardDB : MonoBehaviour
              *  A próxima linha iniciará com o indices do ultimo elemento da linha anterior + 1.
              *  Como queremos ignorar a primeira linha, temos totalDeColunas * (i + 1), adicionamos o + 1 pois o loop inicia a partir do elemento 0.
              *  Seguimos acrescentando + 1, para percorrer cada coluna.
-             */
-            tempCard.Type = data[totalColumns * (i + 1)];
-            tempCard.ID = data[totalColumns * (i + 1) + 1];
-            tempCard.Name = data[totalColumns * (i + 1) + 2];
-            tempCard.Classe = data[totalColumns * (i + 1) + 3];
+             //*/
+            try
+            {
+                tempCard.Type = data[totalColumns * (i + 1)];
+                tempCard.ID = data[totalColumns * (i + 1) + 1];
+                tempCard.Name = data[totalColumns * (i + 1) + 2];
+                //tempCard.Classe = data[totalColumns * (i + 1) + 3];
+                tempCard.Description = data[totalColumns * (i + 1) + 3];
+                tempCard.SocialValue = data[totalColumns * (i + 1) + 4];
+                tempCard.MidiaticoValue = data[totalColumns * (i + 1) + 5];
+                tempCard.EconomicoValue = data[totalColumns * (i + 1) + 6];
+                tempCard.PoliticoValue = data[totalColumns * (i + 1) + 7];
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            //Debug.Log("Oi");
+
 
             AddCard(tempCard);
         }
     }
+
+    //BEGINNOTE: LUCENA ESTEVE AQUI
+
+    [SerializeField] public List<CardInfo> cardList1, cardList2, cardList3;
+    [SerializeField] public List<int> activeCards1, activeCards2, activeCards3;
+    [SerializeField] private List<int> takenCards;
+    private int currentCardIndex1 = 0;
+    private int currentCardIndex2 = 0;
+    private int currentCardIndex3 = 0;
 
     private void AddCard(CardInfo card)
     {
@@ -100,8 +127,32 @@ public class CardDB : MonoBehaviour
             decks.Add(card.Type, deck);
         }
 
+        if (card.Type != "Empresario")
+        {
+            if (card.Type == "Ato1")
+            {
+                cardList1.Add(card);
+                currentCardIndex1++;
+                activeCards1.Add(currentCardIndex1 - 1);
+            }
+            else if (card.Type == "Ato2")
+            {
+                cardList2.Add(card);
+                currentCardIndex2++;
+                activeCards2.Add(currentCardIndex2 - 1);
+            }
+            else if (card.Type == "Ato3")
+            {
+                cardList3.Add(card);
+                currentCardIndex3++;
+                activeCards3.Add(currentCardIndex3 - 1);
+            }
+        }
+        
         deck.Add(card.ID,card);
     }
+    
+    //ENDNOTE
 
     public CardInfo GetRandomCard(string type)
     {

@@ -175,6 +175,10 @@ public class PlayerSetup : NetworkBehaviour
 
     [SyncVar, SerializeField] private bool isMyTurn = false;
 
+    [SerializeField] private SyncList<int> cardsOnHand1 = new SyncList<int>();
+    [SerializeField] private SyncList<int> cardsOnHand2 = new SyncList<int>();
+    [SerializeField] private SyncList<int> cardsOnHand3 = new SyncList<int>();
+
     [SyncVar, SerializeField] private Color color;
 
     public static PlayerSetup localPlayerSetup;
@@ -271,17 +275,22 @@ public class PlayerSetup : NetworkBehaviour
             {
                 case SlotReward.PoliticalResource: //Political
                     politicalResources += reward;
+                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso político.");
                     break;
                 case SlotReward.EconomicalResource: //Economical
                     economicResources += reward;
+                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso econômico.");
                     break;
                 case SlotReward.SocialResource: //Social
                     socialResources += reward;
+                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso social.");
                     break;
                 case SlotReward.MediaResource: //Media
                     mediaResources += reward;
+                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso midiático.");
                     break;
                 case SlotReward.LuckCard:
+                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou uma carta de sorte ou revés.");
                     luckCardAmount++;
                     break;
             }
@@ -291,20 +300,55 @@ public class PlayerSetup : NetworkBehaviour
                 luckCardAmount++;
             }
 
+            CardInfo card = null;
+            int cardIndex = 0;
+            List<CardInfo> deck = null;
+            List<int> deckNum = null;
+
+            switch (tempSlot.ActToUnlock)
+            {
+                case 1:
+                    deckNum = CardDB.Instance.activeCards1;
+                    deck = CardDB.Instance.cardList1;
+                    cardIndex = Random.Range(0, deckNum.Count);
+                    
+                    Debug.LogError($"Deck: {deck.Count}");
+                    Debug.LogError($"deckNum: {deckNum.Count}");
+                    Debug.LogError($"index: {cardIndex}");
+                    
+                    card = deck[cardIndex];
+                    deckNum.Remove(cardIndex);
+                    cardsOnHand1.Add(cardIndex);
+                    
+                    break;
+                case 2:
+                    deckNum = CardDB.Instance.activeCards2;
+                    deck = CardDB.Instance.cardList2;
+                    cardIndex = Random.Range(0, deckNum.Count);
+                    card = deck[cardIndex];
+                    deckNum.Remove(cardIndex);
+                    cardsOnHand2.Add(cardIndex);
+                    break;
+                case 3:
+                    deckNum = CardDB.Instance.activeCards3;
+                    deck = CardDB.Instance.cardList3;
+                    cardIndex = Random.Range(0, deckNum.Count);
+                    card = deck[cardIndex];
+                    deckNum.Remove(cardIndex);
+                    cardsOnHand3.Add(cardIndex);
+                    break;
+            }
+
+            NetworkGameUI.Instance.RpcLog($"O jogador obteve a seguinte carta: {card.Description}");
             NetworkGameUI.Instance.RpcRefreshPlayerCards();
         }
         catch (Exception e)
         {
             Debug.LogError("This shit won't fucking work");
             Debug.LogException(e);
-            Debug.LogError($"Player controllers amount: {PlayerSetup.playerControllers.Count} - Player turn ID: {NetworkGameController.instance.PlayerTurnID}");
-            Debug.LogError($"Player at previously stated index: {PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID]}");
-            Debug.LogError($"Player color: {PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID].MyColor}");
-            Debug.LogError($"Slots: {SlotController.slots}");
-            Debug.LogError($"Slot ID: {SlotController.slots[slotID]}");
         }
 
-        Debug.LogError("Enabling finish round");
+        //Debug.LogError("Enabling finish round");
         NetworkGameUI.Instance.RpcEnableFinishRound();
         choseSlot = true;
     }
@@ -328,32 +372,44 @@ public class PlayerSetup : NetworkBehaviour
         SlotReward rewardType = (SlotReward)Random.Range(0, 4);
         int reward = Random.Range(minLuck, maxLuck);
         ref int resourceToChange = ref economicResources;
+
+        string rewardName = String.Empty;
         
         switch (rewardType)
         {
             case SlotReward.EconomicalResource:
                 resourceToChange = ref economicResources;
+                rewardName = "econômico";
                 break;
             case SlotReward.MediaResource:
                 resourceToChange = ref mediaResources;
+                rewardName = "midiático";
                 break;
             case SlotReward.PoliticalResource:
                 resourceToChange = ref politicalResources;
+                rewardName = "político";
                 break;
             case SlotReward.SocialResource:
                 resourceToChange = socialResources;
+                rewardName = "social";
                 break;
         }
 
         if (isLuck)
+        {
             resourceToChange += reward;
+            NetworkGameUI.Instance.RpcLog($"Jogador tirou sorte e ganhou {reward} pontos de recurso {rewardName}!");
+        }
         else
+        {
             resourceToChange -= reward;
+            NetworkGameUI.Instance.RpcLog($"Jogador tirou revés e perdeu {reward} pontos de recurso {rewardName}!");
+        }
 
         luckCardAmount--;
         usedLuckCard = true;
         
-        Debug.LogError($"Added {reward * (isLuck ? 1 : -1)}");
+        //Debug.LogError($"Added {reward * (isLuck ? 1 : -1)}");
     }
 
     public void UseLuckCard()

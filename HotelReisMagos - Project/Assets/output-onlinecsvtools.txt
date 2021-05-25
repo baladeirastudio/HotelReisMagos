@@ -1,0 +1,62 @@
+﻿TIPO|"ID "|NOME|DESCRIÇÃO|SOCIAL|MIDIÁTICO|MONETÁRIO|POLÍTICO
+Empresario|EMPRE_1|João|descricao|0|0|0|0
+Empresario|EMPRE_2|Samir|descricao|0|0|0|0
+Empresario|EMPRE_3|Lucena|descricao|0|0|0|0
+Empresario|EMPRE_4|Luan|descricao|0|0|0|0
+Empresario|EMPRE_5|Iury|descricao|0|0|0|0
+Ato1|ATO_1_1||“O Hotel Reis Magos também influenciou na criação de uma identidade dos moradores da cidade de Natal, originando o nome da Rua do Motor, que leva esse nome por ter abrigado um gerador de energia do hotel.”|4|0|0|0
+Ato1|ATO_1_2||“O Hotel foi inaugurado em 1965, como parte de um esforço do Governo do Rio Grande do Norte-RN, para estimular o turismo”.|0|0|0|4
+Ato1|ATO_1_3||“Com a inauguração do Reis Magos, a cidade de Natal começou a receber turistas de várias partes do Brasil e do mundo”.|0|0|0|3
+Ato1|ATO_1_4||“O Hotel foi o primeiro da cidade de Natal a ocupar terrenos à beira da praia, trazendo: iluminação; calçamentos; galerias; delegacias; desenvolvimento do comércio, bares e restaurantes e expansão da malha urbana”.|0|0|4|0
+Ato1|ATO_1_5||“Em 1950, o Governo do Estado do RN, optou por priorizar investimentos na cidade de Natal na indústria do turismo, já que existia um potencial para o turismo de sol e mar, por meio das belezas naturais, como praias e dunas”.|0|0|4|0
+Ato1|ATO_1_6||“O Hotel Reis Magos contribuiu para ações que possibilitaram o prolongamento das conexões entre a cidade e o aeroporto de Parnamirim, estimulando transformações no sentido sul da cidade de Natal”.|0|0|2|2
+Ato1|ATO_1_7||“Até então, a única acomodação que mantinha padrão hoteleiro na cidade de Natal, desde 1939, era o Grande Hotel, localizado no bairro da Ribeira”.|0|0|2|2
+Ato1|ATO_1_8||“Com recursos do Governo Federal e do Banco Interamericano de Desenvolvimento, o Governo do Rio Grande do Norte construiu quatro hotéis no estado, dentre eles, na cidade Natal, o Hotel Internacional Reis Magos.”|0|0|2|1
+Ato1|ATO_1_9||“No início do século 17 e as margens do Rio Potengi, foi fundada a cidade de Natal que tem esse nome porque foi estabelecida em 25 de dezembro de 1599”.|0|0|0|4
+Ato1|ATO_1_10||“O Hotel foi o primeiro da cidade de Natal a ocupar terrenos à beira da praia, trazendo: iluminação; calçamentos; galerias; delegacias; desenvolvimento do comércio, bares e restaurantes e expansão da malha urbana”.|0|4|0|0
+Ato2|ATO_2_1||“Uma Cadeia brasileira de Hotéis, adquiriu em 22 de dezembro de 1977, em leilão e oferta pública, o Hotel por US$ 1.140.150,38”.|0|0|4|0
+Ato2|ATO_2_2||“No início dos anos 1990, o governo do RN em parceria com o governo brasileiro inicia a construção da Rota do Sol, ligando Ponta Negra às demais praias do litoral sul do estado”.|0|0|2|2
+Ato2|ATO_2_3||“No início dos anos 1990, a construção da Rota do Sol, ligando Ponta Negra às demais praias do litoral sul torna, a praia de Ponta Negra, o eixo de desenvolvimento turístico de Natal”.|0|0|2|2
+Ato2|ATO_2_4||“A orla de Natal possui um relevo característico e monumentos arquitetônicos e naturais, essas são justificativas apresentadas no plano diretor para a construção com altura máxima de edificações de até dois pavimentos”.|0|0|0|4
+Ato2|ATO_2_5||“O Plano Diretor de Natal é o instrumento da política urbana do município que orienta a ocupação do solo urbano, e que restringe ou permite certos aspectos formais das edificações ao longo do território”.|0|0|0|4
+Ato2|ATO_2_6||Um grupo hoteleiro apesar de receber o perdão das dívidas de IPTU do Reis Magos, não concretizou a contrapartida de restaurar o hotel”.|0|3|0|0
+Ato2|ATO_2_7||“No final de 1980, muitos habitantes da cidade já achavam o local do Hotel decadente, apesar das lembranças gloriosas”.|0|3|0|0
+Ato2|ATO_2_8||“O Plano Diretor de Natal possui limitações para as construções na área do Hotel Reis Magos, para proteger a paisagem do mar e dos monumentos, importantes para o turismo de sol e mar praticado na cidade”.|0|4|0|0
+Ato2|ATO_2_9||“O Hotel localiza-se em uma área máxima de edificação de dois pavimentos para proteger o valor cênico-paisagístico, as condições de bem estar, qualidade de vida e o equilíbrio climático da cidade”.|4|0|0|0
+Ato2|ATO_2_10||“A Prefeitura apresentou projetos para voltar a estimular o turismo na região do hotel: a Instalação da Marina de Natal e a construção de uma nova ponte ligando as praias da Zona Leste a Norte de Natal.|0|0|3|0
+Ato3|ATO_3_1||“A Prefeitura concedeu o perdão das dívidas de IPTU do Hotel, mesmo com o benefício, o seu grupo hoteleiro resolveu colocar o Hotel à venda pelo valor de US$ 5.486.338,87”.|0|0|4|0
+Ato3|ATO_3_2||“Em 2009, Micarla de Souza foi eleita à nova prefeita de Natal, além disso, a cidade foi escolhida pela FIFA como uma das cidades-sede da Copa do Mundo de 2014 e um novo canal de negociações se iniciava, dado o interesse do empresariado no evento”.|0|0|0|4
+Ato3|ATO_3_3||“Em 2013 o Instituto dos Amigos, Patrimônio Histórico, Artístico Cultural e Cidadania, abriu processos na Prefeitura e nos Governos Estadual e Federal, gerando tombamento provisório do imóvel, impedindo qualquer tentativa de derrubada na ocasião”.|0|0|0|3
+Ato3|ATO_3_4||"Um Professor do Departamento de Arquitetura e Urbanismo da UFRN, comenta: ""A arquitetura moderna surgiu em meados da década de 1920, desembarcou em Natal tardiamente nos anos 1950, e essa busca desenfreada pelo novo acaba desvalorizando o que ainda resta de patrimônio” "|3|0|0|0
+Ato3|ATO_3_5||"Um Professor do Departamento de Arquitetura e Urbanismo da UFRN comenta: ""A questão não é de saudosismo nem estamos defendendo o engessamento urbanístico, nossa intenção é discutir formas mais conscientes e menos destrutivas das cidades continuarem crescendo”."|3|0|0|0
+Ato3|ATO_3_6||“O edifício do Hotel Reis Magos reúne atributos que o qualificam como exemplar expressivo da Arquitetura Moderna Brasileira, despidos de qualquer ornamentação vinculada a outros estilos arquitetônicos”. (MAIA, 2018)|3|0|0|0
+Ato3|ATO_3_7||“Depois de o hotel permanecer arrendado durante 15 anos, a empresa proprietária do hotel decidiu desativá-lo”.|0|0|4|0
+Ato3|ATO_3_8||“Em 2007, o Plano Diretor de Natal foi revisto, mantendo a proteção do meio ambiente e da paisagem urbana, além da preservação do patrimônio histórico, tratando este como atividade de interesse urbano”.|3|0|0|0
+Ato3|ATO_3_9||“Em 2010, a imprensa divulgou uma proposta de um novo empreendimento no local, que previa que a empresa proprietária demoliria o hotel, sob a alegação que restaurar seria mais caro que reconstruir”.|0|0|3|0
+Ato3|ATO_3_10||“A imprensa divulgou, em 2007, que o grupo de hotéis não pretendia investir ali devido à crise que afetava o setor, além da falta de regulamentação do Plano Diretor e de incentivos fiscais por parte do governo para a região”.|0|0|3|0
+Ato3|ATO_3_11||“O grupo de hotéis entendeu que a impossibilidade de demolição para ampliar a capacidade construída do hotel era suficiente para recuar as negociações com a Prefeitura, preferindo aguardar por mudanças nas políticas públicas”.|0|0|3|0
+Ato3|ATO_3_12||"Estudante de História da UFRN comenta: ""A empresa proprietária do hotel queria demoli-lo após tê-lo abandonado por anos, deixando com que o prédio se deteriorasse, com lixo e entulho e de não pagar o seu IPTU”. "|0|3|0|0
+Ato3|ATO_3_13||"Estudante de História da UFRN comenta: “Sucessivas gestões da prefeitura não cobraram as dívidas do IPTU do prédio nem trataram de exigir o cumprimento de sua função socioambiental”. "|1|2|0|0
+Ato3|ATO_3_14||"Professores de arquitetura da UFRN relatam: “O tombamento do hotel envolve aspectos indissociáveis na consolidação de uma política urbana voltada para a qualidade de vida aos cidadãos, inclusive o respeito por sua memória e identidade”. "|1|2|0|0
+Ato3|ATO_3_15||"Professores de arquitetura da UFRN comentam: “O hotel é um símbolo arquitetônico da difusão da arquitetura moderna brasileira, evidenciando os elementos físicos que determinam o caráter modernista”. "|1|2|0|0
+Ato3|ATO_3_16||“Uma instituição federal responsável por preservar, divulgar e fiscalizar os bens culturais brasileiros havia ingressado com um processo na Justiça Federal, que decidiu de forma liminar, em fevereiro de 2016, pela manutenção dos efeitos do tombamento provisório”.|3|0|0|0
+Ato3|ATO_3_17||“O atual Prefeito de Natal defende a revisão do Plano Diretor alegando que a mudança é necessária uma vez que o plano atual possui restrições e exigências descabidas que impedem o desenvolvimento de Natal”.|0|0|0|3
+Ato3|ATO_3_18||“Dados de uma recente pesquisa mostraram que 60% da população são favoráveis à liberação de novas construções para o desenvolvimento imobiliário na cidade do Natal pelo novo plano diretor”.|0|3|0|0
+Ato3|ATO_3_19||“A Prefeitura de Natal, entrou com uma solicitação, caso o Poder Executivo Estadual não se pronunciasse sobre o tombamento do prédio, da expedição do alvará de demolição do Hotel”.|0|0|0|4
+Ato3|ATO_3_20||“Já estão sendo realizadas reuniões para a revisão do plano diretor permitindo a construção de prédios mais altos, como as grandes cidades brasileiras”.|0|0|0|4
+SorteReves|SR_1||descricao|0|0|0|0
+SorteReves|SR_2||descricao|0|0|0|0
+SorteReves|SR_3||descricao|0|0|0|0
+SorteReves|SR_4||descricao|0|0|0|0
+SorteReves|SR_5||descricao|0|0|0|0
+SorteReves|SR_6||descricao|0|0|0|0
+SorteReves|SR_7||descricao|0|0|0|0
+SorteReves|SR_8||descricao|0|0|0|0
+SorteReves|SR_9||descricao|0|0|0|0
+SorteReves|SR_10||descricao|0|0|0|0
+SorteReves|SR_11||descricao|0|0|0|0
+SorteReves|SR_12||descricao|0|0|0|0
+CartaAto|CA_1|Ato 1|O Hotel Internacional dos Reis Magos foi inaugurado em 7 de setembro de 1965, localizado na Praia do Meio, na cidade de Natal, Estado do Rio Grande do Norte - Brasil. O hotel possuía 63 apartamentos, uma suíte presidencial, recepção, salões nobres, elevadores, parque aquático, sauna, playground, restaurante, estacionamento, salão de beleza, áreas de lazer, lojas de artesanato e serviço médico. Com a inauguração do hotel, a cidade de Natal começou a receber turistas de várias partes do Brasil e do mundo, se consolidando nos anos seguintes como um destino turístico nacional e internacional, sendo administrado pelo Governo do Estado e, em 1978, após leilão foi adquirido pelo grupo de Hotéis Pernambuco. O hotel viveu seu auge até os anos 80, sendo considerado como um símbolo do turismo no RN, por ter sido o primeiro empreendimento turístico de alto padrão na capital, um hotel de luxo, além de ser um exemplar da arquitetura moderna.|0|0|0|0
+CartaAto|CA_2|Ato 2|"A administração do hotel foi terceirizada, por vários anos, para outras empresas e ao final da década de 1980, nem o bairro da Praia do Meio nem o Hotel Internacional dos Reis Magos - HIRM já não tinham a mesma fama de outrora, representando para muitos habitantes da cidade de Natal como um local decadente, apesar das lembranças gloriosas. Por outro lado, ocorreu um período de crescimento na demanda de turistas em outras áreas da cidade, uma consequência principalmente da construção de uma via expressa litorânea de 8,9 Km de extensão: A Via Costeira, ligando as zonas sul e leste da cidade. No local foram construídos 12 hotéis de luxo entre 3 a 5 estrelas e os investimentos urbanos migravam no sentido Zona Sul - Praia de Ponta Negra. "|0|0|0|0
+CartaAto|CA_3|Ato 3|Em 1995, o Grupo Recife Hotéis S/A, depois de anos de arrendamento e sem realizar nenhum tipo de reforma decidiu desativar, fechando as portas do hotel. Uma série de ocorrências, ao longo dos anos seguintes, fizeram com que o atual proprietário não parasse de pensar sobre a necessidade de tomar uma decisão com urgência em relação aos planos futuros para o Hotel Internacional dos Reis Magos. Que decisão deveria ser tomada em relação ao Hotel Reis Magos - HIRM? A opção de demolir o hotel seria a melhor para o bairro, para a cidade? Seria possível preservar o hotel, garantindo o desenvolvimento da cidade e respeitando ainda os planos do proprietário? Esses anseios são condizentes com o desenvolvimento sustentável da cidade? A demolição do hotel será suficiente para garantir o desenvolvimento da região em que se encontra?|0|0|0|0
+CartaAto|CA_4|Ato 4|Chegamos à última etapa do Wise Kings Game. Agora é o momento que cada equipe fará a apuração dos seus pontos para sabermos o resultado final do jogo, identificando assim qual foi à equipe vencedora, que será aquela equipe que conseguiu obter ao longo das suas decisões os recursos e habilidades necessárias para atingir o seu objetivo, de preservar ou demolir o prédio do hotel.|0|0|0|0

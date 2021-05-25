@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,7 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private Button useLuckCard;
     [SerializeField] private Button finishTurn;
     [SerializeField] private Button tradeCard;
+    [SerializeField] private TextMeshProUGUI logText;
     [SerializeField] private List<PlayerCard> playerCards;
     
     [SerializeField] private List<PlayerSetup> players = new List<PlayerSetup>();
@@ -25,10 +27,23 @@ public class NetworkGameUI : NetworkBehaviour
     {
         instance = this;
 
-        NetworkGameController.OnChangePlayerTurnId += (old, val) =>
+        NetworkGameController.OnChangePlayerTurnId += UpdateGameState;
+        NetworkGameController.OnChangeCurrentAct += UpdateTradeButton;
+    }
+
+    private void UpdateTradeButton(int old, int newval)
+    {
+        //Debug.LogError($"New value: {newval}");
+        
+        if (newval >= 2)
         {
-            RpcUpdateActionsMenu();
-        };
+            tradeCard.interactable = true;
+        }
+    }
+
+    private void UpdateGameState(int old, int val)
+    {
+        RpcUpdateActionsMenu();
     }
 
     public override void OnStartClient()
@@ -41,6 +56,10 @@ public class NetworkGameUI : NetworkBehaviour
     private IEnumerator SetupActionsMenu()
     {
         yield return new WaitUntil( () => { return NetworkGameController.instance && PlayerSetup.localPlayerSetup; });
+        
+        //Setting up logText
+        LocalLog(NetworkGameController.instance.FirstActData.actBeginText.text);
+        
         if (NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
         {
             if (PlayerSetup.localPlayerSetup.hasAuthority)
@@ -59,10 +78,6 @@ public class NetworkGameUI : NetworkBehaviour
     {
         useLuckCard.interactable = PlayerSetup.localPlayerSetup.LuckCardAmount > 0 ;
         finishTurn.interactable = false;
-        if (NetworkGameController.instance.CurrentAct >= 2)
-        {
-            tradeCard.interactable = true;
-        }
 
         //if(PlayerSetup.localPlayerSetup)
     }
@@ -133,11 +148,11 @@ public class NetworkGameUI : NetworkBehaviour
         {
             finishTurn.interactable = true;
             useLuckCard.interactable = false;
-            Debug.LogError("Has auth.");
+            //Debug.LogError("Has auth.");
         }
         else
         {
-            Debug.LogError("Not reaLLY THE CASEEEEE");    
+            //Debug.LogError("Not reaLLY THE CASEEEEE");    
         }
     }
 
@@ -166,6 +181,22 @@ public class NetworkGameUI : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void RpcLog(string text)
+    {
+        LocalLog(text);
+    }
+
+    public void LocalLog(string text)
+    {
+        if(logText.text != String.Empty)
+            logText.SetText(logText.text + "\n" + text.ToString());
+        else
+        {
+            logText.SetText(text.ToString());
+        }
+    }
+    
     public void UseLuckCard()
     {
         useLuckCard.interactable = false;

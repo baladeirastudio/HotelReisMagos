@@ -11,13 +11,23 @@ public class NetworkGameController : NetworkBehaviour
     [SyncVar(hook =nameof(OnChangePlayerTurn)), SerializeField] private int playerTurnID;
     [SyncVar, SerializeField] private int turn;
     [Tooltip("Starts with 1.")]
-    [SyncVar, SerializeField] private int currentAct;
+    [SyncVar(hook = nameof(OnChangeAct)), SerializeField] private int currentAct;
+
+    [SerializeField] private ActData firstActData, secondActData, thirdActData;
 
     public NetworkManagerCardGame server;
 
     public delegate void DelegateIntInt(int old, int newVal);
 
     public static event DelegateIntInt OnChangePlayerTurnId;
+    public static event DelegateIntInt OnChangeTurn;
+    public static event DelegateIntInt OnChangeCurrentAct;
+
+    public ActData FirstActData => firstActData;
+
+    public ActData SecondActData => secondActData;
+
+    public ActData ThirdActData => thirdActData;
     
     public int CurrentAct
     {
@@ -112,19 +122,27 @@ public class NetworkGameController : NetworkBehaviour
             case 1: //Avanço do ato 1.
                 if (turn >= 3)
                 {
+                    NetworkGameUI.Instance.RpcLog(firstActData.actEndText.text);
                     turn = 1;
                     currentAct++;
+                    NetworkGameUI.Instance.RpcLog(secondActData.actBeginText.text);
                 }
                 break;
             case 2: //Avanço do ato 2.
                 if (turn >= 4)
                 {
+                    NetworkGameUI.Instance.RpcLog(secondActData.actEndText.text);
                     turn = 1;
                     currentAct++;
+                    NetworkGameUI.Instance.RpcLog(thirdActData.actBeginText.text);
                 }
                 break;
             case 3: //Avanço do ato 3.
-                
+                if (turn >= 4)
+                {
+                    NetworkGameUI.Instance.RpcLog(thirdActData.actEndText.text);
+                    
+                }
                 break;
         }
 
@@ -142,6 +160,13 @@ public class NetworkGameController : NetworkBehaviour
         //Debug.LogError($"Old val: {old} - New: {val}");
         
         OnChangePlayerTurnId?.Invoke(old, val);
+    }
+    
+    private void OnChangeAct(int old, int val)
+    {
+        //Debug.LogError($"Old val: {old} - New: {val}");
+        
+        OnChangeCurrentAct?.Invoke(old, val);
     }
 
     [ClientRpc]

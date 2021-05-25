@@ -26,6 +26,8 @@ public class SlotController : MonoBehaviour
     
     public string ID { get => id; }
 
+    public int ActToUnlock => actToUnlock;
+
     public SlotReward RewardType => rewardType;
 
     public bool GiveLuckCard => giveLuckCard;
