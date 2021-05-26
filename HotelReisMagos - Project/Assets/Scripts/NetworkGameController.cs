@@ -13,6 +13,14 @@ public class NetworkGameController : NetworkBehaviour
     [Tooltip("Starts with 1.")]
     [SyncVar(hook = nameof(OnChangeAct)), SerializeField] private int currentAct;
 
+    [SerializeField] public SyncList<CardInfo> cardList1 = new SyncList<CardInfo>(),
+        cardList2 = new SyncList<CardInfo>(),
+        cardList3 = new SyncList<CardInfo>();
+    [SerializeField] public SyncList<int> activeCards1 = new SyncList<int>(),
+        activeCards2 = new SyncList<int>(), 
+        activeCards3 = new SyncList<int>();
+    [SerializeField] private SyncList<int> takenCards = new SyncList<int>();
+    
     [SerializeField] private ActData firstActData, secondActData, thirdActData;
 
     public NetworkManagerCardGame server;
@@ -61,6 +69,16 @@ public class NetworkGameController : NetworkBehaviour
     private void Start()
     {
         server = NetworkManagerCardGame.singleton as NetworkManagerCardGame;
+        CardDB currentCards = CardDB.Instance;
+        cardList1.AddRange(currentCards.cardList1);
+        cardList2.AddRange(currentCards.cardList2);
+        cardList3.AddRange(currentCards.cardList3);
+        
+        activeCards1.AddRange(currentCards.activeCards1);
+        activeCards2.AddRange(currentCards.activeCards2);
+        activeCards3.AddRange(currentCards.activeCards3);
+        
+        //TODO: Isso aqui dá cancer.
     }
 
     private void Singleton()

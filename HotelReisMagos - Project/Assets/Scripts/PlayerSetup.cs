@@ -221,7 +221,6 @@ public class PlayerSetup : NetworkBehaviour
     {
         base.OnStartAuthority();
         localPlayerSetup = this;
-
     }
 
     [ClientRpc]
@@ -312,9 +311,9 @@ public class PlayerSetup : NetworkBehaviour
                     deck = CardDB.Instance.cardList1;
                     cardIndex = Random.Range(0, deckNum.Count);
                     
-                    Debug.LogError($"Deck: {deck.Count}");
-                    Debug.LogError($"deckNum: {deckNum.Count}");
-                    Debug.LogError($"index: {cardIndex}");
+                    //Debug.LogError($"Deck: {deck.Count}");
+                    //Debug.LogError($"deckNum: {deckNum.Count}");
+                    //Debug.LogError($"index: {cardIndex}");
                     
                     card = deck[cardIndex];
                     deckNum.Remove(cardIndex);

@@ -19,6 +19,7 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private Button finishTurn;
     [SerializeField] private Button tradeCard;
     [SerializeField] private TextMeshProUGUI logText;
+    [SerializeField] private Scrollbar logScroll;
     [SerializeField] private List<PlayerCard> playerCards;
     
     [SerializeField] private List<PlayerSetup> players = new List<PlayerSetup>();
@@ -189,12 +190,25 @@ public class NetworkGameUI : NetworkBehaviour
 
     public void LocalLog(string text)
     {
-        if(logText.text != String.Empty)
-            logText.SetText(logText.text + "\n" + text.ToString());
+        
+        if (logText.text != String.Empty)
+        {
+            logText.SetText(logText.text + "\n" + text);
+        }
         else
         {
             logText.SetText(text.ToString());
         }
+        
+        StartCoroutine(ResetLog());
+    }
+
+    private IEnumerator ResetLog()
+    {
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+        Debug.Log("Logging: {text}");
+        logScroll.value = 0.0f;
     }
     
     public void UseLuckCard()
