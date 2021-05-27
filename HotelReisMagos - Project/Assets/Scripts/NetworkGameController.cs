@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using Random = System.Random;
 
 public class NetworkGameController : NetworkBehaviour
 {
@@ -20,7 +21,10 @@ public class NetworkGameController : NetworkBehaviour
         activeCards2 = new SyncList<int>(), 
         activeCards3 = new SyncList<int>();
     [SerializeField] private SyncList<int> takenCards = new SyncList<int>();
-    
+
+    [SerializeField] private SyncList<int> activeCharacters = new SyncList<int>();
+    [SerializeField] private List<CharacterInfo> characterList;
+
     [SerializeField] private ActData firstActData, secondActData, thirdActData;
 
     public NetworkManagerCardGame server;
@@ -31,6 +35,8 @@ public class NetworkGameController : NetworkBehaviour
     public static event DelegateIntInt OnChangeTurn;
     public static event DelegateIntInt OnChangeCurrentAct;
 
+    public List<CharacterInfo> CharacterList => characterList;
+    
     public ActData FirstActData => firstActData;
 
     public ActData SecondActData => secondActData;
@@ -64,6 +70,11 @@ public class NetworkGameController : NetworkBehaviour
 
         Init();
         //server = NetworkManagerCardGame.singleton as NetworkManagerCardGame;
+        
+        for (int i = 0; i < characterList.Count; i++)
+        {
+            activeCharacters.Add(i);
+        }
     }
 
     private void Start()
@@ -77,6 +88,14 @@ public class NetworkGameController : NetworkBehaviour
         activeCards1.AddRange(currentCards.activeCards1);
         activeCards2.AddRange(currentCards.activeCards2);
         activeCards3.AddRange(currentCards.activeCards3);
+        
+        currentCards.cardList1 = null;
+        currentCards.cardList2 = null;
+        currentCards.cardList3 = null;
+        
+        currentCards.activeCards1 = null;
+        currentCards.activeCards2 = null;
+        currentCards.activeCards3 = null;
         
         //TODO: Isso aqui dá cancer.
     }
@@ -123,6 +142,8 @@ public class NetworkGameController : NetworkBehaviour
     {
         //PlayerSetup.playerControllers[playerTurnID].RpcEndYourTurn();
 
+        NetworkGameUI.Instance.RpcLog("Jogador terminou o turno.");
+        
         playerTurnID++;
         if(playerTurnID >= NetworkManager.singleton.numPlayers)
         {
@@ -144,6 +165,11 @@ public class NetworkGameController : NetworkBehaviour
                     turn = 1;
                     currentAct++;
                     NetworkGameUI.Instance.RpcLog(secondActData.actBeginText.text);
+                    
+                    for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+                    {
+                        PlayerSetup.playerControllers[i].SecondActBonus();
+                    }
                 }
                 break;
             case 2: //Avanço do ato 2.
@@ -153,6 +179,11 @@ public class NetworkGameController : NetworkBehaviour
                     turn = 1;
                     currentAct++;
                     NetworkGameUI.Instance.RpcLog(thirdActData.actBeginText.text);
+                    
+                    for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+                    {
+                        PlayerSetup.playerControllers[i].ThirdActBonus();
+                    }
                 }
                 break;
             case 3: //Avanço do ato 3.
@@ -166,6 +197,15 @@ public class NetworkGameController : NetworkBehaviour
 
         //NetworkGameUI.Instance.RpcUpdateActionsMenu();
         //PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
+    }
+
+    public int GetRandomCharacter()
+    {
+        int result;
+
+        result = activeCharacters[UnityEngine.Random.Range(0, activeCharacters.Count)];
+        activeCharacters.Remove(result);
+        return result;
     }
 
     private void OnDisable()

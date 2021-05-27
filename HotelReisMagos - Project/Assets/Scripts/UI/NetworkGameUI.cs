@@ -60,6 +60,8 @@ public class NetworkGameUI : NetworkBehaviour
         
         //Setting up logText
         LocalLog(NetworkGameController.instance.FirstActData.actBeginText.text);
+        LocalLog($"Nesta partida, você será o empresário {NetworkGameController.instance.CharacterList[PlayerSetup.localPlayerSetup.CharacterInfoIndex].Name}. \n'{NetworkGameController.instance.CharacterList[PlayerSetup.localPlayerSetup.CharacterInfoIndex].Description}'");
+        //TODO: Esse trecho de cima também dá câncer
         
         if (NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
         {

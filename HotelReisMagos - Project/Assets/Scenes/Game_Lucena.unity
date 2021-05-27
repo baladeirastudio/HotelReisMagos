@@ -1331,9 +1331,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1872,7 +1870,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 131153201}
   m_HandleRect: {fileID: 131153200}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1956,6 +1954,12 @@ MonoBehaviour:
   playerTurnID: 0
   turn: 1
   currentAct: 1
+  characterList:
+  - {fileID: 11400000, guid: de90343e1508c31419c4bb02cc9fde06, type: 2}
+  - {fileID: 11400000, guid: 79ec409f169b18e4581556a07e286814, type: 2}
+  - {fileID: 11400000, guid: 9670f75dd14735540bce0f80a9b26f74, type: 2}
+  - {fileID: 11400000, guid: 089f20350be39c446a03f3291d58d2e9, type: 2}
+  - {fileID: 11400000, guid: bd499632bb3875b4593b821800978734, type: 2}
   firstActData:
     actBeginText: {fileID: 4900000, guid: ca0db593a5b4fe5418573e4a218d4355, type: 3}
     actEndText: {fileID: 4900000, guid: 323834f0ec3bac546b46b35281210929, type: 3}
@@ -2514,7 +2518,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 200}
+  m_AnchoredPosition: {x: 0, y: 199.99998}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &680058453
@@ -3643,7 +3647,7 @@ GameObject:
   - component: {fileID: 1241789598}
   - component: {fileID: 1241789597}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: CardDB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

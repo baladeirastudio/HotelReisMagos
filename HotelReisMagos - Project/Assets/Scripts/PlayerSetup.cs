@@ -178,6 +178,7 @@ public class PlayerSetup : NetworkBehaviour
     [SerializeField] private SyncList<int> cardsOnHand1 = new SyncList<int>();
     [SerializeField] private SyncList<int> cardsOnHand2 = new SyncList<int>();
     [SerializeField] private SyncList<int> cardsOnHand3 = new SyncList<int>();
+    [SyncVar, SerializeField] private int characterInfoIndex; 
 
     [SyncVar, SerializeField] private Color color;
 
@@ -185,6 +186,12 @@ public class PlayerSetup : NetworkBehaviour
     private string PERMAslotId;
     [SyncVar, SerializeField] private bool choseSlot = false;
     [SyncVar, SerializeField] private bool usedLuckCard = false;
+
+    public int CharacterInfoIndex
+    {
+        get => characterInfoIndex;
+        set => characterInfoIndex = value;
+    }
 
     public bool UsedLuckCard
     {
@@ -221,6 +228,15 @@ public class PlayerSetup : NetworkBehaviour
     {
         base.OnStartAuthority();
         localPlayerSetup = this;
+        
+        characterInfoIndex = CmdGetRandomCharacter();
+
+        Debug.Log(characterInfoIndex);
+    }
+
+    private int CmdGetRandomCharacter()
+    {
+        return NetworkGameController.instance.GetRandomCharacter();
     }
 
     [ClientRpc]
@@ -297,18 +313,19 @@ public class PlayerSetup : NetworkBehaviour
             if (tempSlot.GiveLuckCard)
             {
                 luckCardAmount++;
+                NetworkGameUI.Instance.RpcLog($"Jogador ganhou uma carta de sorte ou revés.");
             }
 
             CardInfo card = null;
             int cardIndex = 0;
-            List<CardInfo> deck = null;
-            List<int> deckNum = null;
+            SyncList<CardInfo> deck = null;
+            SyncList<int> deckNum = null;
 
             switch (tempSlot.ActToUnlock)
             {
                 case 1:
-                    deckNum = CardDB.Instance.activeCards1;
-                    deck = CardDB.Instance.cardList1;
+                    deckNum = NetworkGameController.instance.activeCards1;
+                    deck = NetworkGameController.instance.cardList1;
                     cardIndex = Random.Range(0, deckNum.Count);
                     
                     //Debug.LogError($"Deck: {deck.Count}");
@@ -321,16 +338,16 @@ public class PlayerSetup : NetworkBehaviour
                     
                     break;
                 case 2:
-                    deckNum = CardDB.Instance.activeCards2;
-                    deck = CardDB.Instance.cardList2;
+                    deckNum = NetworkGameController.instance.activeCards2;
+                    deck = NetworkGameController.instance.cardList2;
                     cardIndex = Random.Range(0, deckNum.Count);
                     card = deck[cardIndex];
                     deckNum.Remove(cardIndex);
                     cardsOnHand2.Add(cardIndex);
                     break;
                 case 3:
-                    deckNum = CardDB.Instance.activeCards3;
-                    deck = CardDB.Instance.cardList3;
+                    deckNum = NetworkGameController.instance.activeCards3;
+                    deck = NetworkGameController.instance.cardList3;
                     cardIndex = Random.Range(0, deckNum.Count);
                     card = deck[cardIndex];
                     deckNum.Remove(cardIndex);
@@ -431,5 +448,32 @@ public class PlayerSetup : NetworkBehaviour
     private void CmdUpdateSlots(string id)
     {
         NetworkGameController.instance.RpcUpdateSlots(id, color);
+    }
+
+    public void SecondActBonus()
+    {
+        var charInfo = NetworkGameController.instance.CharacterList[characterInfoIndex].SecondActBonus;
+        mediaResources += charInfo.mediaBonus;
+        economicResources += charInfo.economicBonus;
+        politicalResources += charInfo.politicBonus;
+        socialResources += charInfo.socialBonus;
+        RpcLocalLog($"Você recebeu o bônus de empresário! '{charInfo.onReceiveBonusText}'");
+    }
+    
+    public void ThirdActBonus()
+    {
+        var charInfo = NetworkGameController.instance.CharacterList[characterInfoIndex].ThirdActBonus;
+        mediaResources += charInfo.mediaBonus;
+        economicResources += charInfo.economicBonus;
+        politicalResources += charInfo.politicBonus;
+        socialResources += charInfo.socialBonus;
+        RpcLocalLog($"Você recebeu o bônus de empresário! '{charInfo.onReceiveBonusText}'");
+    }
+
+    [ClientRpc]
+    private void RpcLocalLog(string text)
+    {
+        if(hasAuthority)
+            NetworkGameUI.Instance.LocalLog(text);
     }
 }
