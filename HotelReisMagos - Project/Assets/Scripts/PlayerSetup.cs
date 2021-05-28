@@ -231,7 +231,7 @@ public class PlayerSetup : NetworkBehaviour
         
         StartCoroutine(GetRandomCharacter());
 
-        Debug.Log(characterInfoIndex);
+        //Debug.Log(characterInfoIndex);
     }
 
     private IEnumerator GetRandomCharacter()
@@ -244,6 +244,8 @@ public class PlayerSetup : NetworkBehaviour
     private void CmdGetRandomCharacter()
     {
         characterInfoIndex = NetworkGameController.instance.GetRandomCharacter();
+        RpcLocalLog($"Nesta partida, você será o empresário {NetworkGameController.instance.CharacterList[characterInfoIndex].Name}." +
+                    $"\n'{NetworkGameController.instance.CharacterList[characterInfoIndex].Description}'");
     }
 
     [ClientRpc]
@@ -325,7 +327,7 @@ public class PlayerSetup : NetworkBehaviour
 
             CardInfo card = null;
             int cardIndex = 0;
-            SyncList<CardInfo> deck = null;
+            List<CardInfo> deck = null;
             SyncList<int> deckNum = null;
 
             switch (tempSlot.ActToUnlock)

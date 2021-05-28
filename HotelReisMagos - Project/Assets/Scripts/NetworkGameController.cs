@@ -14,15 +14,15 @@ public class NetworkGameController : NetworkBehaviour
     [Tooltip("Starts with 1.")]
     [SyncVar(hook = nameof(OnChangeAct)), SerializeField] private int currentAct;
 
-    [SerializeField] public SyncList<CardInfo> cardList1 = new SyncList<CardInfo>(),
-        cardList2 = new SyncList<CardInfo>(),
-        cardList3 = new SyncList<CardInfo>();
+    [SerializeField] public List<CardInfo> cardList1 = new List<CardInfo>(),
+        cardList2 = new List<CardInfo>(),
+        cardList3 = new List<CardInfo>();
     [SerializeField] public SyncList<int> activeCards1 = new SyncList<int>(),
         activeCards2 = new SyncList<int>(), 
         activeCards3 = new SyncList<int>();
     [SerializeField] private SyncList<int> takenCards = new SyncList<int>();
 
-    [SerializeField] private SyncList<int> activeCharacters = new SyncList<int>();
+    [SerializeField] public SyncList<int> activeCharacters = new SyncList<int>();
     [SerializeField] private List<CharacterInfo> characterList;
 
     [SerializeField] private ActData firstActData, secondActData, thirdActData;
