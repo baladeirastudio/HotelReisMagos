@@ -229,14 +229,21 @@ public class PlayerSetup : NetworkBehaviour
         base.OnStartAuthority();
         localPlayerSetup = this;
         
-        characterInfoIndex = CmdGetRandomCharacter();
+        StartCoroutine(GetRandomCharacter());
 
         Debug.Log(characterInfoIndex);
     }
 
-    private int CmdGetRandomCharacter()
+    private IEnumerator GetRandomCharacter()
     {
-        return NetworkGameController.instance.GetRandomCharacter();
+        yield return new WaitUntil(() => { return NetworkGameController.instance;});
+        CmdGetRandomCharacter();
+    }
+
+    [Command]
+    private void CmdGetRandomCharacter()
+    {
+        characterInfoIndex = NetworkGameController.instance.GetRandomCharacter();
     }
 
     [ClientRpc]

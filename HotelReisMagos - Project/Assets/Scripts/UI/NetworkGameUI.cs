@@ -196,13 +196,13 @@ public class NetworkGameUI : NetworkBehaviour
         if (logText.text != String.Empty)
         {
             logText.SetText(logText.text + "\n" + text);
+            StartCoroutine(ResetLog());
         }
         else
         {
             logText.SetText(text.ToString());
         }
         
-        StartCoroutine(ResetLog());
     }
 
     private IEnumerator ResetLog()
