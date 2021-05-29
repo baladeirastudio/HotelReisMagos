@@ -5,6 +5,7 @@ using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public class NetworkGameUI : NetworkBehaviour
 {
@@ -21,9 +22,26 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI logText;
     [SerializeField] private Scrollbar logScroll;
     [SerializeField] private List<PlayerCard> playerCards;
-    
+
+    [SerializeField] private RectTransform playerCardList, targetCardList, playerList;
+    [SerializeField] private ResourceCardUI cardPrefab;
+    [SerializeField] private List<ResourceCardUI> selectedCards;
+
     [SerializeField] private List<PlayerSetup> players = new List<PlayerSetup>();
+    [SerializeField] private GameObject tradeMenu;
+    [SerializeField] private PlayerCharacterCard playerCharCardPrefab;
+    [SerializeField] private PlayerCharacterCard chosenTradePlayer;
+
+    public List<ResourceCardUI> SelectedCards => selectedCards;
     
+    public ResourceCardUI CardPrefab => cardPrefab;
+    
+    public RectTransform PlayerCardList => playerCardList;
+
+    public RectTransform TargetCardList => targetCardList;
+
+    public RectTransform PlayerList => playerList;
+
     private void Awake()
     {
         instance = this;
@@ -74,6 +92,30 @@ public class NetworkGameUI : NetworkBehaviour
         else
         {
             actionMenu.SetActive(false);
+        }
+
+    }
+
+    private IEnumerator PopulateCharacterCards()
+    {
+        for (int j = 0; j < playerList.childCount; j++)
+        {
+            Destroy(targetCardList.GetChild(j).gameObject);//TODO: Isso dá cancer, assim como outras partes desse código
+        }
+        
+        for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+        {
+
+            if (PlayerSetup.playerControllers[i])
+            {
+                var playerChar = Instantiate(playerCharCardPrefab, playerList);
+                yield return new WaitUntil(() =>
+                {
+                    return PlayerSetup.playerControllers[i].CharacterInfoIndex != -1;
+                });
+
+                playerChar.Populate(i, PlayerSetup.playerControllers[i]);
+            }
         }
     }
 
@@ -202,14 +244,14 @@ public class NetworkGameUI : NetworkBehaviour
         {
             logText.SetText(text.ToString());
         }
-        
+        Debug.Log($"Logging: {text}");
+
     }
 
     private IEnumerator ResetLog()
     {
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
-        Debug.Log("Logging: {text}");
         logScroll.value = 0.0f;
     }
     
@@ -217,5 +259,46 @@ public class NetworkGameUI : NetworkBehaviour
     {
         useLuckCard.interactable = false;
         PlayerSetup.localPlayerSetup.UseLuckCard();
+    }
+
+    public void EnableTradeMenu()
+    {
+        actionMenu.SetActive(false);
+        tradeMenu.SetActive(true);
+        PlayerSetup.localPlayerSetup.EnableTradeMenu();
+        StartCoroutine(PopulateCharacterCards());
+    }
+
+    public void ReturnFromTradeMenu()
+    {
+        actionMenu.SetActive(true);
+        tradeMenu.SetActive(false);
+        chosenTradePlayer.Deselect();
+    }
+
+    public void SelectTradePlayer(PlayerCharacterCard playerCharacterCard)
+    {
+        if (chosenTradePlayer)
+        {
+            chosenTradePlayer.Deselect();
+            chosenTradePlayer = playerCharacterCard;
+            chosenTradePlayer.Select();
+        }
+        else
+        {
+            chosenTradePlayer = playerCharacterCard;
+            chosenTradePlayer.Select();
+        }
+
+        var player = chosenTradePlayer.Player;
+        
+        for (int i = 0; i < targetCardList.childCount; i++)
+        {
+            Destroy(targetCardList.GetChild(i).gameObject);//TODO: Isso dá cancer, assim como outras partes desse código
+        }
+        
+        player.EnableTargetTradeMenu();
+        
+        
     }
 }

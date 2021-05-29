@@ -178,7 +178,7 @@ public class PlayerSetup : NetworkBehaviour
     [SerializeField] private SyncList<int> cardsOnHand1 = new SyncList<int>();
     [SerializeField] private SyncList<int> cardsOnHand2 = new SyncList<int>();
     [SerializeField] private SyncList<int> cardsOnHand3 = new SyncList<int>();
-    [SyncVar, SerializeField] private int characterInfoIndex; 
+    [SyncVar, SerializeField] private int characterInfoIndex = -1; 
 
     [SyncVar, SerializeField] private Color color;
 
@@ -209,9 +209,19 @@ public class PlayerSetup : NetworkBehaviour
 
     public Color MyColor { get => color; set => color = value; }
 
+    private void Awake()
+    {
+        
+    }
+
+    [SerializeField] private List<PlayerSetup> myPlaers;
+    
+    
     private void Start()
     {
         PlayerSetup.playerControllers.Add(this);
+        Debug.Log($"Added {this}!!!!!!!!!!!! ");
+        //myPlaers = playerControllers;
         //Debug.LogError("Adding self.");
 
         if (NetworkGameController.instance)
@@ -461,12 +471,24 @@ public class PlayerSetup : NetworkBehaviour
 
     public void SecondActBonus()
     {
+        if (characterInfoIndex < 0)
+        {
+            Debug.LogError("Nope, not like this, won' work");
+        }
         var charInfo = NetworkGameController.instance.CharacterList[characterInfoIndex].SecondActBonus;
         mediaResources += charInfo.mediaBonus;
         economicResources += charInfo.economicBonus;
         politicalResources += charInfo.politicBonus;
         socialResources += charInfo.socialBonus;
-        RpcLocalLog($"Você recebeu o bônus de empresário! '{charInfo.onReceiveBonusText}'");
+        try
+        {
+            RpcLocalLog($"Você recebeu o bônus de empresário! '{charInfo.onReceiveBonusText}'");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("CATCH EXAEAFASFAAAAAAAAAAA");
+            Debug.LogException(e);
+        }
     }
     
     public void ThirdActBonus()
@@ -484,5 +506,66 @@ public class PlayerSetup : NetworkBehaviour
     {
         if(hasAuthority)
             NetworkGameUI.Instance.LocalLog(text);
+    }
+
+    public void EnableTradeMenu()
+    {
+        var myCardList = NetworkGameUI.Instance.PlayerCardList;
+        var cardPrefab = NetworkGameUI.Instance.CardPrefab;
+        
+        for (int i = 0; i < cardsOnHand1.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand1[i], 1, false);
+        }
+        
+        for (int i = 0; i < cardsOnHand2.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand2[i], 2, false);
+        }
+        
+        for (int i = 0; i < cardsOnHand3.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand3[i], 3, false);
+        }
+        
+        for (int i = 0; i < luckCardAmount; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(0, 0, true);
+        }
+
+    }
+
+    public void EnableTargetTradeMenu()
+    {
+        var myCardList = NetworkGameUI.Instance.TargetCardList;
+        var cardPrefab = NetworkGameUI.Instance.CardPrefab;
+        
+        for (int i = 0; i < cardsOnHand1.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand1[i], 1, false);
+        }
+        
+        for (int i = 0; i < cardsOnHand2.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand2[i], 2, false);
+        }
+        
+        for (int i = 0; i < cardsOnHand3.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand3[i], 3, false);
+        }
+        
+        for (int i = 0; i < luckCardAmount; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(0, 0, true);
+        }
     }
 }

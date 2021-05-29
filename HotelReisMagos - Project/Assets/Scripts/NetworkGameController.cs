@@ -84,11 +84,14 @@ public class NetworkGameController : NetworkBehaviour
         cardList1.AddRange(currentCards.cardList1);
         cardList2.AddRange(currentCards.cardList2);
         cardList3.AddRange(currentCards.cardList3);
-        
-        activeCards1.AddRange(currentCards.activeCards1);
-        activeCards2.AddRange(currentCards.activeCards2);
-        activeCards3.AddRange(currentCards.activeCards3);
-        
+
+        if (isServer)
+        {
+            activeCards1.AddRange(currentCards.activeCards1);
+            activeCards2.AddRange(currentCards.activeCards2);
+            activeCards3.AddRange(currentCards.activeCards3);
+        }
+
         currentCards.cardList1 = null;
         currentCards.cardList2 = null;
         currentCards.cardList3 = null;
