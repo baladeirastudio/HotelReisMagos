@@ -20,7 +20,7 @@ public class PlayerCharacterCard : MonoBehaviour
     public void Populate(int playerListIndex, PlayerSetup player)
     {
         this.player = player;
-        Debug.LogError($"CharCardIndex: {player.CharacterInfoIndex}");    
+        //Debug.LogError($"CharCardIndex: {player.CharacterInfoIndex}");
         nameText.SetText(NetworkGameController.instance.CharacterList[player.CharacterInfoIndex].Name);
         playerNumberId = player.PlayerNumber;
         this.playerListIndex = playerListIndex;

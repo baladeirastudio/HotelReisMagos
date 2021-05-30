@@ -11,11 +11,19 @@ public class ResourceCardUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionText, idText;
     [SerializeField] private int cardIndex, actNumber;
     [SerializeField] private CardInfo cardInfo;
-    
-    public void Populate(int cardIndex, int actNumber, bool isLuck = false)
+    [SerializeField] private bool isTarget;
+
+    public bool IsLuckCard => isLuckCard;
+
+    public int CardIndex => cardIndex;
+
+    public int ActNumber => actNumber;
+
+    public void Populate(int cardIndex, int actNumber, bool isTarget, bool isLuck = false)
     {
         this.cardIndex = cardIndex;
         this.actNumber = actNumber;
+        this.isTarget = isTarget;
         
         if (!isLuck)
         {
@@ -44,13 +52,27 @@ public class ResourceCardUI : MonoBehaviour
 
     public void OnToggle(bool isSelected)
     {
-        if (isSelected)
+        if (isTarget)
         {
-            NetworkGameUI.Instance.SelectedCards.Add(this);
+            if (isSelected)
+            {
+                NetworkGameUI.Instance.SelectedTargetCards.Add(this);
+            }
+            else
+            {
+                NetworkGameUI.Instance.SelectedTargetCards.Remove(this);
+            }
         }
         else
         {
-            NetworkGameUI.Instance.SelectedCards.Remove(this);
+            if (isSelected)
+            {
+                NetworkGameUI.Instance.SelectedCards.Add(this);
+            }
+            else
+            {
+                NetworkGameUI.Instance.SelectedCards.Remove(this);
+            }
         }
     }
 }

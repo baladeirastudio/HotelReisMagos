@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using TMPro;
 using UnityEngine;
@@ -26,6 +27,13 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private RectTransform playerCardList, targetCardList, playerList;
     [SerializeField] private ResourceCardUI cardPrefab;
     [SerializeField] private List<ResourceCardUI> selectedCards;
+    [SerializeField] private List<ResourceCardUI> selectedTargetCards;
+    
+
+    [SerializeField] private RectTransform originTradeCardList, myTradeCardList;
+    [SerializeField] private TradeCardInfo cardInfoPrefab;
+    [SerializeField] private TextMeshProUGUI characterPlayerName;
+    [SerializeField] private Transform tradeProposalWindow, tradeWaitWindow;
 
     [SerializeField] private List<PlayerSetup> players = new List<PlayerSetup>();
     [SerializeField] private GameObject tradeMenu;
@@ -33,6 +41,8 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private PlayerCharacterCard chosenTradePlayer;
 
     public List<ResourceCardUI> SelectedCards => selectedCards;
+
+    public List<ResourceCardUI> SelectedTargetCards => selectedTargetCards;
     
     public ResourceCardUI CardPrefab => cardPrefab;
     
@@ -108,13 +118,16 @@ public class NetworkGameUI : NetworkBehaviour
 
             if (PlayerSetup.playerControllers[i])
             {
-                var playerChar = Instantiate(playerCharCardPrefab, playerList);
-                yield return new WaitUntil(() =>
+                if (PlayerSetup.playerControllers[i] != PlayerSetup.localPlayerSetup)
                 {
-                    return PlayerSetup.playerControllers[i].CharacterInfoIndex != -1;
-                });
+                    var playerChar = Instantiate(playerCharCardPrefab, playerList);
+                    yield return new WaitUntil(() =>
+                    {
+                        return PlayerSetup.playerControllers[i].CharacterInfoIndex != -1;
+                    });
 
-                playerChar.Populate(i, PlayerSetup.playerControllers[i]);
+                    playerChar.Populate(i, PlayerSetup.playerControllers[i]);
+                }
             }
         }
     }
@@ -300,5 +313,112 @@ public class NetworkGameUI : NetworkBehaviour
         player.EnableTargetTradeMenu();
         
         
+    }
+
+    public void ProposeChange()
+    {
+        if(selectedTargetCards.Count > 0)
+            PlayerSetup.localPlayerSetup.ProposeTrade(selectedCards, selectedTargetCards, chosenTradePlayer);
+        else
+        {
+            Debug.LogWarning("You didn't add any cards");
+        }
+    }
+
+    [SerializeField] private PlayerSetup currentTradeOrigin;
+
+    
+    //TODO: Uau, quem diria! Mais uma função com alto teor de código cancerígeno! Quem será que escreveu esse Chernobyl?
+    public void PresentTrade(List<List<int>> originCard, List<List<int>> selectedMyCards, int playerNumber)
+    {
+        currentTradeOrigin = PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First();
+        tradeProposalWindow.gameObject.SetActive(true);
+        
+        #region ORIGINCARDS
+        {
+            for (int i = 0; i < originCard[0].Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, originTradeCardList);
+                var card = NetworkGameController.instance.cardList1[originCard[0][i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+
+            for (int i = 0; i < originCard[1].Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, originTradeCardList);
+                var card = NetworkGameController.instance.cardList1[originCard[1][i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+
+            for (int i = 0; i < originCard[2].Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, originTradeCardList);
+                var card = NetworkGameController.instance.cardList1[originCard[2][i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+        }
+        #endregion
+
+        #region MYCARDS
+        {
+            for (int i = 0; i < selectedMyCards[0].Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, myTradeCardList);
+                var card = NetworkGameController.instance.cardList1[selectedMyCards[0][i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+
+            for (int i = 0; i < selectedMyCards[1].Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, myTradeCardList);
+                var card = NetworkGameController.instance.cardList1[selectedMyCards[1][i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+
+            for (int i = 0; i < selectedMyCards[2].Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, myTradeCardList);
+                var card = NetworkGameController.instance.cardList1[selectedMyCards[2][i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+        }
+        #endregion
+
+        var charName = NetworkGameController.instance.CharacterList[currentTradeOrigin.CharacterInfoIndex];
+        
+        characterPlayerName.SetText($"O empresário {charName.Name} te propõe uma troca!");
+    }
+
+    public void AcceptTrade()
+    {
+        PlayerSetup.localPlayerSetup.AcceptTrade(currentTradeOrigin);
+    }
+
+    public void RefuseTrade()
+    {
+        PlayerSetup.localPlayerSetup.RefuseTrade(currentTradeOrigin);
+    }
+
+    public void WaitTradeResult()
+    {
+        tradeMenu.SetActive(false);
+        tradeWaitWindow.gameObject.SetActive(true);
+    }
+
+    public void ReturnFromWaitTrade()
+    {
+        tradeWaitWindow.gameObject.SetActive(false);
+        actionMenu.SetActive(true);
+    }
+    
+    public void ReturnFromTradeProposal()
+    {
+        tradeProposalWindow.gameObject.SetActive(false);
     }
 }

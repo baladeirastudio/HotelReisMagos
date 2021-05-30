@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using Mirror.Examples.Chat;
 using Steamworks;
@@ -28,6 +29,12 @@ public class PlayerSetup : NetworkBehaviour
     [SyncVar, SerializeField] private int luckCardAmount = 0;
     [Tooltip("Minimum and max value to be used in the luck card, inclusive and exclusive.")]
     [SerializeField] private int minLuck = 3, maxLuck = 5;
+
+    public SyncList<int> CardsOnHand1 => cardsOnHand1;
+
+    public SyncList<int> CardsOnHand2 => cardsOnHand2;
+
+    public SyncList<int> CardsOnHand3 => cardsOnHand3;
 
     public int LuckCardAmount
     {
@@ -178,7 +185,14 @@ public class PlayerSetup : NetworkBehaviour
     [SerializeField] private SyncList<int> cardsOnHand1 = new SyncList<int>();
     [SerializeField] private SyncList<int> cardsOnHand2 = new SyncList<int>();
     [SerializeField] private SyncList<int> cardsOnHand3 = new SyncList<int>();
-    [SyncVar, SerializeField] private int characterInfoIndex = -1; 
+    [SyncVar, SerializeField] private int characterInfoIndex = -1;
+
+    public enum TradeStatus
+    {
+        Pending, Denied, Accepted, NotUsed
+    }
+    
+    [SyncVar, SerializeField] private TradeStatus tradeStatus = TradeStatus.NotUsed;
 
     [SyncVar, SerializeField] private Color color;
 
@@ -214,9 +228,6 @@ public class PlayerSetup : NetworkBehaviour
         
     }
 
-    [SerializeField] private List<PlayerSetup> myPlaers;
-    
-    
     private void Start()
     {
         PlayerSetup.playerControllers.Add(this);
@@ -516,25 +527,25 @@ public class PlayerSetup : NetworkBehaviour
         for (int i = 0; i < cardsOnHand1.Count; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(cardsOnHand1[i], 1, false);
+            newCard.Populate(cardsOnHand1[i], 1, false, false);
         }
         
         for (int i = 0; i < cardsOnHand2.Count; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(cardsOnHand2[i], 2, false);
+            newCard.Populate(cardsOnHand2[i], 2, false, false);
         }
         
         for (int i = 0; i < cardsOnHand3.Count; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(cardsOnHand3[i], 3, false);
+            newCard.Populate(cardsOnHand3[i], 3, false, false);
         }
         
         for (int i = 0; i < luckCardAmount; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(0, 0, true);
+            newCard.Populate(0, 0, false, true);
         }
 
     }
@@ -547,25 +558,202 @@ public class PlayerSetup : NetworkBehaviour
         for (int i = 0; i < cardsOnHand1.Count; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(cardsOnHand1[i], 1, false);
+            newCard.Populate(cardsOnHand1[i], 1, true, false);
         }
         
         for (int i = 0; i < cardsOnHand2.Count; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(cardsOnHand2[i], 2, false);
+            newCard.Populate(cardsOnHand2[i], 2, true, false);
         }
         
         for (int i = 0; i < cardsOnHand3.Count; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(cardsOnHand3[i], 3, false);
+            newCard.Populate(cardsOnHand3[i], 3, true, false);
         }
         
         for (int i = 0; i < luckCardAmount; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
-            newCard.Populate(0, 0, true);
+            newCard.Populate(0, 0, true, true);
         }
     }
+
+    public void ProposeTrade(List<ResourceCardUI> selectedCards, List<ResourceCardUI> selectedTargetCards, PlayerCharacterCard chosenTradePlayer)
+    {
+        List<List<int>> selectedCards1 = new List<List<int>>();
+        List<List<int>> selectedTargetCards1 = new List<List<int>>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            selectedCards1.Add(new List<int>());
+        }
+        
+        for (int i = 0; i < 3; i++)
+        {
+            selectedTargetCards1.Add(new List<int>());
+        }
+        
+        /*selectedCards1 = selectedCards.Select(((card, i) =>
+        {
+            new {i, c = card.CardIndex};
+        }))*/
+        for (int i = 0; i < selectedCards.Count; i++)
+        {
+            selectedCards1[selectedCards[i].ActNumber - 1].Add(selectedCards[i].CardIndex);
+        }
+        
+        for (int i = 0; i < selectedTargetCards.Count; i++)
+        {
+            selectedTargetCards1[selectedTargetCards[i].ActNumber - 1].Add(selectedTargetCards[i].CardIndex);
+        }
+
+        var player = chosenTradePlayer.Player.PlayerNumber;
+        
+        tradeStatus = TradeStatus.Pending;
+        NetworkGameUI.Instance.WaitTradeResult();
+
+        CmdProposeTrade(selectedCards1, selectedTargetCards1, player);
+
+        StartCoroutine(WaitForTradeResult(selectedCards1, selectedTargetCards1, chosenTradePlayer.Player));
+    }
+
+    private IEnumerator WaitForTradeResult(List<List<int>> selectedCards, List<List<int>> selectedTargetCards, PlayerSetup chosenTradePlayerNumber)
+    {
+        while (tradeStatus == TradeStatus.Pending)
+        {
+            yield return new WaitForEndOfFrame();
+            Debug.LogWarning("Waiting for trade...");
+        }
+
+        if (tradeStatus == TradeStatus.Accepted)
+        {
+            CmdConcludeTrade(selectedCards, selectedTargetCards, chosenTradePlayerNumber.PlayerNumber);
+            var originName = NetworkGameController.instance.CharacterList[chosenTradePlayerNumber.characterInfoIndex];
+            var myName = NetworkGameController.instance.CharacterList[characterInfoIndex];
+            NetworkGameUI.Instance.RpcLog($"Os jogadores {myName.Name} e {originName.Name} firmaram uma troca!");
+            NetworkGameUI.Instance.ReturnFromWaitTrade();
+        }
+        else
+        {
+            NetworkGameUI.Instance.LocalLog("Sua troca foi negada!");
+        }
+
+        tradeStatus = TradeStatus.NotUsed;
+    }
+
+    private void CmdConcludeTrade(List<List<int>> selectedMyCards, List<List<int>> selectedTargetCards, int chosenTradePlayerNumber)
+    {
+        PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == chosenTradePlayerNumber)).First();
+
+        for (int i = 0; i < selectedMyCards[0].Count; i++)
+        {
+            player.CardsOnHand1.Remove(selectedMyCards[0][i]);
+        }
+        
+        for (int i = 0; i < selectedMyCards[1].Count; i++)
+        {
+            player.CardsOnHand2.Remove(selectedMyCards[1][i]);
+        }
+        for (int i = 0; i < selectedMyCards[2].Count; i++)
+        {
+            player.CardsOnHand3.Remove(selectedMyCards[2][i]);
+        }
+        
+        player.CardsOnHand1.AddRange(selectedMyCards[0]);
+        player.CardsOnHand2.AddRange(selectedMyCards[1]);
+        player.CardsOnHand3.AddRange(selectedMyCards[2]);
+        
+        for (int i = 0; i < selectedTargetCards[0].Count; i++)
+        {
+            cardsOnHand1.Remove(selectedTargetCards[0][i]);
+        }
+        
+        for (int i = 0; i < selectedTargetCards[1].Count; i++)
+        {
+            cardsOnHand2.Remove(selectedTargetCards[1][i]);
+        }
+        for (int i = 0; i < selectedTargetCards[2].Count; i++)
+        {
+            cardsOnHand3.Remove(selectedTargetCards[2][i]);
+        }    
+        
+        cardsOnHand1.AddRange(selectedTargetCards[0]);
+        cardsOnHand2.AddRange(selectedTargetCards[1]);
+        cardsOnHand3.AddRange(selectedTargetCards[2]);
+    }
+
+    [Command]
+    private void CmdProposeTrade(List<List<int>> selectedCards, List<List<int>> selectedTargetCards, int chosenTradePlayerNumber)
+    {
+
+        PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == chosenTradePlayerNumber)).First();
+
+        player.RpcPresentTrade(selectedCards, selectedTargetCards, playerNumber);
+    }
+
+    [ClientRpc]
+    private void RpcPresentTrade(List<List<int>> originCard, List<List<int>> selectedMyCards, int playerNumber)
+    {
+        if (hasAuthority)
+        {
+            NetworkGameUI.Instance.PresentTrade(originCard, selectedMyCards, playerNumber);
+        }
+        else
+        {
+            Debug.Log("No authority to show window etc");
+        }
+    }
+
+    [SyncVar, SerializeField] private PlayerSetup currentTradeOrigin;
+
+    public void AcceptTrade(PlayerSetup tradeOrigin)
+    {
+        currentTradeOrigin = tradeOrigin;
+        Debug.Log("Trade response!! POSITIVE");
+        
+        CmdAcceptTrade(currentTradeOrigin.PlayerNumber);
+        NetworkGameUI.Instance.ReturnFromTradeProposal();
+    }
+
+    [Command]
+    private void CmdAcceptTrade(int number)
+    {
+        PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == number)).First();
+
+        try
+        {
+            player._TradeStatus = TradeStatus.Accepted;
+        } 
+        catch(Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+
+    public void RefuseTrade(PlayerSetup tradeOrigin)
+    {
+        currentTradeOrigin = tradeOrigin;
+        Debug.Log("Trade response!! NEGATIVE");
+        CmdRefuseTrade(currentTradeOrigin.PlayerNumber);
+        NetworkGameUI.Instance.ReturnFromTradeProposal();
+    }
+
+    [Command]
+    private void CmdRefuseTrade(int number)
+    {
+        PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == number)).First();
+
+        try
+        {
+            player._TradeStatus = TradeStatus.Denied;
+        } 
+        catch(Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+
+    public TradeStatus _TradeStatus { get => tradeStatus; set => tradeStatus = value; }
 }
