@@ -150,12 +150,17 @@ public class NetworkGameController : NetworkBehaviour
         playerTurnID++;
         if(playerTurnID >= NetworkManager.singleton.numPlayers)
         {
-            playerTurnID = 0;
+            if(currentAct != 3 || (currentAct >= 3 && turn < 4))
+                playerTurnID = 0;
+            
             turn++;
-            for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+            if(currentAct != 3 || (currentAct >= 3 && turn < 5))
             {
-                PlayerSetup.playerControllers[i].ChoseSlot = false;
-                PlayerSetup.playerControllers[i].UsedLuckCard = false;
+                for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+                {
+                    PlayerSetup.playerControllers[i].ChoseSlot = false;
+                    PlayerSetup.playerControllers[i].UsedLuckCard = false;
+                }
             }
         }
 
@@ -190,16 +195,77 @@ public class NetworkGameController : NetworkBehaviour
                 }
                 break;
             case 3: //Avanço do ato 3.
-                if (turn >= 4)
+                if (turn >= 5)
                 {
                     NetworkGameUI.Instance.RpcLog(thirdActData.actEndText.text);
-                    
+                    ProcessWinner();
                 }
                 break;
         }
 
         //NetworkGameUI.Instance.RpcUpdateActionsMenu();
         //PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
+    }
+
+    [SerializeField] List<PlayerSetup> winningPlayers = new List<PlayerSetup>();
+
+    
+    private void ProcessWinner()
+    {
+        Debug.Log("Processing winner...");
+        var players = PlayerSetup.playerControllers;
+        if (players.Count == 1)
+        {
+            var charInfo = characterList[players[0].CharacterInfoIndex];
+            if (players[0].MediaResources >= charInfo.MediaGoal &&
+                players[0].EconomicResources >= charInfo.EconomicGoal &&
+                players[0].SocialResources >= charInfo.SocialGoal &&
+                players[0].PoliticalResources >= charInfo.PoliticGoal)
+            {
+                NetworkGameUI.Instance.LocalLog("Você atingiu todos os recursos necessários e venceu esta partida!");
+            }
+            else
+            {
+                NetworkGameUI.Instance.LocalLog("Você não atingiu todos os recursos necessários e perdeu esta partida...");
+            }
+        }
+        else if(players.Count > 1)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                var charInfo = characterList[players[i].CharacterInfoIndex];
+                if (players[i].MediaResources >= charInfo.MediaGoal &&
+                    players[i].EconomicResources >= charInfo.EconomicGoal &&
+                    players[i].SocialResources >= charInfo.SocialGoal &&
+                    players[i].PoliticalResources >= charInfo.PoliticGoal)
+                {
+                    winningPlayers.Add(players[i]);
+                }
+            }
+
+            if (winningPlayers.Count == 1)
+            {
+                var charInfo = characterList[winningPlayers[0].CharacterInfoIndex];
+
+                NetworkGameUI.Instance.RpcLog($"Apenas o jogador empresário {charInfo.Name} atingiu seus objetivos! Com isso, {charInfo.Name} é o vencedor!");
+            }
+            else if (winningPlayers.Count > 1)
+            {
+                //var charInfo = characterList[winningPlayers[0].CharacterInfoIndex];
+
+                NetworkGameUI.Instance.RpcLog($"Vários jogadores conseguiram seus objetivos! Vote em qual jogador você quer que vença!");
+            }
+            else
+            {
+                //var charInfo = characterList[winningPlayers[0].CharacterInfoIndex];
+
+                NetworkGameUI.Instance.RpcLog($"Nenhum jogador atingiu seus objetivos! Vote em qual jogador você quer que vença!");
+            }
+        }
+        else
+        {
+            Debug.LogError("Deu algo errado?");
+        }
     }
 
     public int GetRandomCharacter()
