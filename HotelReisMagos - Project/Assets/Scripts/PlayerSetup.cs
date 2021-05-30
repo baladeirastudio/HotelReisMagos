@@ -523,6 +523,11 @@ public class PlayerSetup : NetworkBehaviour
     {
         var myCardList = NetworkGameUI.Instance.PlayerCardList;
         var cardPrefab = NetworkGameUI.Instance.CardPrefab;
+
+        for (int i = 0; i < myCardList.childCount; i++)
+        {
+            Destroy(myCardList.GetChild(i).gameObject);
+        }
         
         for (int i = 0; i < cardsOnHand1.Count; i++)
         {
@@ -554,6 +559,11 @@ public class PlayerSetup : NetworkBehaviour
     {
         var myCardList = NetworkGameUI.Instance.TargetCardList;
         var cardPrefab = NetworkGameUI.Instance.CardPrefab;
+        
+        for (int i = 0; i < myCardList.childCount; i++)
+        {
+            Destroy(myCardList.GetChild(i).gameObject);
+        }
         
         for (int i = 0; i < cardsOnHand1.Count; i++)
         {

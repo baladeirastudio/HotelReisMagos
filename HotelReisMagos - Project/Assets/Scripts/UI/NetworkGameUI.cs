@@ -106,12 +106,23 @@ public class NetworkGameUI : NetworkBehaviour
 
     }
 
+    [SerializeField] private GameObject altChildList;
+    [SerializeField] private GameObject emptyObject;
+
     private IEnumerator PopulateCharacterCards()
     {
-        for (int j = 0; j < playerList.childCount; j++)
+        Debug.Log("Clearing cards1");
+        
+        Destroy(playerList.gameObject);
+
+        playerList = Instantiate(emptyObject, altChildList.transform).transform as RectTransform;
+        
+        /*for (int j = 0; j < playerList.childCount; j++)
         {
             Destroy(targetCardList.GetChild(j).gameObject);//TODO: Isso dá cancer, assim como outras partes desse código
-        }
+            Debug.Log("Clearing cards333333333333????????");
+
+        }*/
         
         for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
         {
@@ -125,6 +136,7 @@ public class NetworkGameUI : NetworkBehaviour
                     {
                         return PlayerSetup.playerControllers[i].CharacterInfoIndex != -1;
                     });
+                    Debug.Log("Clearing cards222222222222222222222222");
 
                     playerChar.Populate(i, PlayerSetup.playerControllers[i]);
                 }
@@ -279,6 +291,10 @@ public class NetworkGameUI : NetworkBehaviour
         actionMenu.SetActive(false);
         tradeMenu.SetActive(true);
         PlayerSetup.localPlayerSetup.EnableTradeMenu();
+        for (int i = 0; i < targetCardList.childCount; i++)
+        {
+            Destroy(targetCardList.GetChild(i).gameObject);
+        }
         StartCoroutine(PopulateCharacterCards());
     }
 
@@ -286,7 +302,8 @@ public class NetworkGameUI : NetworkBehaviour
     {
         actionMenu.SetActive(true);
         tradeMenu.SetActive(false);
-        chosenTradePlayer.Deselect();
+        if(chosenTradePlayer)
+            chosenTradePlayer.Deselect();
     }
 
     public void SelectTradePlayer(PlayerCharacterCard playerCharacterCard)
