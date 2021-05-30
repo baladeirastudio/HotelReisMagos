@@ -312,7 +312,7 @@ public class PlayerSetup : NetworkBehaviour
             var tempSlot = SlotController.slots[slotID];
             var tempPlayer = PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID];
             var tempColor = tempPlayer.MyColor;
-            tempSlot.SetSelectedSlot(MyColor);
+            tempSlot.SetSelectedSlot(tempColor, playerNumber);
 
             int reward = Random.Range(tempSlot.MinReward, tempSlot.MaxReward);
 
@@ -469,15 +469,15 @@ public class PlayerSetup : NetworkBehaviour
         (NetworkManagerCardGame.singleton as NetworkManagerCardGame).ServerChangeScene("Game_Lucena"); //TODO: Don't use constants
     }
 
-    public void UpdateSlots(string id)
+    public void UpdateSlots(string id, int number)
     {
-        CmdUpdateSlots(id);
+        CmdUpdateSlots(id, number);
     }
     
     [Command]
-    private void CmdUpdateSlots(string id)
+    private void CmdUpdateSlots(string id, int playerNumber)
     {
-        NetworkGameController.instance.RpcUpdateSlots(id, color);
+        NetworkGameController.instance.RpcUpdateSlots(id, playerNumber);
     }
 
     public void SecondActBonus()

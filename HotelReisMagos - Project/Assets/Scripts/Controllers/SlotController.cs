@@ -112,13 +112,16 @@ public class SlotController : MonoBehaviour
         //DummyServer.Instance.SelectSlot(this);  
     }
 
-    public void SetSelectedSlot(Color color)
+    public void SetSelectedSlot(Color color, int playerNum=-1)
     {
         isSelected = true;
         slotImage.color = color;
 
         slotImage.raycastTarget = false;
-        PlayerSetup.localPlayerSetup.UpdateSlots(id);
+        if(playerNum != -1)
+            PlayerSetup.localPlayerSetup.UpdateSlots(id, playerNum);
+        
+        //PlayerSetup.playerControllers.Find((setup => setup.PlayerNumber == playerNum)).UpdateSlots(id, playerNum);
     }
 
     public void ResetSlot()

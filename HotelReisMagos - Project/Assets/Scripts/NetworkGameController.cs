@@ -302,8 +302,10 @@ public class NetworkGameController : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcUpdateSlots(string slotId, Color slotColor)
+    public void RpcUpdateSlots(string slotId, int playerNumber)
     {
+        var slotColor = PlayerSetup.playerControllers.Find((setup => setup.PlayerNumber == playerNumber)).MyColor;
+        
         if(!SlotController.slots[slotId].isSelected)
             SlotController.slots[slotId].SetSelectedSlot(slotColor);
     }
