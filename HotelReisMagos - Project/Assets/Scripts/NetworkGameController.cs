@@ -208,6 +208,7 @@ public class NetworkGameController : NetworkBehaviour
     }
 
     [SerializeField] List<PlayerSetup> winningPlayers = new List<PlayerSetup>();
+    [SerializeField] List<int> winningPlayerNumbers = new List<int>();
 
     
     private void ProcessWinner()
@@ -240,6 +241,7 @@ public class NetworkGameController : NetworkBehaviour
                     players[i].PoliticalResources >= charInfo.PoliticGoal)
                 {
                     winningPlayers.Add(players[i]);
+                    winningPlayerNumbers.Add(players[i].PlayerNumber);
                 }
             }
 
@@ -254,12 +256,15 @@ public class NetworkGameController : NetworkBehaviour
                 //var charInfo = characterList[winningPlayers[0].CharacterInfoIndex];
 
                 NetworkGameUI.Instance.RpcLog($"Vários jogadores conseguiram seus objetivos! Vote em qual jogador você quer que vença!");
+                NetworkGameUI.Instance.RpcSetWinnerElection(winningPlayerNumbers);
             }
             else
             {
                 //var charInfo = characterList[winningPlayers[0].CharacterInfoIndex];
 
                 NetworkGameUI.Instance.RpcLog($"Nenhum jogador atingiu seus objetivos! Vote em qual jogador você quer que vença!");
+                NetworkGameUI.Instance.RpcSetWinnerElection(winningPlayerNumbers);
+
             }
         }
         else
@@ -301,5 +306,41 @@ public class NetworkGameController : NetworkBehaviour
     {
         if(!SlotController.slots[slotId].isSelected)
             SlotController.slots[slotId].SetSelectedSlot(slotColor);
+    }
+
+    public SyncList<int> votesPerPlayer = new SyncList<int>();
+
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+
+        for (int i = 0; i < NetworkManager.singleton.numPlayers; i++)
+        {
+            votesPerPlayer.Add(0);
+        }
+    }
+
+    [SyncVar] public int votesCast;
+    
+    public void VoteOnCharacter(int playerNumber)
+    {
+        votesPerPlayer[playerNumber]++;
+        votesCast++;
+        if (votesCast >= NetworkManager.singleton.numPlayers)
+        {
+            PlayerSetup winner = null;
+            int currentVotesWinner = 0;
+            for (int i = 0; i < NetworkManager.singleton.numPlayers; i++)
+            {
+                if (votesPerPlayer[i] > currentVotesWinner)
+                {
+                    currentVotesWinner = votesPerPlayer[i];
+                    winner = PlayerSetup.playerControllers.Find((setup => setup.PlayerNumber == i));
+                }
+            }
+
+            var winnerName = characterList[winner.CharacterInfoIndex];
+            NetworkGameUI.Instance.RpcLog($"A votação foi concluída! Foi decidido que o vencedor será {winnerName}!");
+        }
     }
 }

@@ -767,4 +767,15 @@ public class PlayerSetup : NetworkBehaviour
     }
 
     public TradeStatus _TradeStatus { get => tradeStatus; set => tradeStatus = value; }
+
+    public void VoteOnCharacter(int i)
+    {
+        CmdVoteOnCharacter(i);
+    }
+
+    [Command]
+    public void CmdVoteOnCharacter(int playerNumber)
+    {
+        NetworkGameController.instance.VoteOnCharacter(playerNumber);
+    }
 }

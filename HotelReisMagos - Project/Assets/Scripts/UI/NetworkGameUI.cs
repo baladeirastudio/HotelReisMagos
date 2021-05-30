@@ -438,4 +438,30 @@ public class NetworkGameUI : NetworkBehaviour
     {
         tradeProposalWindow.gameObject.SetActive(false);
     }
+
+    [SerializeField] private Transform winnersList, winnerWindow;
+    [SerializeField] private WinnerPlayerCard winnerCardPrefab;
+
+    [ClientRpc]
+    public void RpcSetWinnerElection(List<int> playerNumbers)
+    {
+        List<PlayerSetup> players = new List<PlayerSetup>();
+
+        winnerWindow.gameObject.SetActive(true);
+        
+        for (int i = 0; i < playerNumbers.Count; i++)
+        {
+            if (PlayerSetup.playerControllers[i] != PlayerSetup.localPlayerSetup)
+            {
+                players.Add(PlayerSetup.playerControllers.Find((setup => setup.PlayerNumber == playerNumbers[i])));
+                var winnerCard = Instantiate(winnerCardPrefab, winnersList);
+                winnerCard.Populate(players.Last());
+            }
+        }
+    }
+
+    public void CloseVoteMenu()
+    {
+        winnerWindow.gameObject.SetActive(false);
+    }
 }
