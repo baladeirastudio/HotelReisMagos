@@ -182,9 +182,9 @@ public class PlayerSetup : NetworkBehaviour
 
     [SyncVar, SerializeField] private bool isMyTurn = false;
 
-    [SerializeField] private SyncList<int> cardsOnHand1 = new SyncList<int>();
-    [SerializeField] private SyncList<int> cardsOnHand2 = new SyncList<int>();
-    [SerializeField] private SyncList<int> cardsOnHand3 = new SyncList<int>();
+    [SerializeField] public SyncList<int> cardsOnHand1 = new SyncList<int>();
+    [SerializeField] public SyncList<int> cardsOnHand2 = new SyncList<int>();
+    [SerializeField] public SyncList<int> cardsOnHand3 = new SyncList<int>();
     [SyncVar, SerializeField] private int characterInfoIndex = -1;
 
     public enum TradeStatus
@@ -653,40 +653,41 @@ public class PlayerSetup : NetworkBehaviour
         tradeStatus = TradeStatus.NotUsed;
     }
 
+    [Command]
     private void CmdConcludeTrade(List<List<int>> selectedMyCards, List<List<int>> selectedTargetCards, int chosenTradePlayerNumber)
     {
         PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == chosenTradePlayerNumber)).First();
 
-        for (int i = 0; i < selectedMyCards[0].Count; i++)
-        {
-            player.CardsOnHand1.Remove(selectedMyCards[0][i]);
-        }
-        
-        for (int i = 0; i < selectedMyCards[1].Count; i++)
-        {
-            player.CardsOnHand2.Remove(selectedMyCards[1][i]);
-        }
-        for (int i = 0; i < selectedMyCards[2].Count; i++)
-        {
-            player.CardsOnHand3.Remove(selectedMyCards[2][i]);
-        }
-        
-        player.CardsOnHand1.AddRange(selectedMyCards[0]);
-        player.CardsOnHand2.AddRange(selectedMyCards[1]);
-        player.CardsOnHand3.AddRange(selectedMyCards[2]);
-        
         for (int i = 0; i < selectedTargetCards[0].Count; i++)
         {
-            cardsOnHand1.Remove(selectedTargetCards[0][i]);
+            player.cardsOnHand1.Remove(selectedTargetCards[0][i]);
         }
         
         for (int i = 0; i < selectedTargetCards[1].Count; i++)
         {
-            cardsOnHand2.Remove(selectedTargetCards[1][i]);
+            player.cardsOnHand2.Remove(selectedTargetCards[1][i]);
         }
         for (int i = 0; i < selectedTargetCards[2].Count; i++)
         {
-            cardsOnHand3.Remove(selectedTargetCards[2][i]);
+            player.cardsOnHand3.Remove(selectedTargetCards[2][i]);
+        }
+        
+        player.cardsOnHand1.AddRange(selectedMyCards[0]);
+        player.cardsOnHand2.AddRange(selectedMyCards[1]);
+        player.cardsOnHand3.AddRange(selectedMyCards[2]);
+        
+        for (int i = 0; i < selectedMyCards[0].Count; i++)
+        {
+            cardsOnHand1.Remove(selectedMyCards[0][i]);
+        }
+        
+        for (int i = 0; i < selectedMyCards[1].Count; i++)
+        {
+            cardsOnHand2.Remove(selectedMyCards[1][i]);
+        }
+        for (int i = 0; i < selectedMyCards[2].Count; i++)
+        {
+            cardsOnHand3.Remove(selectedMyCards[2][i]);
         }    
         
         cardsOnHand1.AddRange(selectedTargetCards[0]);
