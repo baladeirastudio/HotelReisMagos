@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerCard : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI politicalText, economicText, socialText, mediaText;
     [SerializeField] private int playerSetupIndex;
     [SerializeField] private PlayerSetup trackedPlayer;
@@ -29,6 +30,7 @@ public class PlayerCard : MonoBehaviour
                        $"Med: {trackedPlayer.MediaResources}");*/
         yield return new WaitForSeconds(0.5f);
 
+        nameText.SetText(NetworkGameController.instance.CharacterList[trackedPlayer.CharacterInfoIndex].Name);// TODO: Forma mais rápida e fácil de botar isso
         politicalText.SetText($"{trackedPlayer.PoliticalResources}");
         economicText.SetText($"{trackedPlayer.EconomicResources}");
         socialText.SetText($"{trackedPlayer.SocialResources}");

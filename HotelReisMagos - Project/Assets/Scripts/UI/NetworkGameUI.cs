@@ -464,4 +464,9 @@ public class NetworkGameUI : NetworkBehaviour
     {
         winnerWindow.gameObject.SetActive(false);
     }
+
+    public void ResetSlots()
+    {
+        
+    }
 }

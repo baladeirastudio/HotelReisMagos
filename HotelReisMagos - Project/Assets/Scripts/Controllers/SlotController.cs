@@ -67,8 +67,9 @@ public class SlotController : MonoBehaviour
         }
 
         slots.Add(slot.ID, slot);
+        NetworkGameController.instance.OnResetSlots.AddListener(ResetSlot);
     }
-    
+
     private void Init()
     {
         slotImage = GetComponent<Image>();

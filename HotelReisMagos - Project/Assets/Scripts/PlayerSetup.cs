@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class PlayerSetup : NetworkBehaviour
@@ -250,9 +251,23 @@ public class PlayerSetup : NetworkBehaviour
         base.OnStartAuthority();
         localPlayerSetup = this;
         
-        StartCoroutine(GetRandomCharacter());
+        StartCoroutine(GetRandomCharacterTwo());
+        SceneManager.activeSceneChanged += SceneManagerOnactiveSceneChanged;
 
         //Debug.Log(characterInfoIndex);
+    }
+
+    private IEnumerator GetRandomCharacterTwo()
+    {
+        yield return new WaitForEndOfFrame();
+        if(!choseCharacter)
+            if(NetworkGameController.instance)
+            CmdGetRandomCharacter();
+    }
+
+    private void SceneManagerOnactiveSceneChanged(Scene arg0, Scene arg1)
+    {
+        StartCoroutine(GetRandomCharacter());
     }
 
     private IEnumerator GetRandomCharacter()
@@ -261,15 +276,22 @@ public class PlayerSetup : NetworkBehaviour
         CmdGetRandomCharacter();
     }
 
+    [SyncVar, SerializeField] private bool choseCharacter = false;
+
     [Command]
     private void CmdGetRandomCharacter()
     {
-        characterInfoIndex = NetworkGameController.instance.GetRandomCharacter();
-        RpcLocalLog($"Nesta partida, você será o empresário {NetworkGameController.instance.CharacterList[characterInfoIndex].Name}." +
-                    $"\n'{NetworkGameController.instance.CharacterList[characterInfoIndex].Description}'");
+        if (!choseCharacter)
+        {
+            characterInfoIndex = NetworkGameController.instance.GetRandomCharacter();
+            choseCharacter = true;
+            RpcLocalLog(
+                $"Nesta partida, você será o empresário {NetworkGameController.instance.CharacterList[characterInfoIndex].Name}." +
+                $"\n'{NetworkGameController.instance.CharacterList[characterInfoIndex].Description}'");
+        }
     }
 
-    [ClientRpc]
+        [ClientRpc]
     public void RpcStartYourTurn()
     {
         if (hasAuthority)
@@ -308,6 +330,14 @@ public class PlayerSetup : NetworkBehaviour
         //Debug.LogError("Testing.");
         try
         {
+            if (characterInfoIndex == -1)
+            {
+                Debug.Log($"InfoIndex: {characterInfoIndex}");
+                if (characterInfoIndex < 0)
+                    characterInfoIndex = NetworkGameController.instance.GetRandomCharacter();
+                Debug.Log("Getting random character");
+            }
+            
             //Debug.LogError($"Key: {slotID} - Value: {SlotController.slots[slotID]}");
             var tempSlot = SlotController.slots[slotID];
             var tempPlayer = PlayerSetup.playerControllers[NetworkGameController.instance.PlayerTurnID];
@@ -485,7 +515,25 @@ public class PlayerSetup : NetworkBehaviour
         if (characterInfoIndex < 0)
         {
             Debug.LogError("Nope, not like this, won' work");
+            Debug.Log($"InfoIndex: {characterInfoIndex}");
+            Debug.LogWarning($"newwwwwwwwwwwwwwInfoIndex: {characterInfoIndex}");
+
+            
+            if (!NetworkGameController.instance)
+            {
+                Debug.LogError("There's no gameController");
+            }
+            else
+            {
+                Debug.LogError("There IS A gameController!!!???");
+                if (characterInfoIndex < 0)
+                    characterInfoIndex = NetworkGameController.instance.GetRandomCharacter();
+            }
         }
+
+        Debug.LogWarning($"NetworkGameInstance: {NetworkGameController.instance}");
+        
+        
         var charInfo = NetworkGameController.instance.CharacterList[characterInfoIndex].SecondActBonus;
         mediaResources += charInfo.mediaBonus;
         economicResources += charInfo.economicBonus;

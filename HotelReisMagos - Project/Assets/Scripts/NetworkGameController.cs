@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = System.Random;
 
 public class NetworkGameController : NetworkBehaviour
@@ -172,6 +173,7 @@ public class NetworkGameController : NetworkBehaviour
                     NetworkGameUI.Instance.RpcLog(firstActData.actEndText.text);
                     turn = 1;
                     currentAct++;
+                    ResetSlots();
                     NetworkGameUI.Instance.RpcLog(secondActData.actBeginText.text);
                     
                     for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
@@ -186,6 +188,7 @@ public class NetworkGameController : NetworkBehaviour
                     NetworkGameUI.Instance.RpcLog(secondActData.actEndText.text);
                     turn = 1;
                     currentAct++;
+                    ResetSlots();
                     NetworkGameUI.Instance.RpcLog(thirdActData.actBeginText.text);
                     
                     for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
@@ -205,6 +208,17 @@ public class NetworkGameController : NetworkBehaviour
 
         //NetworkGameUI.Instance.RpcUpdateActionsMenu();
         //PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
+    }
+
+    [SerializeField] private UnityEvent onResetSlots;
+
+    public UnityEvent OnResetSlots => onResetSlots;
+    
+    private void ResetSlots()
+    {
+        //(NetworkManager as NetworkManagerCardGame).Slots;
+        onResetSlots.Invoke();
+        NetworkGameUI.Instance.ResetSlots();
     }
 
     [SerializeField] List<PlayerSetup> winningPlayers = new List<PlayerSetup>();
