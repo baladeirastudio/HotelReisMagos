@@ -350,22 +350,22 @@ public class PlayerSetup : NetworkBehaviour
             {
                 case SlotReward.PoliticalResource: //Political
                     politicalResources += reward;
-                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso político.");
+                    NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} ganhou {reward} pontos de recurso político.");
                     break;
                 case SlotReward.EconomicalResource: //Economical
                     economicResources += reward;
-                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso econômico.");
+                    NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} ganhou {reward} pontos de recurso econômico.");
                     break;
                 case SlotReward.SocialResource: //Social
                     socialResources += reward;
-                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso social.");
+                    NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} ganhou {reward} pontos de recurso social.");
                     break;
                 case SlotReward.MediaResource: //Media
                     mediaResources += reward;
-                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou {reward} pontos de recurso midiático.");
+                    NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} ganhou {reward} pontos de recurso midiático.");
                     break;
                 case SlotReward.LuckCard:
-                    NetworkGameUI.Instance.RpcLog($"Jogador ganhou uma carta de sorte ou revés.");
+                    NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} ganhou uma carta de sorte ou revés.");
                     luckCardAmount++;
                     break;
             }
@@ -373,7 +373,7 @@ public class PlayerSetup : NetworkBehaviour
             if (tempSlot.GiveLuckCard)
             {
                 luckCardAmount++;
-                NetworkGameUI.Instance.RpcLog($"Jogador ganhou uma carta de sorte ou revés.");
+                NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} ganhou uma carta de sorte ou revés.");
             }
 
             CardInfo card = null;
@@ -415,7 +415,7 @@ public class PlayerSetup : NetworkBehaviour
                     break;
             }
 
-            NetworkGameUI.Instance.RpcLog($"O jogador obteve a seguinte carta: {card.Description}");
+            NetworkGameUI.Instance.RpcLog($"O jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} obteve a seguinte carta: {card.Description}");
             NetworkGameUI.Instance.RpcRefreshPlayerCards();
         }
         catch (Exception e)
@@ -437,6 +437,7 @@ public class PlayerSetup : NetworkBehaviour
     [Command]
     private void CmdNext()
     {
+        NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} terminou o turno.");
         NetworkGameController.instance.RpcNextTurn();
     }
 
@@ -474,12 +475,12 @@ public class PlayerSetup : NetworkBehaviour
         if (isLuck)
         {
             resourceToChange += reward;
-            NetworkGameUI.Instance.RpcLog($"Jogador tirou sorte e ganhou {reward} pontos de recurso {rewardName}!");
+            NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} tirou sorte e ganhou {reward} pontos de recurso {rewardName}!");
         }
         else
         {
             resourceToChange -= reward;
-            NetworkGameUI.Instance.RpcLog($"Jogador tirou revés e perdeu {reward} pontos de recurso {rewardName}!");
+            NetworkGameUI.Instance.RpcLog($"Jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} tirou revés e perdeu {reward} pontos de recurso {rewardName}!");
         }
 
         luckCardAmount--;
@@ -496,7 +497,8 @@ public class PlayerSetup : NetworkBehaviour
     [Command]
     public void CmdStartMatch()
     {
-        (NetworkManagerCardGame.singleton as NetworkManagerCardGame).ServerChangeScene("Game_Lucena"); //TODO: Don't use constants
+        NetworkGameUI.Instance.RpcStartGame();
+        //(NetworkManagerCardGame.singleton as NetworkManagerCardGame).ServerChangeScene("Game_Lucena"); //TODO: Don't use constants
     }
 
     public void UpdateSlots(string id, int number)
@@ -696,6 +698,7 @@ public class PlayerSetup : NetworkBehaviour
         else
         {
             NetworkGameUI.Instance.LocalLog("Sua troca foi negada!");
+            NetworkGameUI.Instance.ReturnFromWaitTrade();
         }
 
         tradeStatus = TradeStatus.NotUsed;

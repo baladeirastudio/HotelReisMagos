@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
@@ -31,6 +32,7 @@ public class NetworkGameController : NetworkBehaviour
     public NetworkManagerCardGame server;
 
     public delegate void DelegateIntInt(int old, int newVal);
+    public delegate void VoidDelegate();
 
     public static event DelegateIntInt OnChangePlayerTurnId;
     public static event DelegateIntInt OnChangeTurn;
@@ -146,7 +148,7 @@ public class NetworkGameController : NetworkBehaviour
     {
         //PlayerSetup.playerControllers[playerTurnID].RpcEndYourTurn();
 
-        NetworkGameUI.Instance.RpcLog("Jogador terminou o turno.");
+        //NetworkGameUI.Instance.RpcLog("Jogador terminou o turno.");
         
         playerTurnID++;
         if(playerTurnID >= NetworkManager.singleton.numPlayers)
@@ -163,6 +165,9 @@ public class NetworkGameController : NetworkBehaviour
                     PlayerSetup.playerControllers[i].UsedLuckCard = false;
                 }
             }
+            
+            NetworkGameUI.Instance.RpcLog($"Agora é o turno do jogador " +
+                                          $"{CharacterList[PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerTurnID)).First().CharacterInfoIndex].Name}.");
         }
 
         switch (currentAct)
@@ -210,15 +215,15 @@ public class NetworkGameController : NetworkBehaviour
         //PlayerSetup.playerControllers[playerTurnID].RpcStartYourTurn();
     }
 
-    [SerializeField] private UnityEvent onResetSlots;
+    [SerializeField] private static UnityEvent onResetSlots = new UnityEvent();
 
-    public UnityEvent OnResetSlots => onResetSlots;
+    public static UnityEvent OnResetSlots => onResetSlots;
     
     private void ResetSlots()
     {
         //(NetworkManager as NetworkManagerCardGame).Slots;
         onResetSlots.Invoke();
-        NetworkGameUI.Instance.ResetSlots();
+        NetworkGameUI.Instance.RpcResetSlots();
     }
 
     [SerializeField] List<PlayerSetup> winningPlayers = new List<PlayerSetup>();
@@ -358,5 +363,12 @@ public class NetworkGameController : NetworkBehaviour
             var winnerName = characterList[winner.CharacterInfoIndex];
             NetworkGameUI.Instance.RpcLog($"A votação foi concluída! Foi decidido que o vencedor será {winnerName}!");
         }
+    }
+    
+    public static event VoidDelegate onLoadFakeScene;
+
+    public static void InvokeOnLoadFakeScene()
+    {
+        onLoadFakeScene.Invoke();
     }
 }

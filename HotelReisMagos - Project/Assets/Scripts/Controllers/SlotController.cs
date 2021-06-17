@@ -67,7 +67,7 @@ public class SlotController : MonoBehaviour
         }
 
         slots.Add(slot.ID, slot);
-        NetworkGameController.instance.OnResetSlots.AddListener(ResetSlot);
+        NetworkGameController.OnResetSlots.AddListener(ResetSlot);
     }
 
     private void Init()
@@ -94,13 +94,15 @@ public class SlotController : MonoBehaviour
 
         if (NetworkGameController.instance.CurrentAct < actToUnlock)
         {
-            Debug.LogError($"Wrong act. This slot only opens on act {actToUnlock}. " +
-                           $"Current act: {NetworkGameController.instance.CurrentAct}");
+            NetworkGameUI.Instance.LocalLog($"Este espaço só abre no ato {actToUnlock}. O ato atual é {NetworkGameController.instance.CurrentAct}");
+            Debug.LogWarning($"Wrong act. This slot only opens on act {actToUnlock}. " +
+                             $"Current act: {NetworkGameController.instance.CurrentAct}");
             return;
         }
         if (PlayerSetup.localPlayerSetup.ChoseSlot)
         {
-            Debug.LogError("You already chose a slot.");
+            NetworkGameUI.Instance.LocalLog("Você já escolheu um espaço neste turno.");
+            Debug.LogWarning("You already chose a slot.");
             return;
         }
         
@@ -108,7 +110,8 @@ public class SlotController : MonoBehaviour
             PlayerSetup.localPlayerSetup.CmdSelectSlot(this);
         else
         {
-            Debug.LogError("Not your turn.");
+            NetworkGameUI.Instance.LocalLog("Não é seu turno.");
+            Debug.LogWarning("Not your turn.");
         }
         //DummyServer.Instance.SelectSlot(this);  
     }

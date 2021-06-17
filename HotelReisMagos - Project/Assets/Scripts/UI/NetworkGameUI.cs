@@ -5,6 +5,7 @@ using System.Linq;
 using Mirror;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -290,6 +291,10 @@ public class NetworkGameUI : NetworkBehaviour
     {
         actionMenu.SetActive(false);
         tradeMenu.SetActive(true);
+        
+        selectedCards.RemoveAll((ui => ui));
+        selectedTargetCards.RemoveAll((ui => ui));
+        
         PlayerSetup.localPlayerSetup.EnableTradeMenu();
         for (int i = 0; i < targetCardList.childCount; i++)
         {
@@ -334,11 +339,12 @@ public class NetworkGameUI : NetworkBehaviour
 
     public void ProposeChange()
     {
-        if(selectedTargetCards.Count > 0)
+        if(selectedTargetCards.Count > 0 || selectedCards.Count > 0)
             PlayerSetup.localPlayerSetup.ProposeTrade(selectedCards, selectedTargetCards, chosenTradePlayer);
         else
         {
             Debug.LogWarning("You didn't add any cards");
+            LocalLog("Você não está pedindo ou dando nenhuma carta");
         }
     }
 
@@ -350,6 +356,18 @@ public class NetworkGameUI : NetworkBehaviour
     {
         currentTradeOrigin = PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First();
         tradeProposalWindow.gameObject.SetActive(true);
+        
+        for (int i = 0; i < originTradeCardList.childCount; i++)
+        {
+            var tempObject = originTradeCardList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+        
+        for (int i = 0; i < myTradeCardList.childCount; i++)
+        {
+            var tempObject = myTradeCardList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
         
         #region ORIGINCARDS
         {
@@ -414,11 +432,35 @@ public class NetworkGameUI : NetworkBehaviour
 
     public void AcceptTrade()
     {
+        for (int i = 0; i < originTradeCardList.childCount; i++)
+        {
+            var tempObject = originTradeCardList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+        
+        for (int i = 0; i < myTradeCardList.childCount; i++)
+        {
+            var tempObject = myTradeCardList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+        
         PlayerSetup.localPlayerSetup.AcceptTrade(currentTradeOrigin);
     }
 
     public void RefuseTrade()
     {
+        for (int i = 0; i < originTradeCardList.childCount; i++)
+        {
+            var tempObject = originTradeCardList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+        
+        for (int i = 0; i < myTradeCardList.childCount; i++)
+        {
+            var tempObject = myTradeCardList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+        
         PlayerSetup.localPlayerSetup.RefuseTrade(currentTradeOrigin);
     }
 
@@ -465,8 +507,19 @@ public class NetworkGameUI : NetworkBehaviour
         winnerWindow.gameObject.SetActive(false);
     }
 
-    public void ResetSlots()
+    [ClientRpc]
+    public void RpcResetSlots()
     {
-        
+        NetworkGameController.OnResetSlots.Invoke();
+    }
+
+    [SerializeField] private GameObject gameScene, menuScene;
+    
+    [ClientRpc]
+    public void RpcStartGame()
+    {
+        gameScene.SetActive(true);
+        menuScene.SetActive(false);
+        NetworkGameController.InvokeOnLoadFakeScene();
     }
 }
