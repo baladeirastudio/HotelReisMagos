@@ -422,6 +422,8 @@ public class NetworkGameUI : NetworkBehaviour
                 newCard.DescriptionText.SetText(card.Description);
                 newCard.IdText.SetText(card.ID);
             }
+            
+            
         }
         #endregion
 
@@ -521,5 +523,59 @@ public class NetworkGameUI : NetworkBehaviour
         gameScene.SetActive(true);
         menuScene.SetActive(false);
         NetworkGameController.InvokeOnLoadFakeScene();
+    }
+
+    [SerializeField] private Transform playerDeckList;
+    [SerializeField] private GameObject playerDeckWindow;
+
+    public void ShowPlayerCards(int playerNumber)
+    {
+        var player = PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First();
+        playerDeckWindow.SetActive(true);
+        
+        for (int i = 0; i < playerDeckList.childCount; i++)
+        {
+            var tempObject = playerDeckList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+
+        #region ORIGINCARDS
+        {
+            for (int i = 0; i < player.cardsOnHand1.Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, playerDeckList);
+                var card = NetworkGameController.instance.cardList1[player.cardsOnHand1[i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+
+            for (int i = 0; i < player.cardsOnHand2.Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, playerDeckList);
+                var card = NetworkGameController.instance.cardList1[player.cardsOnHand2[i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+
+            for (int i = 0; i < player.cardsOnHand3.Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, playerDeckList);
+                var card = NetworkGameController.instance.cardList1[player.cardsOnHand3[i]];
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+            
+            for (int i = 0; i < player.LuckCardAmount; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, playerDeckList);
+                newCard.DescriptionText.SetText("Sorte ou revés");
+                newCard.IdText.SetText("???");
+            }
+        }
+        #endregion
+
+        //var charName = NetworkGameController.instance.CharacterList[currentTradeOrigin.CharacterInfoIndex];
+        
+        //characterPlayerName.SetText($"O empresário {charName.Name} te propõe uma troca!");
     }
 }
