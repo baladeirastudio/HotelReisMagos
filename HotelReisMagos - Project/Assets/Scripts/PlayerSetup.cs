@@ -605,6 +605,46 @@ public class PlayerSetup : NetworkBehaviour
 
     }
 
+    public void EnableAuctionMenu()
+    {
+        var myCardList = NetworkGameUI.Instance.PlayerAuctionList;
+        var cardPrefab = NetworkGameUI.Instance.CardPrefab;
+
+        for (int i = 0; i < myCardList.childCount; i++)
+        {
+            Destroy(myCardList.GetChild(i).gameObject);
+        }
+        
+        for (int i = 0; i < cardsOnHand1.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand1[i], 1, false, false);
+            newCard.IsAuction = true;
+        }
+        
+        for (int i = 0; i < cardsOnHand2.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand2[i], 2, false, false);
+            newCard.IsAuction = true;
+        }
+        
+        for (int i = 0; i < cardsOnHand3.Count; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(cardsOnHand3[i], 3, false, false);
+            newCard.IsAuction = true;
+        }
+        
+        for (int i = 0; i < luckCardAmount; i++)
+        {
+            var newCard = Instantiate(cardPrefab, myCardList);
+            newCard.Populate(0, 0, false, true);
+            newCard.IsAuction = true;
+        }
+    }
+
+    
     public void EnableTargetTradeMenu()
     {
         var myCardList = NetworkGameUI.Instance.TargetCardList;
@@ -678,6 +718,75 @@ public class PlayerSetup : NetworkBehaviour
 
         StartCoroutine(WaitForTradeResult(selectedCards1, selectedTargetCards1, chosenTradePlayer.Player));
     }
+    
+    public void ProposeAuction(List<ResourceCardUI> selectedCards)
+    {
+        List<List<int>> selectedCards1 = new List<List<int>>();
+        List<List<int>> selectedTargetCards1 = new List<List<int>>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            selectedCards1.Add(new List<int>());
+        }
+
+        /*selectedCards1 = selectedCards.Select(((card, i) =>
+        {
+            new {i, c = card.CardIndex};
+        }))*/
+        for (int i = 0; i < selectedCards.Count; i++)
+        {
+            selectedCards1[selectedCards[i].ActNumber - 1].Add(selectedCards[i].CardIndex);
+        }
+        
+        /*for (int i = 0; i < selectedTargetCards.Count; i++)
+        {
+            selectedTargetCards1[selectedTargetCards[i].ActNumber - 1].Add(selectedTargetCards[i].CardIndex);
+        }
+
+        var player = chosenTradePlayer.Player.PlayerNumber;*/
+        
+        //NetworkGameUI.Instance.WaitTradeResult();
+
+        CmdProposeAuction(selectedCards1);
+
+        StartCoroutine(WaitForAuctionResult());
+        
+        NetworkGameUI.Instance.GoToAuctionWait();
+    }
+
+    [SyncVar, SerializeField] private int answeredPlayers = 0;
+    public SyncList<List<List<int>>> playerAuctionOffers = new SyncList<List<List<int>>>(); //TODO: Com certeza tem uma forma melhor de fazer isso, mas eu só quero fazer isso o mais rápido possível
+    
+    private IEnumerator WaitForAuctionResult()
+    {
+        while (answeredPlayers < NetworkManager.singleton.numPlayers-1)
+        {
+            yield return new WaitForEndOfFrame();
+            Debug.LogWarning("Waiting for every player...");
+        }
+
+        if (playerAuctionOffers.Count == 0)
+        {
+            var charName = NetworkGameController.instance.CharacterList[characterInfoIndex];
+
+            NetworkGameUI.Instance.RpcLog($"Ninguém deu um lance no leilão do jogador {charName.Name}.");
+            NetworkGameUI.Instance.ReturnFromAuctionWait();
+        }
+        else
+        {
+            RpcPresentAuctionOffers();
+        }
+    }
+
+    [ClientRpc]
+    private void RpcPresentAuctionOffers()
+    {
+        if (hasAuthority)
+        {
+            Debug.LogError("DEU CERTOOOOOOOOO");
+        }
+    }
+
 
     private IEnumerator WaitForTradeResult(List<List<int>> selectedCards, List<List<int>> selectedTargetCards, PlayerSetup chosenTradePlayerNumber)
     {
@@ -755,6 +864,31 @@ public class PlayerSetup : NetworkBehaviour
         player.RpcPresentTrade(selectedCards, selectedTargetCards, playerNumber);
     }
 
+    [Command]
+    private void CmdProposeAuction(List<List<int>> selectedCards)
+    {
+        for (int i = 0; i < playerControllers.Count; i++)
+        {
+            if (playerControllers[i] != this)
+            {
+                playerControllers[i].RpcPresentAuction(selectedCards, playerNumber);
+            }
+        }
+
+        /*PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == chosenTradePlayerNumber)).First();
+
+        player.RpcPresentTrade(selectedCards, selectedTargetCards, playerNumber);*/
+    }
+
+    [ClientRpc]
+    private void RpcPresentAuction(List<List<int>> selectedCards, int playerNumber)
+    {
+        if (hasAuthority)
+        {
+            NetworkGameUI.Instance.PresentAuction(selectedCards, playerNumber);
+        }
+    }
+
     [ClientRpc]
     private void RpcPresentTrade(List<List<int>> originCard, List<List<int>> selectedMyCards, int playerNumber)
     {
@@ -801,6 +935,51 @@ public class PlayerSetup : NetworkBehaviour
         CmdRefuseTrade(currentTradeOrigin.PlayerNumber);
         NetworkGameUI.Instance.ReturnFromTradeProposal();
     }
+    
+    public void RefuseAuctionParticipation(PlayerSetup auctionOrigin)
+    {
+        Debug.Log("Auction response!! NEGATIVE");
+        CmdRefuseAuctionParticipation(auctionOrigin.PlayerNumber);
+        NetworkGameUI.Instance.ReturnFromAuctionAnswer();
+    }
+
+    public void AuctionBid(List<ResourceCardUI> cards, PlayerSetup auctionOrigin)
+    {
+        var selectedTargetCards1 = new List<List<int>>();
+        for (int i = 0; i < 3; i++)
+        {
+            selectedTargetCards1.Add(new List<int>());
+        }
+        
+        /*selectedCards1 = selectedCards.Select(((card, i) =>
+        {
+            new {i, c = card.CardIndex};
+        }))*/
+        for (int i = 0; i < cards.Count; i++)
+        {
+            selectedTargetCards1[cards[i].ActNumber - 1].Add(cards[i].CardIndex);
+        }
+        
+        CmdAuctionBid(selectedTargetCards1, auctionOrigin.playerNumber);
+    }
+
+    [Command]
+    public void CmdAuctionBid(List<List<int>> cards, int number)
+    {
+        PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == number)).First();
+
+        try
+        {
+            player.answeredPlayers++;
+            cards.Add(new List<int>());
+            cards[3].Add(playerNumber);
+            player.playerAuctionOffers.Add(cards);
+        } 
+        catch(Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
 
     [Command]
     private void CmdRefuseTrade(int number)
@@ -810,6 +989,21 @@ public class PlayerSetup : NetworkBehaviour
         try
         {
             player._TradeStatus = TradeStatus.Denied;
+        } 
+        catch(Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+    
+    [Command]
+    private void CmdRefuseAuctionParticipation(int number)
+    {
+        PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == number)).First();
+
+        try
+        {
+            player.answeredPlayers++;
         } 
         catch(Exception e)
         {

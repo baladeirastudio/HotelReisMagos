@@ -11,13 +11,19 @@ public class ResourceCardUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionText, idText;
     [SerializeField] private int cardIndex, actNumber;
     [SerializeField] private CardInfo cardInfo;
-    [SerializeField] private bool isTarget;
+    [SerializeField] private bool isTarget, isAuction = false;
 
     public bool IsLuckCard => isLuckCard;
 
     public int CardIndex => cardIndex;
 
     public int ActNumber => actNumber;
+
+    public bool IsAuction
+    {
+        get => isAuction;
+        set => isAuction = value;
+    }
 
     public void Populate(int cardIndex, int actNumber, bool isTarget, bool isLuck = false)
     {
@@ -52,26 +58,38 @@ public class ResourceCardUI : MonoBehaviour
 
     public void OnToggle(bool isSelected)
     {
-        if (isTarget)
+        if (!isAuction)
         {
-            if (isSelected)
+            if (isTarget)
             {
-                NetworkGameUI.Instance.SelectedTargetCards.Add(this);
+                if (isSelected)
+                    NetworkGameUI.Instance.SelectedTargetCards.Add(this);
+                else
+                    NetworkGameUI.Instance.SelectedTargetCards.Remove(this);
             }
             else
             {
-                NetworkGameUI.Instance.SelectedTargetCards.Remove(this);
+                if (isSelected)
+                    NetworkGameUI.Instance.SelectedCards.Add(this);
+                else
+                    NetworkGameUI.Instance.SelectedCards.Remove(this);
             }
         }
         else
         {
-            if (isSelected)
+            if (!isTarget)
             {
-                NetworkGameUI.Instance.SelectedCards.Add(this);
+                if (isSelected)
+                    NetworkGameUI.Instance.SelectAuctionCards.Add(this);
+                else
+                    NetworkGameUI.Instance.SelectAuctionCards.Remove(this);
             }
             else
             {
-                NetworkGameUI.Instance.SelectedCards.Remove(this);
+                if (isSelected)
+                    NetworkGameUI.Instance.SelectAuctionToGiveCards.Add(this);
+                else
+                    NetworkGameUI.Instance.SelectAuctionToGiveCards.Remove(this);
             }
         }
     }

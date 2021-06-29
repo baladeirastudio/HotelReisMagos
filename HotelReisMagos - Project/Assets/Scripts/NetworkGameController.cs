@@ -166,9 +166,10 @@ public class NetworkGameController : NetworkBehaviour
                 }
             }
             
-            NetworkGameUI.Instance.RpcLog($"Agora é o turno do jogador " +
-                                          $"{CharacterList[PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerTurnID)).First().CharacterInfoIndex].Name}.");
         }
+        
+        NetworkGameUI.Instance.RpcLog($"Agora é o turno do jogador " +
+                                      $"{CharacterList[PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerTurnID)).First().CharacterInfoIndex].Name}.");
 
         switch (currentAct)
         {

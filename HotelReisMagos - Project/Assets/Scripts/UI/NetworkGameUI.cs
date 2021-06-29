@@ -25,11 +25,13 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private Scrollbar logScroll;
     [SerializeField] private List<PlayerCard> playerCards;
 
-    [SerializeField] private RectTransform playerCardList, targetCardList, playerList;
+    [SerializeField] private RectTransform playerCardList, playerAuctionList, targetCardList, playerList;
     [SerializeField] private ResourceCardUI cardPrefab;
     [SerializeField] private List<ResourceCardUI> selectedCards;
     [SerializeField] private List<ResourceCardUI> selectedTargetCards;
-    
+
+    [SerializeField] private List<ResourceCardUI> selectAuctionCards;
+    [SerializeField] private List<ResourceCardUI> selectAuctionToGiveCards;
 
     [SerializeField] private RectTransform originTradeCardList, myTradeCardList;
     [SerializeField] private TradeCardInfo cardInfoPrefab;
@@ -41,6 +43,10 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private PlayerCharacterCard playerCharCardPrefab;
     [SerializeField] private PlayerCharacterCard chosenTradePlayer;
 
+    public List<ResourceCardUI> SelectAuctionCards => selectAuctionCards;
+
+    public List<ResourceCardUI> SelectAuctionToGiveCards => selectAuctionToGiveCards;
+    
     public List<ResourceCardUI> SelectedCards => selectedCards;
 
     public List<ResourceCardUI> SelectedTargetCards => selectedTargetCards;
@@ -48,6 +54,8 @@ public class NetworkGameUI : NetworkBehaviour
     public ResourceCardUI CardPrefab => cardPrefab;
     
     public RectTransform PlayerCardList => playerCardList;
+
+    public RectTransform PlayerAuctionList => playerAuctionList;
 
     public RectTransform TargetCardList => targetCardList;
 
@@ -113,6 +121,41 @@ public class NetworkGameUI : NetworkBehaviour
     private IEnumerator PopulateCharacterCards()
     {
         Debug.Log("Clearing cards1");
+        
+        Destroy(playerList.gameObject);
+
+        playerList = Instantiate(emptyObject, altChildList.transform).transform as RectTransform;
+        
+        /*for (int j = 0; j < playerList.childCount; j++)
+        {
+            Destroy(targetCardList.GetChild(j).gameObject);//TODO: Isso dá cancer, assim como outras partes desse código
+            Debug.Log("Clearing cards333333333333????????");
+
+        }*/
+        
+        for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+        {
+
+            if (PlayerSetup.playerControllers[i])
+            {
+                if (PlayerSetup.playerControllers[i] != PlayerSetup.localPlayerSetup)
+                {
+                    var playerChar = Instantiate(playerCharCardPrefab, playerList);
+                    yield return new WaitUntil(() =>
+                    {
+                        return PlayerSetup.playerControllers[i].CharacterInfoIndex != -1;
+                    });
+                    Debug.Log("Clearing cards222222222222222222222222");
+
+                    playerChar.Populate(i, PlayerSetup.playerControllers[i]);
+                }
+            }
+        }
+    }
+    
+    private IEnumerator PopulateCharacterCardsAuction()
+    {
+        Debug.Log("Clearing cards1 auction");
         
         Destroy(playerList.gameObject);
 
@@ -303,12 +346,42 @@ public class NetworkGameUI : NetworkBehaviour
         StartCoroutine(PopulateCharacterCards());
     }
 
+    [SerializeField] private GameObject auctionMenu;
+    
+    public void EnableAuctionMenu()
+    {
+        if (NetworkManager.singleton.numPlayers <= 1)
+        {
+            LocalLog("Só há um jogador na partida. Não é possível fazer um leilão.");
+            return;
+        }
+        
+        actionMenu.SetActive(false);
+        auctionMenu.SetActive(true);
+        
+        selectedCards.RemoveAll((ui => ui));
+        selectedTargetCards.RemoveAll((ui => ui));
+        
+        PlayerSetup.localPlayerSetup.EnableAuctionMenu();
+        for (int i = 0; i < targetCardList.childCount; i++)
+        {
+            Destroy(targetCardList.GetChild(i).gameObject);
+        }
+        //StartCoroutine(PopulateCharacterCards());
+    }
+
     public void ReturnFromTradeMenu()
     {
         actionMenu.SetActive(true);
         tradeMenu.SetActive(false);
         if(chosenTradePlayer)
             chosenTradePlayer.Deselect();
+    }
+    
+    public void ReturnFromAuctionMenu()
+    {
+        actionMenu.SetActive(true);
+        auctionMenu.SetActive(false);
     }
 
     public void SelectTradePlayer(PlayerCharacterCard playerCharacterCard)
@@ -347,8 +420,19 @@ public class NetworkGameUI : NetworkBehaviour
             LocalLog("Você não está pedindo ou dando nenhuma carta");
         }
     }
+    
+    public void ProposeAuction()
+    {
+        if(selectAuctionCards.Count > 0)
+            PlayerSetup.localPlayerSetup.ProposeAuction(selectAuctionCards);
+        else
+        {
+            Debug.LogWarning("You didn't add any cards");
+            LocalLog("Você não está pedindo ou dando nenhuma carta");
+        }
+    }
 
-    [SerializeField] private PlayerSetup currentTradeOrigin;
+    [SerializeField] private PlayerSetup currentTradeOrigin, currentAuctionOrigin;
 
     
     //TODO: Uau, quem diria! Mais uma função com alto teor de código cancerígeno! Quem será que escreveu esse Chernobyl?
@@ -465,6 +549,11 @@ public class NetworkGameUI : NetworkBehaviour
         
         PlayerSetup.localPlayerSetup.RefuseTrade(currentTradeOrigin);
     }
+    
+    public void RefuseAuctionParticipation()
+    {
+        PlayerSetup.localPlayerSetup.RefuseAuctionParticipation(currentAuctionOrigin);
+    }
 
     public void WaitTradeResult()
     {
@@ -577,5 +666,96 @@ public class NetworkGameUI : NetworkBehaviour
         //var charName = NetworkGameController.instance.CharacterList[currentTradeOrigin.CharacterInfoIndex];
         
         //characterPlayerName.SetText($"O empresário {charName.Name} te propõe uma troca!");
+    }
+
+    [SerializeField] private Transform auctionProposalWindow;
+    [SerializeField] private Transform auctionProposerCardList, auctionMyCardList;
+    [SerializeField] private TextMeshProUGUI auctionProposalReceiveTitle;
+    
+
+    public void PresentAuction(List<List<int>> cardList, int playerNumber)
+    {
+        currentAuctionOrigin = PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First();
+        auctionProposalWindow.gameObject.SetActive(true);
+        
+        for (int i = 0; i < auctionProposerCardList.childCount; i++)
+        {
+            var tempObject = auctionProposerCardList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+
+        //Cartas do proponente do leilão
+        for (int j = 0; j < 3; j++)
+        {
+            for (int i = 0; i < cardList[j].Count; i++)
+            {
+                var newCard = Instantiate(cardInfoPrefab, auctionProposerCardList);
+                CardInfo card = null;
+                if(j == 0) //TODO: Isso aqui devia ser um switch, mas um if é mais rápido de fazer.
+                    card = NetworkGameController.instance.cardList1[currentAuctionOrigin.cardsOnHand1[i]];
+                else if(j == 1)
+                    card = NetworkGameController.instance.cardList2[currentAuctionOrigin.cardsOnHand2[i]];
+                else if(j == 2)
+                    card = NetworkGameController.instance.cardList3[currentAuctionOrigin.cardsOnHand3[i]];
+                
+                
+                newCard.DescriptionText.SetText(card.Description);
+                newCard.IdText.SetText(card.ID);
+            }
+        }
+        
+        //Cartas do jogador que viu a tela do leilão
+        for (int j = 0; j < 3; j++)
+        {
+            for (int i = 0; i < cardList[j].Count; i++)
+            {
+                var newCard = Instantiate(cardPrefab, auctionMyCardList);
+                CardInfo card = null;
+                if(j == 0) //TODO: Isso aqui devia ser um switch, mas um if é mais rápido de fazer.
+                    card = NetworkGameController.instance.cardList1[PlayerSetup.localPlayerSetup.cardsOnHand1[i]];
+                else if(j == 1)
+                    card = NetworkGameController.instance.cardList2[PlayerSetup.localPlayerSetup.cardsOnHand2[i]];
+                else if(j == 2)
+                    card = NetworkGameController.instance.cardList3[PlayerSetup.localPlayerSetup.cardsOnHand3[i]];
+                
+                newCard.Populate(i, j + 1, true);
+                newCard.IsAuction = true;
+            }
+        }
+        
+        var charName = NetworkGameController.instance.CharacterList[currentAuctionOrigin.CharacterInfoIndex];
+        
+        auctionProposalReceiveTitle.SetText($"O empresário {charName} propõe um leilão!");
+    }
+
+    public void AuctionBid()
+    {
+        if (selectAuctionToGiveCards.Count <= 0)
+        {
+            LocalLog("Você não selecionou nenhuma carta para dar o lance.");
+        }
+        else
+        {
+            PlayerSetup.localPlayerSetup.AuctionBid(selectAuctionToGiveCards, currentAuctionOrigin);
+        }
+    }
+
+    public void ReturnFromAuctionAnswer()
+    {
+        auctionProposalWindow.gameObject.SetActive(false);
+    }
+
+    [SerializeField] private GameObject auctionWait;
+    
+    public void ReturnFromAuctionWait()
+    {
+        auctionWait.SetActive(false);
+        actionMenu.SetActive(true);
+    }
+
+    public void GoToAuctionWait()
+    {
+        auctionMenu.SetActive(false);
+        auctionWait.SetActive(true);
     }
 }
