@@ -41,7 +41,7 @@ public class NetworkGameUI : NetworkBehaviour
     [SerializeField] private List<PlayerSetup> players = new List<PlayerSetup>();
     [SerializeField] private GameObject tradeMenu;
     [SerializeField] private PlayerCharacterCard playerCharCardPrefab;
-    [SerializeField] private PlayerCharacterCard chosenTradePlayer;
+    [SerializeField] private PlayerCharacterCard chosenTradePlayer, chosenAuctionPlayer;
 
     public List<ResourceCardUI> SelectAuctionCards => selectAuctionCards;
 
@@ -52,6 +52,8 @@ public class NetworkGameUI : NetworkBehaviour
     public List<ResourceCardUI> SelectedTargetCards => selectedTargetCards;
     
     public ResourceCardUI CardPrefab => cardPrefab;
+
+    public TradeCardInfo CardInfoPrefab => cardInfoPrefab;
     
     public RectTransform PlayerCardList => playerCardList;
 
@@ -121,41 +123,6 @@ public class NetworkGameUI : NetworkBehaviour
     private IEnumerator PopulateCharacterCards()
     {
         Debug.Log("Clearing cards1");
-        
-        Destroy(playerList.gameObject);
-
-        playerList = Instantiate(emptyObject, altChildList.transform).transform as RectTransform;
-        
-        /*for (int j = 0; j < playerList.childCount; j++)
-        {
-            Destroy(targetCardList.GetChild(j).gameObject);//TODO: Isso dá cancer, assim como outras partes desse código
-            Debug.Log("Clearing cards333333333333????????");
-
-        }*/
-        
-        for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
-        {
-
-            if (PlayerSetup.playerControllers[i])
-            {
-                if (PlayerSetup.playerControllers[i] != PlayerSetup.localPlayerSetup)
-                {
-                    var playerChar = Instantiate(playerCharCardPrefab, playerList);
-                    yield return new WaitUntil(() =>
-                    {
-                        return PlayerSetup.playerControllers[i].CharacterInfoIndex != -1;
-                    });
-                    Debug.Log("Clearing cards222222222222222222222222");
-
-                    playerChar.Populate(i, PlayerSetup.playerControllers[i]);
-                }
-            }
-        }
-    }
-    
-    private IEnumerator PopulateCharacterCardsAuction()
-    {
-        Debug.Log("Clearing cards1 auction");
         
         Destroy(playerList.gameObject);
 
@@ -549,7 +516,7 @@ public class NetworkGameUI : NetworkBehaviour
         
         PlayerSetup.localPlayerSetup.RefuseTrade(currentTradeOrigin);
     }
-    
+
     public void RefuseAuctionParticipation()
     {
         PlayerSetup.localPlayerSetup.RefuseAuctionParticipation(currentAuctionOrigin);
@@ -737,6 +704,7 @@ public class NetworkGameUI : NetworkBehaviour
         else
         {
             PlayerSetup.localPlayerSetup.AuctionBid(selectAuctionToGiveCards, currentAuctionOrigin);
+            ReturnFromAuctionAnswer();
         }
     }
 
@@ -757,5 +725,117 @@ public class NetworkGameUI : NetworkBehaviour
     {
         auctionMenu.SetActive(false);
         auctionWait.SetActive(true);
+    }
+
+    [SerializeField] private Transform auctionChoicelWindow;
+    [SerializeField] private Transform auctionChoiceOfferList, auctionChoiceMyList, auctionChoicePlayerList;
+
+    [SerializeField]private List<List<List<int>>> playerOFfers;
+
+    public Transform AuctionChoicePlayerList => auctionChoicePlayerList;
+
+    public Transform AuctionChoiceMyList => auctionChoiceMyList;
+
+    public Transform AuctionChoiceOfferList => auctionChoiceOfferList;
+    public void PresentAuctionChoice(List<List<List<int>>> playerAuctionOffers)
+    {
+        auctionWait.SetActive(false);
+        playerOFfers = playerAuctionOffers;
+        StartCoroutine(PopulateChoiceCharacters());
+    }
+    
+    private IEnumerator PopulateChoiceCharacters()
+    {
+        Debug.Log("Clearing cards1 auction");
+
+        for (int i = 0; i < auctionChoicePlayerList.childCount; i++)
+        {
+            Destroy(auctionChoicelWindow.GetChild(i));
+        }
+
+        /*for (int j = 0; j < playerList.childCount; j++)
+        {
+            Destroy(targetCardList.GetChild(j).gameObject);//TODO: Isso dá cancer, assim como outras partes desse código
+            Debug.Log("Clearing cards333333333333????????");
+
+        }*/
+        
+        for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
+        {
+
+            if (PlayerSetup.playerControllers[i])
+            {
+                if (PlayerSetup.playerControllers[i] != PlayerSetup.localPlayerSetup)
+                {
+                    var playerChar = Instantiate(playerCharCardPrefab, auctionChoicePlayerList);
+                    yield return new WaitUntil(() =>
+                    {
+                        return PlayerSetup.playerControllers[i].CharacterInfoIndex != -1;
+                    });
+                    Debug.Log("Clearing cards222222222222222222222222");
+
+                    playerChar.Populate(i, PlayerSetup.playerControllers[i]);
+                    playerChar.IsAuction = true;
+                }
+            }
+        }
+        
+        auctionChoicelWindow.gameObject.SetActive(true);
+    }
+
+    private List<List<int>> selectedAuctionCards;
+    public void SelectAuctionPlayer(PlayerCharacterCard playerCharacterCard)
+    {
+        if (chosenAuctionPlayer)
+        {
+            chosenAuctionPlayer.Deselect();
+            chosenAuctionPlayer = playerCharacterCard;
+            chosenAuctionPlayer.Select();
+        }
+        else
+        {
+            chosenAuctionPlayer = playerCharacterCard;
+            chosenAuctionPlayer.Select();
+        }
+
+        var player = chosenAuctionPlayer.Player;
+        
+        for (int i = 0; i < auctionChoicePlayerList.childCount; i++)
+        {
+            Destroy(auctionChoicePlayerList.GetChild(i).gameObject);//TODO: Isso dá cancer, assim como outras partes desse código
+        }
+        
+        player.EnableTargetAuctionChoiceMenu();
+        
+        
+    }
+
+    public void AcceptAuctionSelectedOffer()
+    {
+        if (chosenAuctionPlayer)
+        {
+            PlayerSetup.localPlayerSetup.ConcludeAuction(chosenAuctionPlayer, selectedAuctionCards);
+        }
+        else
+        {
+            LocalLog("Você não selecionou um empresário para finalizar o leilão.");
+        }
+    }
+
+    public void RefuseEveryBid()
+    {
+        for (int i = 0; i < auctionChoiceMyList.childCount; i++)
+        {
+            var tempObject = auctionChoiceMyList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+        
+        for (int i = 0; i < auctionChoiceOfferList.childCount; i++)
+        {
+            var tempObject = auctionChoiceOfferList.GetChild(i).gameObject;
+            Destroy(tempObject);
+        }
+
+        PlayerSetup.localPlayerSetup.RefuseEveryBid();
     }
 }

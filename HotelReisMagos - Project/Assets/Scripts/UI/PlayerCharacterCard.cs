@@ -7,14 +7,24 @@ public class PlayerCharacterCard : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private Toggle selectionToggle;
     [SerializeField] private PlayerSetup player;
-    
-    [SerializeField] private int playerNumberId, playerListIndex;
 
+    [SerializeField] private int playerNumberId, playerListIndex;
+    [SerializeField] private bool isAuction;
+
+    public bool IsAuction
+    {
+        get => isAuction;
+        set => isAuction = value;
+    }
+    
     public PlayerSetup Player => player;
     
     public void OnToggle(bool isSelected)
     {
-        NetworkGameUI.Instance.SelectTradePlayer(this);
+        if(!isAuction)
+            NetworkGameUI.Instance.SelectTradePlayer(this);
+        else
+            NetworkGameUI.Instance.SelectAuctionPlayer(this);
     }
 
     public void Populate(int playerListIndex, PlayerSetup player)
