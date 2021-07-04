@@ -680,8 +680,10 @@ public class PlayerSetup : NetworkBehaviour
         }
     }
     
-    public void EnableTargetAuctionChoiceMenu()
+    public void EnableTargetAuctionChoiceMenu(PlayerSetup chosenAuctionPlayer)
     {
+        List<List<int>> selectedTargetCards = playerAuctionOffers.Where((list => list[3][0] == chosenAuctionPlayer.PlayerNumber)).First();
+
         var myCardList = NetworkGameUI.Instance.AuctionChoiceOfferList;
         var cardPrefab = NetworkGameUI.Instance.CardInfoPrefab;
         
@@ -689,8 +691,17 @@ public class PlayerSetup : NetworkBehaviour
         {
             Destroy(myCardList.GetChild(i).gameObject);
         }
+
+        for (int j = 0; j < 3; j++)
+        {
+            for (int i = 0; i < selectedTargetCards[j].Count; i++)
+            {
+                var newCard = Instantiate(cardPrefab, myCardList);
+                newCard.Populate(selectedTargetCards[j][i], j + 1, true, false);
+            }
+        }
         
-        for (int i = 0; i < cardsOnHand1.Count; i++)
+        /*for (int i = 0; i < cardsOnHand1.Count; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
             newCard.Populate(cardsOnHand1[i], 1, true, false);
@@ -712,7 +723,8 @@ public class PlayerSetup : NetworkBehaviour
         {
             var newCard = Instantiate(cardPrefab, myCardList);
             newCard.Populate(0, 0, true, true);
-        }
+        }*/
+    
     }
 
     public void ProposeTrade(List<ResourceCardUI> selectedCards, List<ResourceCardUI> selectedTargetCards, PlayerCharacterCard chosenTradePlayer)
@@ -754,17 +766,17 @@ public class PlayerSetup : NetworkBehaviour
         StartCoroutine(WaitForTradeResult(selectedCards1, selectedTargetCards1, chosenTradePlayer.Player));
     }
 
-    [SerializeField] private List<List<int>> selectedCards1;
-    
-    
+    [SerializeField] private SyncList<List<int>> selectedCards1 = new SyncList<List<int>>();
+
+    public SyncList<List<int>> SelectedCards1 => selectedCards1;
+
     public void ProposeAuction(List<ResourceCardUI> selectedCards)
     {
-        selectedCards1 = new List<List<int>>();
-        List<List<int>> selectedTargetCards1 = new List<List<int>>();
-
+        var selectedCardsTemp = new List<List<int>>();
+        
         for (int i = 0; i < 3; i++)
         {
-            selectedCards1.Add(new List<int>());
+            selectedCardsTemp.Add(new List<int>());
         }
 
         /*selectedCards1 = selectedCards.Select(((card, i) =>
@@ -773,7 +785,7 @@ public class PlayerSetup : NetworkBehaviour
         }))*/
         for (int i = 0; i < selectedCards.Count; i++)
         {
-            selectedCards1[selectedCards[i].ActNumber - 1].Add(selectedCards[i].CardIndex);
+            selectedCardsTemp[selectedCards[i].ActNumber - 1].Add(selectedCards[i].CardIndex);
         }
         
         /*for (int i = 0; i < selectedTargetCards.Count; i++)
@@ -784,8 +796,8 @@ public class PlayerSetup : NetworkBehaviour
         var player = chosenTradePlayer.Player.PlayerNumber;*/
         
         //NetworkGameUI.Instance.WaitTradeResult();
-
-        CmdProposeAuction(selectedCards1);
+        
+       CmdProposeAuction(selectedCardsTemp.ToList());
 
         StartCoroutine(WaitForAuctionResult());
         
@@ -797,10 +809,10 @@ public class PlayerSetup : NetworkBehaviour
     
     private IEnumerator WaitForAuctionResult()
     {
-        while (answeredPlayers < NetworkManager.singleton.numPlayers-1)
+        Debug.LogWarning("Waiting for every player...");
+        while (answeredPlayers < PlayerSetup.playerControllers.Count-1)
         {
             yield return new WaitForEndOfFrame();
-            Debug.LogWarning("Waiting for every player...");
         }
 
         if (playerAuctionOffers.Count == 0)
@@ -809,11 +821,18 @@ public class PlayerSetup : NetworkBehaviour
 
             NetworkGameUI.Instance.RpcLog($"Ninguém deu um lance no leilão do jogador {charName.Name}.");
             NetworkGameUI.Instance.ReturnFromAuctionWait();
+            CmdResetAuctionProposer();
         }
         else
         {
-            RpcPresentAuctionOffers();
+            CmdPresentAuctionOffers();
         }
+    }
+
+    [Command]
+    private void CmdPresentAuctionOffers()
+    {
+        RpcPresentAuctionOffers();
     }
 
     [ClientRpc]
@@ -906,6 +925,21 @@ public class PlayerSetup : NetworkBehaviour
     [Command]
     private void CmdProposeAuction(List<List<int>> selectedCards)
     {
+        /*List<List<int>> selectedTargetCards1 = new List<List<int>>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            selectedCards1.Add(new List<int>());
+        }
+        
+        for (int i = 0; i < selectedCards.Count; i++)
+        {
+            selectedCards1[selectedCards[i].ActNumber - 1].Add(selectedCards[i].CardIndex);
+        }*/
+        
+        selectedCards1.AddRange(selectedCards);
+        
+        
         for (int i = 0; i < playerControllers.Count; i++)
         {
             if (playerControllers[i] != this)
@@ -1065,52 +1099,106 @@ public class PlayerSetup : NetworkBehaviour
 
     public void ConcludeAuction(PlayerCharacterCard chosenAuctionPlayer, List<List<int>> selectedTargetCards)
     {
-        CmdConcludeAuction(chosenAuctionPlayer.Player.PlayerNumber, selectedTargetCards);
+        var myCardList = NetworkGameUI.Instance.AuctionChoiceOfferList;
+        for (int i = 0; i < myCardList.childCount; i++)
+        {
+            Destroy(myCardList.GetChild(i).gameObject);
+        }
+        
+        CmdConcludeAuction(chosenAuctionPlayer.Player.PlayerNumber);
     }
 
-    private void CmdConcludeAuction(int playerNumber, List<List<int>> selectedTargetCards)
+    [Command]
+    private void CmdConcludeAuction(int playerNumber)
     {
-        PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First();
-        
-        for (int i = 0; i < selectedTargetCards[0].Count; i++)
+        try
         {
-            player.cardsOnHand1.Remove(selectedTargetCards[0][i]);
+            PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First(); 
+            List<List<int>> selectedTargetCards = playerAuctionOffers.Where((list => list[3][0] == playerNumber)).First();
+
+            for (int i = 0; i < selectedTargetCards[0].Count; i++)
+            {
+                player.cardsOnHand1.Remove(selectedTargetCards[0][i]);
+            }
+        
+            for (int i = 0; i < selectedTargetCards[1].Count; i++)
+            {
+                player.cardsOnHand2.Remove(selectedTargetCards[1][i]);
+            }
+            for (int i = 0; i < selectedTargetCards[2].Count; i++)
+            {
+                player.cardsOnHand3.Remove(selectedTargetCards[2][i]);
+            }
+
+            Debug.Log($"Player: {player}");
+            Debug.Log($"SelectedCards1: {selectedCards1}");
+            player.cardsOnHand1.AddRange(selectedCards1[0]);
+            player.cardsOnHand2.AddRange(selectedCards1[1]);
+            player.cardsOnHand3.AddRange(selectedCards1[2]);
+        
+            for (int i = 0; i < selectedCards1[0].Count; i++)
+            {
+                cardsOnHand1.Remove(selectedCards1[0][i]);
+            }
+        
+            for (int i = 0; i < selectedCards1[1].Count; i++)
+            {
+                cardsOnHand2.Remove(selectedCards1[1][i]);
+            }
+            for (int i = 0; i < selectedCards1[2].Count; i++)
+            {
+                cardsOnHand3.Remove(selectedCards1[2][i]);
+            }    
+        
+            cardsOnHand1.AddRange(selectedTargetCards[0]);
+            cardsOnHand2.AddRange(selectedTargetCards[1]);
+            cardsOnHand3.AddRange(selectedTargetCards[2]);
+
+            ResetAuctionProposer();
         }
-        
-        for (int i = 0; i < selectedTargetCards[1].Count; i++)
+        catch (Exception e)
         {
-            player.cardsOnHand2.Remove(selectedTargetCards[1][i]);
+            Debug.LogException(e);
         }
-        for (int i = 0; i < selectedTargetCards[2].Count; i++)
+    }
+
+    [Command]
+    private void CmdResetAuctionProposer()
+    {
+        ResetAuctionProposer();
+    }
+    
+    private void ResetAuctionProposer()
+    {
+        answeredPlayers = 0;
+
+        for (int i = 0; i < playerAuctionOffers.Count; i++)
         {
-            player.cardsOnHand3.Remove(selectedTargetCards[2][i]);
+            playerAuctionOffers.RemoveAt(i);
         }
-        
-        player.cardsOnHand1.AddRange(selectedCards1[0]);
-        player.cardsOnHand2.AddRange(selectedCards1[1]);
-        player.cardsOnHand3.AddRange(selectedCards1[2]);
-        
-        for (int i = 0; i < selectedCards1[0].Count; i++)
+
+        for (int i = 0; i < playerControllers.Count; i++)
         {
-            cardsOnHand1.Remove(selectedCards1[0][i]);
+            playerControllers[i].ResetAuction();
         }
+
+        selectedCards1.RemoveAll((ints => ints != null));
+        NetworkGameUI.Instance.RpcResetAuction();
+    }
+
+    private void ResetAuction()
+    {
         
-        for (int i = 0; i < selectedCards1[1].Count; i++)
-        {
-            cardsOnHand2.Remove(selectedCards1[1][i]);
-        }
-        for (int i = 0; i < selectedCards1[2].Count; i++)
-        {
-            cardsOnHand3.Remove(selectedCards1[2][i]);
-        }    
-        
-        cardsOnHand1.AddRange(selectedTargetCards[0]);
-        cardsOnHand2.AddRange(selectedTargetCards[1]);
-        cardsOnHand3.AddRange(selectedTargetCards[2]);
     }
 
     public void RefuseEveryBid()
     {
+        var myCardList = NetworkGameUI.Instance.AuctionChoiceOfferList;
+        for (int i = 0; i < myCardList.childCount; i++)
+        {
+            Destroy(myCardList.GetChild(i).gameObject);
+        }
+        
         CmdRefuseEveryBid();
     }
     
@@ -1118,6 +1206,7 @@ public class PlayerSetup : NetworkBehaviour
     public void CmdRefuseEveryBid()
     {
         NetworkGameUI.Instance.RpcLog("O empresário recusou todas as ofertas do leilão!");
-        playerAuctionOffers = new SyncList<List<List<int>>>();
+
+        ResetAuctionProposer();
     }
 }
