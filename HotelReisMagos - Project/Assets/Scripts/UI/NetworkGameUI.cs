@@ -582,12 +582,17 @@ public class NetworkGameUI : NetworkBehaviour
 
     [SerializeField] private Transform playerDeckList;
     [SerializeField] private GameObject playerDeckWindow;
+    [SerializeField] private TextMeshProUGUI characterName, characterHistory;
 
-    public void ShowPlayerCards(int playerNumber)
+    public void ShowPlayerCards(int playerNumber, int charInfoIndex)
     {
         var player = PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First();
         playerDeckWindow.SetActive(true);
+        var charInfo = NetworkGameController.instance.CharacterList[charInfoIndex];
         
+        characterName.SetText(charInfo.Name);
+        characterHistory.SetText(charInfo.Description);
+
         for (int i = 0; i < playerDeckList.childCount; i++)
         {
             var tempObject = playerDeckList.GetChild(i).gameObject;

@@ -86,6 +86,6 @@ public class PlayerCard : MonoBehaviour
 
     public void ShowDeck()
     {
-        NetworkGameUI.Instance.ShowPlayerCards(trackedPlayer.PlayerNumber);
+        NetworkGameUI.Instance.ShowPlayerCards(trackedPlayer.PlayerNumber, trackedPlayer.CharacterInfoIndex);
     }
 }
