@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b958eedab0c54eadb880397379615478, type: 3}
+  m_Name: Empresario1
+  m_EditorClassIdentifier: 
+  name: Gabriel
+  description: "Empres\xE1rio com interesse na m\xEDdia."
+  mediaGoal: 20
+  economicGoal: 0
+  socialGoal: 0
+  politicGoal: 0
+  secondActBonus:
+    mediaBonus: 2
+    economicBonus: 0
+    socialBonus: 0
+    politicBonus: 0
+  thirdActBonus:
+    mediaBonus: 3
+    economicBonus: 0
+    socialBonus: 0
+    politicBonus: 0

@@ -4,16 +4,33 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum SlotReward
+{
+    MediaResource, SocialResource, EconomicalResource, PoliticalResource,
+    LuckCard
+}
+
 public class SlotController : MonoBehaviour
 {
     [SerializeField] private string id;
+    [SerializeField] private int actToUnlock;
     [SerializeField] private int actNumber, actId;
+    [SerializeField] private SlotReward rewardType;
+    [Tooltip("Set to true and the slot will give a luck card as well as the resource.")]
+    [SerializeField] private bool giveLuckCard;
+    [Tooltip("Minimum and max reward, inclusive and exclusive, respectively.")]
     [SerializeField] private int minReward = 10, maxReward = 16;
     
 
     public static Dictionary<string, SlotController> slots = new Dictionary<string, SlotController>();
     
     public string ID { get => id; }
+
+    public int ActToUnlock => actToUnlock;
+
+    public SlotReward RewardType => rewardType;
+
+    public bool GiveLuckCard => giveLuckCard;
 
     public int MinReward
     {
@@ -50,8 +67,9 @@ public class SlotController : MonoBehaviour
         }
 
         slots.Add(slot.ID, slot);
+        NetworkGameController.OnResetSlots.AddListener(ResetSlot);
     }
-    
+
     private void Init()
     {
         slotImage = GetComponent<Image>();
@@ -73,23 +91,41 @@ public class SlotController : MonoBehaviour
     {
         var server = NetworkManager.singleton as NetworkManagerCardGame;
         //server.CmdSelectSlot(this);
+
+        if (NetworkGameController.instance.CurrentAct < actToUnlock)
+        {
+            NetworkGameUI.Instance.LocalLog($"Este espaço só abre no ato {actToUnlock}. O ato atual é {NetworkGameController.instance.CurrentAct}");
+            Debug.LogWarning($"Wrong act. This slot only opens on act {actToUnlock}. " +
+                             $"Current act: {NetworkGameController.instance.CurrentAct}");
+            return;
+        }
+        if (PlayerSetup.localPlayerSetup.ChoseSlot)
+        {
+            NetworkGameUI.Instance.LocalLog("Você já escolheu um espaço neste turno.");
+            Debug.LogWarning("You already chose a slot.");
+            return;
+        }
         
         if(NetworkGameController.instance.PlayerTurnID == PlayerSetup.localPlayerSetup.PlayerNumber)
             PlayerSetup.localPlayerSetup.CmdSelectSlot(this);
         else
         {
-            Debug.LogError("Not your turn.");
+            NetworkGameUI.Instance.LocalLog("Não é seu turno.");
+            Debug.LogWarning("Not your turn.");
         }
         //DummyServer.Instance.SelectSlot(this);  
     }
 
-    public void SetSelectedSlot(Color color)
+    public void SetSelectedSlot(Color color, int playerNum=-1)
     {
         isSelected = true;
         slotImage.color = color;
 
         slotImage.raycastTarget = false;
-        NetworkGameController.instance.RpcUpdateSlots(id, color);
+        if(playerNum != -1)
+            PlayerSetup.localPlayerSetup.UpdateSlots(id, playerNum);
+        
+        //PlayerSetup.playerControllers.Find((setup => setup.PlayerNumber == playerNum)).UpdateSlots(id, playerNum);
     }
 
     public void ResetSlot()

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using kcp2k;
 using Mirror;
 using Mirror.Authenticators;
+using Mirror.FizzySteam;
 using UnityEngine;
 
 public class NetworkManagerCardGame : NetworkManager
@@ -12,6 +14,8 @@ public class NetworkManagerCardGame : NetworkManager
     [SerializeField] private GameObject loginPanel, lobbyPanel;
     [SerializeField] private NetworkLobbyUI lobbyUi;
     [SerializeField] private NetworkGameUI gameUi;
+    [SerializeField] private KcpTransport kcpTransportPrefab;
+    [SerializeField] private FizzySteamworks steamTransportPrefab;
 
     public List<PlayerSetup> players = new List<PlayerSetup>();
     public List<NetworkIdentity> identities = new List<NetworkIdentity>();
@@ -47,22 +51,32 @@ public class NetworkManagerCardGame : NetworkManager
         //PlayerSetup.playerControllers.Add(player);
         players.Add(player);
         identities.Add(conn.identity);
-        player.PlayerNumber = numPlayers;
+        player.PlayerNumber = numPlayers - 1;
 
         RegisterOnPlayerList(player);
+        
+        player.MyColor = GetPlayerColor(player.PlayerNumber);
 
         if (lobbyUi)
         {
             lobbyUi.RpcSpawnPlayerEntry(conn.identity, identities);
         }
 
-        if (gameUi)
+        if (NetworkGameUI.Instance)
         {
-            gameUi.RpcSpawnPlayer(identities);
+            NetworkGameUI.Instance.RpcSpawnPlayer(identities);
         }
         else
         {
-            NetworkGameUI.Instance.RpcSpawnPlayer(identities);
+            try
+            {
+                //NetworkGameUI.Instance.RpcSpawnPlayer(identities);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                Debug.LogError($"Current networkgameUI: {NetworkGameUI.Instance}");
+            }
         }
 
         /*var newEntry = Instantiate(playerListEntryPrefab, playerListGroup);
@@ -83,11 +97,29 @@ public class NetworkManagerCardGame : NetworkManager
     
     
     
+    private List<Color> playersColors;
+
+    private void InitColors()
+    {
+        playersColors = new List<Color>();
+
+        playersColors.Add(new Color(0, 1, 1, 1));
+        playersColors.Add(new Color(1, 0, 1, 1));
+        playersColors.Add(new Color(1, 1, 0, 1));
+        playersColors.Add(new Color(0, 0, 1, 1));
+        playersColors.Add(new Color(0, 1, 0, 1));
+        playersColors.Add(new Color(1, 0, 0, 1));
+    }
+
+    public Color GetPlayerColor(int playerID)
+    {
+        return playersColors[playerID];
+    }
     
     
     
     
-    
+
     //static public DummyServer instance;
 
     [SerializeField] private List<PlayerController> __playerControllers;
@@ -95,7 +127,8 @@ public class NetworkManagerCardGame : NetworkManager
     private Dictionary<string, SlotController> slots;
 
     public NetworkGameController gameController;
-    
+    [SerializeField] private GameObject startMatchButton;
+
     public Dictionary<string, SlotController> Slots => slots;
 
     public int NumberOFPlayers { get => PlayerSetup.playerControllers.Count; }
@@ -103,70 +136,100 @@ public class NetworkManagerCardGame : NetworkManager
     public override void Awake()
     {
         base.Awake();
-        
-        //Singleton();
-        
-        //PlayerSetup.playerControllers = new List<PlayerSetup>();
+        steamTransportPrefab = GetComponent<FizzySteamworks>();
+        kcpTransportPrefab = GetComponent<KcpTransport>();
 
-        slots = new Dictionary<string, SlotController>(); 
+        slots = new Dictionary<string, SlotController>();
+        InitColors();
     }
 
-    public override void Start()
+    public override void OnStartServer()
     {
-        base.Start();
-    }
+        base.OnStartServer();
 
-    /*private void Singleton()
-    {
-        if (instance)
-            Destroy(gameObject);
-        instance = this;
-    }*/
+        if (startMatchButton)
+            startMatchButton.SetActive(true);
+    }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        StartCoroutine(Init());
+        //StartCoroutine(InitGameController());
+
     }
 
-    private IEnumerator Init()
+    private IEnumerator InitGameController()
     {
         //DontDestroyOnLoad(this);
         yield return null;
         //yield return new WaitForEndOfFrame();
-        try
+        if (NetworkGameController.instance)
         {
-            gameController = NetworkGameController.instance;
-            //gameController = FindObjectOfType<NetworkGameController>();
-            gameController.PlayerTurnID = 0;
-            gameController.Turn = 1;
-            Debug.Log("SUCCESSSSSSSSSS!!!!!!!");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("CATCH EXCEPTION");
-            Debug.LogException(e);
-            //throw;
+            try
+            {
+                gameController = NetworkGameController.instance;
+                //gameController = FindObjectOfType<NetworkGameController>();
+                gameController.PlayerTurnID = 0;
+                gameController.Turn = 1;
+                
+                gameUi = NetworkGameUI.Instance;
+                Debug.Log("SUCCESSSSSSSSSS!!!!!!!");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("CATCH EXCEPTION");
+                Debug.LogException(e);
+                //throw;
+            }
         }
     }
 
     public IEnumerator SetPlayerID(PlayerSetup player)
     {
-        int playerID = PlayerSetup.playerControllers.Count;
+        //int playerID = PlayerSetup.playerControllers.Count - 1;
 
-        player.PlayerNumber = playerID; //Set the player number to match the index
+        //player.PlayerNumber = playerID; //Set the player number to match the index
 
         yield return new WaitUntil(() => gameController);
         
+        player.MyColor = GetPlayerColor(player.PlayerNumber);
+
         try
         {
-            player.MyColor = gameController.GetPlayerColor(playerID);
+            player.MyColor = gameController.GetPlayerColor(player.PlayerNumber);
         }
         catch (Exception e)
         {
             Debug.Log("catch!");
             Debug.LogException(e);
         }
+        
+        yield return new WaitUntil(() => NetworkGameUI.Instance);
+    }
+
+    public void EnableSteamTransport()
+    {
+        kcpTransportPrefab.enabled = false;
+        steamTransportPrefab.enabled = true;
+        
+        transport = steamTransportPrefab;
+        Transport.activeTransport = steamTransportPrefab;
+
+        //Destroy(transport.gameObject);
+        //transport = Instantiate(steamTransportPrefab);
+    }
+
+    public void EnableKcpTransport()
+    {
+        steamTransportPrefab.Shutdown();
+        steamTransportPrefab.enabled = false;
+        kcpTransportPrefab.enabled = true;
+        
+        transport = kcpTransportPrefab;
+        Transport.activeTransport = kcpTransportPrefab;
+        
+        //Destroy(transport.gameObject);
+        //transport = Instantiate(kcpTransportPrefab);
     }
 
     public void SelectSlot(SlotController slot)
