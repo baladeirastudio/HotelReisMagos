@@ -1,0 +1,13 @@
+Vermelho: #BD1C46
+Verde: #ABBA73
+Azul cartas: #2CB3B6
+Azul oceano: #00C9C3
+Amarelo: #FAB41A
+Laranja: #EA592D
+
+Preto: #272C40 (na verdade é um azul escuro, use ele ao invés do preto puro )
+
+*a cor de fundo da tela de vitoria sempre será alguma das cores que não esta aparecendo no podio
+Ex. se os vencedores são amarelo, verde e vermelho, a cor de fundo só podera ser laranja ou azul
+
+
