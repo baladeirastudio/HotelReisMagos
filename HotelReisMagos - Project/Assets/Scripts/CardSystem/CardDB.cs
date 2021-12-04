@@ -88,6 +88,13 @@ public class CardDB : MonoBehaviour
                 tempCard.MidiaticoValue = data[totalColumns * (i + 1) + 5];
                 tempCard.EconomicoValue = data[totalColumns * (i + 1) + 6];
                 tempCard.PoliticoValue = data[totalColumns * (i + 1) + 7];
+
+                AudioClip voice = Resources.Load<AudioClip>($"VoiceAudios/{tempCard.ID}");
+
+                if (voice)
+                {
+                    tempCard.VoiceClip = voice;
+                }
             }
             catch (Exception e)
             {

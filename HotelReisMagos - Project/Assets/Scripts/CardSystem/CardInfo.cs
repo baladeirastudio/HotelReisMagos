@@ -40,4 +40,8 @@ public class CardInfo
     [SerializeField]
     private string midiatico;
     public string MidiaticoValue { get => midiatico; set => midiatico = value; }
+
+    [SerializeField] 
+    private AudioClip voiceClip;
+    public AudioClip VoiceClip { get => voiceClip; set => voiceClip = value; }
 }

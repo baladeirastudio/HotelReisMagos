@@ -416,6 +416,7 @@ public class PlayerSetup : NetworkBehaviour
             }
 
             NetworkGameUI.Instance.RpcLog($"O jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} obteve a seguinte carta: {card.Description}");
+            NetworkGameUI.Instance.RpcPlayAudioEverywhere(cardIndex, tempSlot.ActToUnlock);
             NetworkGameUI.Instance.RpcRefreshPlayerCards();
         }
         catch (Exception e)

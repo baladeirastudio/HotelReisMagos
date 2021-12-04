@@ -933,4 +933,40 @@ public class NetworkGameUI : NetworkBehaviour
         PlayerSetup.localPlayerSetup.RefuseEveryBid();
         ReturnFromAuctionChoice();
     }
+
+    [SerializeField] private AudioSource narrator;
+
+    [ClientRpc]
+    public void RpcPlayAudioEverywhere(int cardIndex, int act)
+    {
+        List<CardInfo> deck = null;
+        CardInfo card;
+        
+        switch(act)
+        {
+            case 1:
+                deck = NetworkGameController.instance.cardList1;
+                break;
+            case 2:
+                deck = NetworkGameController.instance.cardList2;
+                break;
+            case 3:
+                deck = NetworkGameController.instance.cardList3;
+                break;
+            default:
+                deck = NetworkGameController.instance.cardList1;
+                break;
+        }
+
+        card = deck[cardIndex];
+        if(card != null)
+            if (card.VoiceClip)
+            {
+                narrator.PlayOneShot(card.VoiceClip);
+            }
+            else
+            {
+                Debug.Log("No voiceclip.");
+            }
+    }
 }
