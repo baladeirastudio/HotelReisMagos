@@ -83,7 +83,7 @@ public class NetworkGameController : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
-        NetworkGameUI.Instance.RpcPlayActAudio(1);
+        
     }
 
     private void Start()
@@ -147,6 +147,11 @@ public class NetworkGameController : NetworkBehaviour
     public Color GetPlayerColor(int playerID)
     {
         return playersColors[playerID];
+    }
+
+    public void PlayAto1() // GO HORSE!
+    {
+        NetworkGameUI.Instance.RpcPlayActAudio(1);
     }
     
     //[ClientRpc]
