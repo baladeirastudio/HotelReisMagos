@@ -80,6 +80,12 @@ public class NetworkGameController : NetworkBehaviour
         }
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        NetworkGameUI.Instance.RpcPlayActAudio(1);
+    }
+
     private void Start()
     {
         server = NetworkManagerCardGame.singleton as NetworkManagerCardGame;
@@ -171,12 +177,14 @@ public class NetworkGameController : NetworkBehaviour
         NetworkGameUI.Instance.RpcLog($"Agora é o turno do jogador " +
                                       $"{CharacterList[PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == playerTurnID)).First().CharacterInfoIndex].Name}.");
 
+        
+        
         switch (currentAct)
         {
             case 1: //Avanço do ato 1.
                 if (turn >= 3)
                 {
-                    NetworkGameUI.Instance.RpcLog(firstActData.actEndText.text);
+                    //NetworkGameUI.Instance.RpcLog(firstActData.actEndText.text);
                     turn = 1;
                     currentAct++;
                     ResetSlots();
@@ -186,16 +194,18 @@ public class NetworkGameController : NetworkBehaviour
                     {
                         PlayerSetup.playerControllers[i].SecondActBonus();
                     }
+                    NetworkGameUI.Instance.RpcPlayActAudio(currentAct);
                 }
                 break;
             case 2: //Avanço do ato 2.
                 if (turn >= 4)
                 {
-                    NetworkGameUI.Instance.RpcLog(secondActData.actEndText.text);
+                    //NetworkGameUI.Instance.RpcLog(secondActData.actEndText.text);
                     turn = 1;
                     currentAct++;
                     ResetSlots();
                     NetworkGameUI.Instance.RpcLog(thirdActData.actBeginText.text);
+                    NetworkGameUI.Instance.RpcPlayActAudio(currentAct);
                     
                     for (int i = 0; i < PlayerSetup.playerControllers.Count; i++)
                     {
@@ -207,6 +217,8 @@ public class NetworkGameController : NetworkBehaviour
                 if (turn >= 5)
                 {
                     NetworkGameUI.Instance.RpcLog(thirdActData.actEndText.text);
+                    NetworkGameUI.Instance.RpcPlayActAudio(4);
+                    
                     ProcessWinner();
                 }
                 break;

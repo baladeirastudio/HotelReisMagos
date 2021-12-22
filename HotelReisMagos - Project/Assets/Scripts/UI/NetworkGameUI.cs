@@ -934,6 +934,8 @@ public class NetworkGameUI : NetworkBehaviour
         ReturnFromAuctionChoice();
     }
 
+    // Isso não devia estar aqui, mas só quero terminar isso logo -Lucena
+    
     [SerializeField] private AudioSource narrator;
 
     [ClientRpc]
@@ -962,11 +964,22 @@ public class NetworkGameUI : NetworkBehaviour
         if(card != null)
             if (card.VoiceClip)
             {
-                narrator.PlayOneShot(card.VoiceClip);
+                narrator.clip = card.VoiceClip;
+                narrator.Play();
+                //narrator.PlayOneShot(card.VoiceClip);
             }
             else
             {
                 Debug.Log("No voiceclip.");
             }
+    }
+
+    [SerializeField] List<AudioClip> actAudios = new List<AudioClip>();
+
+    [ClientRpc]
+    public void RpcPlayActAudio(int number)
+    {
+        narrator.clip = actAudios[number-1];
+        narrator.Play();
     }
 }
