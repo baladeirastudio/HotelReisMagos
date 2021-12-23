@@ -13,7 +13,13 @@ MonoBehaviour:
   m_Name: Empresario5
   m_EditorClassIdentifier: 
   name: "Jo\xE3o"
-  description: "Empres\xE1rio que planeja um imp\xE9rio pol\xEDtico e social."
+  description: "Sou T\xFAlio, tenho cinquenta e seis anos, acabei de me aposentar
+    como servidor p\xFAblico e trabalhei por muitos anos na Secretaria Estadual de
+    Turismo do RN. Atualmente, sou professor de turismo em uma universidade particular
+    e sempre tive o sonho de empreender na \xE1rea de hotelaria. H\xE1 alguns anos,
+    venho observando de perto as mudan\xE7as de mercado na hotelaria na cidade. E
+    ainda acredito que o estado pode fazer muito, juntamente com a iniciativa privada
+    para fortalecer ainda mais o destino tur\xEDstico Natal."
   mediaGoal: 0
   economicGoal: 0
   socialGoal: 12
@@ -23,8 +29,10 @@ MonoBehaviour:
     economicBonus: 0
     socialBonus: 1
     politicBonus: 1
+    onReceiveBonusText: 
   thirdActBonus:
     mediaBonus: 0
     economicBonus: 0
     socialBonus: 1
     politicBonus: 1
+    onReceiveBonusText: 

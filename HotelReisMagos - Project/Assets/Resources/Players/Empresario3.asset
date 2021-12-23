@@ -12,8 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b958eedab0c54eadb880397379615478, type: 3}
   m_Name: Empresario3
   m_EditorClassIdentifier: 
-  name: Luan
-  description: "Empres\xE1rio que deseja reconhecimento social."
+  name: Beatriz
+  description: "Meu nome \xE9 Beatriz, tenho vinte e dois anos, sou psic\xF3loga
+    social e conclu\xED recentemente o meu mestrado na \xE1rea. Sempre estive envolvida
+    em projetos que apoiam as causas sociais. Meu pai agora decidiu se aposentar
+    e me disse que como sou \xFAnica filha e herdeira, gostaria de realizar um investimento
+    em um neg\xF3cio que lhe proporcionasse retorno financeiro, mas que ao mesmo
+    tempo estivesse vinculado ao que eu gosto. Assim, ele me pediu uma sugest\xE3o
+    de algum neg\xF3cio que me atra\xEDsse aten\xE7\xE3o. Disse a ele que meu sonho
+    de neg\xF3cio sempre estaria relacionado a conciliar os interesses de sustentabilidade
+    pessoal com os interesses de qualidade de vida das pessoas."
   mediaGoal: 0
   economicGoal: 0
   socialGoal: 18
@@ -23,8 +31,10 @@ MonoBehaviour:
     economicBonus: 0
     socialBonus: 2
     politicBonus: 0
+    onReceiveBonusText: 
   thirdActBonus:
     mediaBonus: 0
     economicBonus: 0
     socialBonus: 3
     politicBonus: 0
+    onReceiveBonusText: 

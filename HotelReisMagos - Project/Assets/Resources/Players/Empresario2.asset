@@ -12,8 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b958eedab0c54eadb880397379615478, type: 3}
   m_Name: Empresario2
   m_EditorClassIdentifier: 
-  name: Samir
-  description: "Empres\xE1rio que almeja recurso econ\xF4mico."
+  name: Mateus
+  description: "Meu nome \xE9 Mateus, tenho sessenta anos, nasci em Natal. Desde
+    crian\xE7a, seguindo o exemplo do meu pai, sou comerciante. Com a experi\xEAncia
+    que adquiri dele, tenho um perfil de comprar e vender empresas e im\xF3veis.
+    Principalmente aquelas empresas que est\xE3o em situa\xE7\xE3o financeira dif\xEDcil
+    ou em uma situa\xE7\xE3o pr\xE9-falimentar. Ent\xE3o eu procuro o propriet\xE1rio
+    do neg\xF3cio, vejo as exig\xEAncias dele e dependendo das condi\xE7\xF5es do
+    risco e do mercado, Fa\xE7o uma oferta que julgo vantajosa pra mim. Como negociante
+    n\xE3o pretendo permanecer muito tempo com o investimento na minha m\xE3o. Entendo
+    que quanto mais giro o estoque desse investimento mais lucro. Tenho interesse
+    unicamente em ganhar dinheiro nesse processo de compra e venda."
   mediaGoal: 0
   economicGoal: 23
   socialGoal: 0
@@ -23,8 +32,10 @@ MonoBehaviour:
     economicBonus: 2
     socialBonus: 0
     politicBonus: 0
+    onReceiveBonusText: 
   thirdActBonus:
     mediaBonus: 0
     economicBonus: 3
     socialBonus: 0
     politicBonus: 0
+    onReceiveBonusText: 

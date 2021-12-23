@@ -12,8 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b958eedab0c54eadb880397379615478, type: 3}
   m_Name: Empresario1
   m_EditorClassIdentifier: 
-  name: Gabriel
-  description: "Empres\xE1rio com interesse na m\xEDdia."
+  name: Diego
+  description: "Sou Diego, empres\xE1rio natalense de cinquenta e tr\xEAs anos. Conheci
+    o Hotel Reis Magos desde pequeno, pois sempre morei no bairro de Santos Reis,
+    localizado pr\xF3ximo ao hotel. Todos me conhecem na regi\xE3o. J\xE1 fui propriet\xE1rio
+    de um bar e tive uma pousada. Atualmente, tenho um restaurante na praia de Areia
+    Preta que fica ao lado da Praia do Meio, onde o hotel est\xE1 localizado, E j\xE1
+    h\xE1 algum tempo estou juntando recursos econ\xF4micos suficientes para tentar
+    adquirir e me tornar o propriet\xE1rio do hotel, transformando-o em um grande
+    shopping center."
   mediaGoal: 20
   economicGoal: 0
   socialGoal: 0
@@ -23,8 +30,10 @@ MonoBehaviour:
     economicBonus: 0
     socialBonus: 0
     politicBonus: 0
+    onReceiveBonusText: 
   thirdActBonus:
     mediaBonus: 3
     economicBonus: 0
     socialBonus: 0
     politicBonus: 0
+    onReceiveBonusText: 

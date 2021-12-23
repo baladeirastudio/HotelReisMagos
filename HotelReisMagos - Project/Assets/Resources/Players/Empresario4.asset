@@ -12,8 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b958eedab0c54eadb880397379615478, type: 3}
   m_Name: Empresario4
   m_EditorClassIdentifier: 
-  name: Iury
-  description: "Empres\xE1rio que almeja poder pol\xEDtico."
+  name: "Val\xE9ria"
+  description: "Meu nome \xE9 Val\xE9ria, tenho cinquenta e dois anos, nasci na cidade
+    de Natal, RN. Venho de uma fam\xEDlia de empreendedores que atuam no segmento
+    de constru\xE7\xE3o civil. Costumamos realizar nossos investimentos na constru\xE7\xE3o
+    de hot\xE9is pelo Brasil. Conheci o Hotel Reis Magos quando era crian\xE7a e,
+    depois de adulta, me interessei em construir ali, no terreno do hotel, um grande
+    hotel cinco estrelas. Soube que na \xE1rea onde est\xE1 localizado o hotel ainda
+    existem algumas restri\xE7\xF5es legais que limitam a constru\xE7\xE3o de um
+    pr\xE9dio com at\xE9 dois andares, inviabilizando em parte a realiza\xE7\xE3o
+    de meu sonho."
   mediaGoal: 0
   economicGoal: 0
   socialGoal: 0
@@ -23,8 +31,10 @@ MonoBehaviour:
     economicBonus: 0
     socialBonus: 0
     politicBonus: 2
+    onReceiveBonusText: 
   thirdActBonus:
     mediaBonus: 0
     economicBonus: 0
     socialBonus: 0
     politicBonus: 3
+    onReceiveBonusText: 
