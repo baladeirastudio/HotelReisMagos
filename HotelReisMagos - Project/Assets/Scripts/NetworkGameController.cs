@@ -164,7 +164,7 @@ public class NetworkGameController : NetworkBehaviour
         playerTurnID++;
         if(playerTurnID >= NetworkManager.singleton.numPlayers)
         {
-            if(currentAct != 3 || (currentAct >= 3 && turn < 4))
+            if(currentAct != 3 || (currentAct >= 3 && turn <= 4))
                 playerTurnID = 0;
             
             turn++;
@@ -251,6 +251,7 @@ public class NetworkGameController : NetworkBehaviour
     private void ProcessWinner()
     {
         Debug.Log("Processing winner...");
+        //NetworkGameUI.Instance.ShowWinner();
         var players = PlayerSetup.playerControllers;
         if (players.Count == 1)
         {
@@ -353,7 +354,7 @@ public class NetworkGameController : NetworkBehaviour
     {
         base.OnStartAuthority();
 
-        for (int i = 0; i < NetworkManager.singleton.numPlayers; i++)
+        for (int i = 0; i < NetworkManager.singleton.numPlayers + 8; i++)
         {
             votesPerPlayer.Add(0);
         }
@@ -363,7 +364,9 @@ public class NetworkGameController : NetworkBehaviour
     
     public void VoteOnCharacter(int playerNumber)
     {
-        votesPerPlayer[playerNumber]++;
+        Debug.LogError($"Number: {playerNumber} - Number of players: {votesPerPlayer.Count}");
+        
+        votesPerPlayer[playerNumber]++; //Doesn't work right now
         votesCast++;
         if (votesCast >= NetworkManager.singleton.numPlayers)
         {

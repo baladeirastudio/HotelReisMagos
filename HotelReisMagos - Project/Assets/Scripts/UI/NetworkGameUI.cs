@@ -280,8 +280,8 @@ public class NetworkGameUI : NetworkBehaviour
         {
             logText.SetText(text.ToString());
         }
-        Debug.Log($"Logging: {text}");
 
+        //StartCoroutine(ResetLog());
     }
 
     private IEnumerator ResetLog()
@@ -550,7 +550,7 @@ public class NetworkGameUI : NetworkBehaviour
         
         for (int i = 0; i < playerNumbers.Count; i++)
         {
-            if (PlayerSetup.playerControllers[i] != PlayerSetup.localPlayerSetup)
+            //if (PlayerSetup.playerControllers[i] != PlayerSetup.localPlayerSetup)
             {
                 players.Add(PlayerSetup.playerControllers.Find((setup => setup.PlayerNumber == playerNumbers[i])));
                 var winnerCard = Instantiate(winnerCardPrefab, winnersList);

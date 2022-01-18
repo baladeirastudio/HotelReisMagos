@@ -421,7 +421,7 @@ public class PlayerSetup : NetworkBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError("This shit won't fucking work");
+            Debug.LogError("This won't work");
             Debug.LogException(e);
         }
 

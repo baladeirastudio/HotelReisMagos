@@ -13,13 +13,15 @@ public class WinnerPlayerCard : MonoBehaviour
     {
         playerNumber = player.PlayerNumber;
         this.player = player;
-        var charInfo = NetworkGameController.instance.CharacterList[playerNumber];
+        var charInfo = NetworkGameController.instance.CharacterList[player.CharacterInfoIndex];
         
         nameText.SetText(charInfo.Name);
-        nameText.SetText($"Midia - {player.MediaResources} |" +
+        resourceText.SetText($"Midia - {player.MediaResources} |" +
                          $" Politico - {player.PoliticalResources} |" +
                          $" Social - {player.SocialResources} |" +
                          $"Economico - {player.EconomicResources}");
+
+        Debug.LogError("Number: playerNumber");
     }
 
     public void Vote()
