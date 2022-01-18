@@ -353,17 +353,19 @@ public class NetworkGameController : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-
-        for (int i = 0; i < NetworkManager.singleton.numPlayers + 8; i++)
-        {
-            votesPerPlayer.Add(0);
-        }
     }
 
     [SyncVar] public int votesCast;
     
     public void VoteOnCharacter(int playerNumber)
     {
+        if (votesPerPlayer.Count <= 0)
+        {
+            for (int i = 0; i < NetworkManager.singleton.numPlayers + 8; i++)
+            {
+                votesPerPlayer.Add(0);
+            }
+        }
         Debug.LogError($"Number: {playerNumber} - Number of players: {votesPerPlayer.Count}");
         
         votesPerPlayer[playerNumber]++; //Doesn't work right now
@@ -382,7 +384,7 @@ public class NetworkGameController : NetworkBehaviour
             }
 
             var winnerName = characterList[winner.CharacterInfoIndex];
-            NetworkGameUI.Instance.RpcLog($"A votação foi concluída! Foi decidido que o vencedor será {winnerName}!");
+            NetworkGameUI.Instance.RpcLog($"A votação foi concluída! Foi decidido que o vencedor será {winnerName.name}!");
         }
     }
     
