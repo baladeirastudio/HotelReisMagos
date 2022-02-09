@@ -637,12 +637,12 @@ public class PlayerSetup : NetworkBehaviour
             newCard.IsAuction = true;
         }
         
-        for (int i = 0; i < luckCardAmount; i++)
+        /*for (int i = 0; i < luckCardAmount; i++)
         {
             var newCard = Instantiate(cardPrefab, myCardList);
             newCard.Populate(0, 0, false, true);
             newCard.IsAuction = true;
-        }
+        }*/
     }
 
     

@@ -665,7 +665,7 @@ public class NetworkGameUI : NetworkBehaviour
         {
             for (int i = 0; i < cardList[j].Count; i++)
             {
-                var newCard = Instantiate(cardInfoPrefab, auctionProposerCardList);
+                
                 CardInfo card = null;
                 if(j == 0) //TODO: Isso aqui devia ser um switch, mas um if é mais rápido de fazer.
                     card = NetworkGameController.instance.cardList1[cardList[j][i]];
@@ -673,7 +673,12 @@ public class NetworkGameUI : NetworkBehaviour
                     card = NetworkGameController.instance.cardList2[cardList[j][i]];
                 else if(j == 2)
                     card = NetworkGameController.instance.cardList3[cardList[j][i]];
-                
+
+                if (false)
+                {
+                    
+                }
+                var newCard = Instantiate(cardInfoPrefab, auctionProposerCardList);
                 newCard.DescriptionText.SetText(card.Description);
                 newCard.IdText.SetText(card.ID);
             }
@@ -721,7 +726,7 @@ public class NetworkGameUI : NetworkBehaviour
         
         var charName = NetworkGameController.instance.CharacterList[currentAuctionOrigin.CharacterInfoIndex];
         
-        auctionProposalReceiveTitle.SetText($"O empresário {charName} propõe um leilão!");
+        auctionProposalReceiveTitle.SetText($"O empresário {charName.Name} propõe um leilão!");
     }
 
     public void AuctionBid()
@@ -981,5 +986,13 @@ public class NetworkGameUI : NetworkBehaviour
     {
         narrator.clip = actAudios[number-1];
         narrator.Play();
+    }
+
+    [SerializeField] private GameObject actionsHolder;
+    
+    [ClientRpc]
+    public void RpcDisableActions()
+    {
+        actionsHolder.SetActive(false);    
     }
 }

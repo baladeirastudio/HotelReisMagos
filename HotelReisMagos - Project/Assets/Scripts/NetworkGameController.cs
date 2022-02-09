@@ -224,6 +224,7 @@ public class NetworkGameController : NetworkBehaviour
                     NetworkGameUI.Instance.RpcLog(thirdActData.actEndText.text);
                     NetworkGameUI.Instance.RpcPlayActAudio(4);
                     
+                    NetworkGameUI.Instance.RpcDisableActions();
                     ProcessWinner();
                 }
                 break;
@@ -384,7 +385,7 @@ public class NetworkGameController : NetworkBehaviour
             }
 
             var winnerName = characterList[winner.CharacterInfoIndex];
-            NetworkGameUI.Instance.RpcLog($"A votação foi concluída! Foi decidido que o vencedor será {winnerName.name}!");
+            NetworkGameUI.Instance.RpcLog($"A votação foi concluída! Foi decidido que o vencedor será {winnerName.Name}!");
         }
     }
     

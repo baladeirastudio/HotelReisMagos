@@ -21,7 +21,7 @@ public class WinnerPlayerCard : MonoBehaviour
                          $" Social - {player.SocialResources} |" +
                          $"Economico - {player.EconomicResources}");
 
-        Debug.LogError("Number: playerNumber");
+        Debug.Log("Number: playerNumber");
     }
 
     public void Vote()
