@@ -3,11 +3,15 @@ using UnityEngine;
 
 public class TradeCardInfo : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI descriptionText, idText;
+    [SerializeField] private TextMeshProUGUI idText, politicalText, economicText, socialText, mediaText;
 
-    public TextMeshProUGUI DescriptionText => descriptionText;
+    public TextMeshProUGUI PoliticalText => politicalText;
+    public TextMeshProUGUI EconomicText => economicText;
+    public TextMeshProUGUI SocialText => socialText;
+    public TextMeshProUGUI MediaText => mediaText;
+    public TextMeshProUGUI IDText => idText;
 
-    public TextMeshProUGUI IdText => idText;
+
 
     public void Populate(int cardIndex, int actNumber, bool isTarget, bool isLuck = false)
     {
@@ -29,13 +33,19 @@ public class TradeCardInfo : MonoBehaviour
                     break;
             }
 
-            descriptionText.SetText(cardInfo.Description);
+            politicalText.SetText(cardInfo.Description);
+            economicText.SetText(cardInfo.Description);
+            socialText.SetText(cardInfo.Description);
+            mediaText.SetText(cardInfo.Description);
             idText.SetText(cardInfo.ID);
         }
         else
         {
-            descriptionText.SetText("Sorte ou revés");
-            idText.SetText("???");
+            politicalText.SetText("???");
+            economicText.SetText("???");
+            socialText.SetText("???");
+            mediaText.SetText("???");
+            idText.SetText("¿S ou R ?");
         }
     }
 }

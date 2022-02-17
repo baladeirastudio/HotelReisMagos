@@ -425,24 +425,33 @@ public class NetworkGameUI : NetworkBehaviour
             {
                 var newCard = Instantiate(cardInfoPrefab, originTradeCardList);
                 var card = NetworkGameController.instance.cardList1[originCard[0][i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
 
             for (int i = 0; i < originCard[1].Count; i++)
             {
                 var newCard = Instantiate(cardInfoPrefab, originTradeCardList);
                 var card = NetworkGameController.instance.cardList1[originCard[1][i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
 
             for (int i = 0; i < originCard[2].Count; i++)
             {
                 var newCard = Instantiate(cardInfoPrefab, originTradeCardList);
                 var card = NetworkGameController.instance.cardList1[originCard[2][i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
         }
         #endregion
@@ -453,24 +462,33 @@ public class NetworkGameUI : NetworkBehaviour
             {
                 var newCard = Instantiate(cardInfoPrefab, myTradeCardList);
                 var card = NetworkGameController.instance.cardList1[selectedMyCards[0][i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
 
             for (int i = 0; i < selectedMyCards[1].Count; i++)
             {
                 var newCard = Instantiate(cardInfoPrefab, myTradeCardList);
                 var card = NetworkGameController.instance.cardList1[selectedMyCards[1][i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
 
             for (int i = 0; i < selectedMyCards[2].Count; i++)
             {
                 var newCard = Instantiate(cardInfoPrefab, myTradeCardList);
                 var card = NetworkGameController.instance.cardList1[selectedMyCards[2][i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
             
             
@@ -605,31 +623,43 @@ public class NetworkGameUI : NetworkBehaviour
             {
                 var newCard = Instantiate(cardInfoPrefab, playerDeckList);
                 var card = NetworkGameController.instance.cardList1[player.cardsOnHand1[i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
 
             for (int i = 0; i < player.cardsOnHand2.Count; i++)
             {
                 var newCard = Instantiate(cardInfoPrefab, playerDeckList);
                 var card = NetworkGameController.instance.cardList1[player.cardsOnHand2[i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
 
             for (int i = 0; i < player.cardsOnHand3.Count; i++)
             {
                 var newCard = Instantiate(cardInfoPrefab, playerDeckList);
                 var card = NetworkGameController.instance.cardList1[player.cardsOnHand3[i]];
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
             
             for (int i = 0; i < player.LuckCardAmount; i++)
             {
                 var newCard = Instantiate(cardInfoPrefab, playerDeckList);
-                newCard.DescriptionText.SetText("Sorte ou revés");
-                newCard.IdText.SetText("???");
+                newCard.PoliticalText.SetText("???");
+                newCard.EconomicText.SetText("???");
+                newCard.SocialText.SetText("???");
+                newCard.MediaText.SetText("???");
+                newCard.IDText.SetText("¿S ou R ?");
             }
         }
         #endregion
@@ -679,8 +709,11 @@ public class NetworkGameUI : NetworkBehaviour
                     
                 }
                 var newCard = Instantiate(cardInfoPrefab, auctionProposerCardList);
-                newCard.DescriptionText.SetText(card.Description);
-                newCard.IdText.SetText(card.ID);
+                newCard.PoliticalText.SetText(card.PoliticoValue);
+                newCard.EconomicText.SetText(card.EconomicoValue);
+                newCard.SocialText.SetText(card.SocialValue);
+                newCard.MediaText.SetText(card.MidiaticoValue);
+                newCard.IDText.SetText(card.ID);
             }
         }
         
