@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -76,6 +77,14 @@ public class SlotController : MonoBehaviour
 
         if (!slotImage)
             Debug.LogError("Missing Image component!");
+
+        NetworkGameController.OnChangeCurrentAct += (old, val) =>
+        {
+            if (val == actToUnlock)
+            {
+                GetComponent<Button>().interactable = true;
+            }
+        };
     }
 
     private void Start()
@@ -85,6 +94,11 @@ public class SlotController : MonoBehaviour
         RegisterSlot(this);
         //DummyServer.Instance.RegisterSlot(this);
 
+    }
+
+    private void Update()
+    {
+        
     }
 
     public void OnClick()

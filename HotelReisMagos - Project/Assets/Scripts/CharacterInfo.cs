@@ -8,6 +8,8 @@ public class CharacterInfo : ScriptableObject
     [SerializeField] private new string name;
     
     [SerializeField, TextArea(3, 6)] private string description;
+    [SerializeField, TextArea(3, 6)] private string decription2;
+    [SerializeField, TextArea(3, 6)] private string description3;
 
     [Serializable]
     public class ActBonus

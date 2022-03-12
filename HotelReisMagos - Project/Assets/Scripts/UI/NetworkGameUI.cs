@@ -14,7 +14,9 @@ public class NetworkGameUI : NetworkBehaviour
     private static NetworkGameUI instance;
 
     public static NetworkGameUI Instance => instance;
-    
+
+    [SerializeField] private TextMeshProUGUI currentPlayer, currentAct;
+
     [SerializeField] private PlayerCard playerCardPrefab;
     [SerializeField] private Transform playerListGroup;
     [SerializeField] private GameObject actionMenu;
@@ -68,7 +70,28 @@ public class NetworkGameUI : NetworkBehaviour
         instance = this;
 
         NetworkGameController.OnChangePlayerTurnId += UpdateGameState;
+        NetworkGameController.OnChangePlayerTurnId += ShowPlayer;
         NetworkGameController.OnChangeCurrentAct += UpdateTradeButton;
+        NetworkGameController.OnChangeCurrentAct += ShowAct;
+    }
+
+    private void ShowAct(int old, int newval)
+    {
+        currentAct.SetText($"Ato {newval}");
+    }
+    
+    
+
+    private void ShowPlayer(int old, int newval)
+    {
+        var index = PlayerSetup.playerControllers.Where((setup => setup.PlayerNumber == newval));
+        
+        if (index.ToArray().Length > 0)
+        {
+            var charInfo = NetworkGameController.instance.CharacterList[index.First().CharacterInfoIndex];
+            currentPlayer.SetText($"Jogador atual: {charInfo.Name}");
+        }
+        
     }
 
     private void UpdateTradeButton(int old, int newval)
@@ -96,6 +119,8 @@ public class NetworkGameUI : NetworkBehaviour
     private IEnumerator SetupActionsMenu()
     {
         yield return new WaitUntil( () => { return NetworkGameController.instance && PlayerSetup.localPlayerSetup; });
+        
+        ShowPlayer(-1, 0);
         
         //Setting up logText
         LocalLog(NetworkGameController.instance.FirstActData.actBeginText.text);
