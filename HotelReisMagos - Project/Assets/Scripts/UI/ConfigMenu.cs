@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ConfigMenu : MonoBehaviour
@@ -50,5 +52,32 @@ public class ConfigMenu : MonoBehaviour
     {
         narratorSource.volume = newVal;
         PlayerPrefs.SetFloat("narratorVol", newVal);
+    }
+
+    public void ExitMatch()
+    {
+        Application.Quit();
+        
+        /*try
+        {
+            if (PlayerSetup.localPlayerSetup.isClientOnly)
+            {
+                NetworkManager.singleton.StopClient();
+            }
+            else
+            {
+                NetworkManager.singleton.StopHost();
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            NetworkManager.singleton.StopClient();
+        }
+
+        PlayerSetup.localPlayerSetup = null;
+        SlotController.slots = new Dictionary<string, SlotController>();
+        
+        SceneManager.LoadScene("EmptyScene");*/
     }
 }

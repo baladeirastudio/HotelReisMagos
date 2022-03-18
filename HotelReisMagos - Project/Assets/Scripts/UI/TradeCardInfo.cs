@@ -33,10 +33,10 @@ public class TradeCardInfo : MonoBehaviour
                     break;
             }
 
-            politicalText.SetText(cardInfo.Description);
-            economicText.SetText(cardInfo.Description);
-            socialText.SetText(cardInfo.Description);
-            mediaText.SetText(cardInfo.Description);
+            politicalText.SetText(cardInfo.PoliticoValue);
+            economicText.SetText(cardInfo.EconomicoValue);
+            socialText.SetText(cardInfo.SocialValue);
+            mediaText.SetText(cardInfo.MidiaticoValue);
             idText.SetText(cardInfo.ID);
         }
         else

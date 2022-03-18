@@ -387,13 +387,8 @@ public class PlayerSetup : NetworkBehaviour
                     deckNum = NetworkGameController.instance.activeCards1;
                     deck = NetworkGameController.instance.cardList1;
                     cardIndex = Random.Range(0, deckNum.Count);
-                    
-                    //Debug.LogError($"Deck: {deck.Count}");
-                    //Debug.LogError($"deckNum: {deckNum.Count}");
-                    //Debug.LogError($"index: {cardIndex}");
-                    
                     card = deck[cardIndex];
-                    deckNum.Remove(cardIndex);
+                    deckNum.Remove(cardIndex); //Cartas são removidas
                     cardsOnHand1.Add(cardIndex);
                     
                     break;
@@ -414,6 +409,17 @@ public class PlayerSetup : NetworkBehaviour
                     cardsOnHand3.Add(cardIndex);
                     break;
             }
+
+            int result = 0;
+            
+            if (int.TryParse(card.PoliticoValue, out result))
+            { politicalResources += result; }
+            if (int.TryParse(card.SocialValue, out result))
+            { socialResources += result; }
+            if (int.TryParse(card.MidiaticoValue, out result))
+            { mediaResources += result; }
+            if (int.TryParse(card.EconomicoValue, out result))
+            { economicResources += result; }
 
             NetworkGameUI.Instance.RpcLog($"O jogador {NetworkGameController.instance.CharacterList[characterInfoIndex].Name} obteve a seguinte carta: {card.Description}");
             NetworkGameUI.Instance.RpcPlayAudioEverywhere(cardIndex, tempSlot.ActToUnlock);
@@ -1117,44 +1123,239 @@ public class PlayerSetup : NetworkBehaviour
             PlayerSetup player = playerControllers.Where((setup => setup.PlayerNumber == playerNumber)).First(); 
             List<List<int>> selectedTargetCards = playerAuctionOffers.Where((list => list[3][0] == playerNumber)).First();
 
+            CardInfo card;
+
+            #region RemoveCardsFromWinner
+            
             for (int i = 0; i < selectedTargetCards[0].Count; i++)
             {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedTargetCards[0][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { player.politicalResources -= result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { player.socialResources -= result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { player.mediaResources -= result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { player.economicResources -= result; }
+                
                 player.cardsOnHand1.Remove(selectedTargetCards[0][i]);
             }
         
             for (int i = 0; i < selectedTargetCards[1].Count; i++)
             {
+                int result = 0;
+                card = NetworkGameController.instance.cardList2[selectedTargetCards[1][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { player.politicalResources -= result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { player.socialResources -= result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { player.mediaResources -= result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { player.economicResources -= result; }
+                
                 player.cardsOnHand2.Remove(selectedTargetCards[1][i]);
             }
             for (int i = 0; i < selectedTargetCards[2].Count; i++)
             {
+                int result = 0;
+                card = NetworkGameController.instance.cardList3[selectedTargetCards[2][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { player.politicalResources -= result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { player.socialResources -= result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { player.mediaResources -= result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { player.economicResources -= result; }
+                
                 player.cardsOnHand3.Remove(selectedTargetCards[2][i]);
             }
 
+            #endregion
+
+
             Debug.Log($"Player: {player}");
             Debug.Log($"SelectedCards1: {selectedCards1}");
+
+            #region AddCardsToWinner
+            
+            for (int i = 0; i < selectedCards1[0].Count; i++)
+            {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedCards1[0][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { player.politicalResources += result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { player.socialResources += result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { player.mediaResources += result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { player.economicResources += result; }
+                
+                //player.cardsOnHand1.Remove(selectedCards1[0][i]);
+            }
+        
+            for (int i = 0; i < selectedCards1[1].Count; i++)
+            {
+                int result = 0;
+                card = NetworkGameController.instance.cardList2[selectedCards1[1][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { player.politicalResources += result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { player.socialResources += result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { player.mediaResources += result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { player.economicResources += result; }
+                
+                //player.cardsOnHand2.Remove(selectedTargetCards[1][i]);
+            }
+            for (int i = 0; i < selectedTargetCards[2].Count; i++)
+            {
+                int result = 0;
+                card = NetworkGameController.instance.cardList3[selectedTargetCards[2][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { player.politicalResources += result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { player.socialResources += result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { player.mediaResources += result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { player.economicResources += result; }
+                
+                //player.cardsOnHand3.Remove(selectedTargetCards[2][i]);
+            }
+            
             player.cardsOnHand1.AddRange(selectedCards1[0]);
             player.cardsOnHand2.AddRange(selectedCards1[1]);
             player.cardsOnHand3.AddRange(selectedCards1[2]);
-        
+
+            #endregion
+
+
+            #region RemoveCardsFromAuctioner
+
             for (int i = 0; i < selectedCards1[0].Count; i++)
             {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedCards1[0][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { politicalResources -= result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { socialResources -= result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { mediaResources -= result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { economicResources -= result; }
+                
                 cardsOnHand1.Remove(selectedCards1[0][i]);
             }
         
             for (int i = 0; i < selectedCards1[1].Count; i++)
             {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedCards1[1][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { politicalResources -= result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { socialResources -= result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { mediaResources -= result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { economicResources -= result; }
+                
                 cardsOnHand2.Remove(selectedCards1[1][i]);
             }
             for (int i = 0; i < selectedCards1[2].Count; i++)
             {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedCards1[2][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { politicalResources -= result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { socialResources -= result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { mediaResources -= result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { economicResources -= result; }
+                
                 cardsOnHand3.Remove(selectedCards1[2][i]);
             }    
+
+            #endregion
+
+            #region AddCardsToAuctioner
+
+            for (int i = 0; i < selectedTargetCards[0].Count; i++)
+            {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedTargetCards[0][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { politicalResources += result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { socialResources += result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { mediaResources += result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { economicResources += result; }
+                
+                //cardsOnHand1.Remove(selectedCards1[0][i]);
+            }
         
+            for (int i = 0; i < selectedTargetCards[1].Count; i++)
+            {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedTargetCards[1][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { politicalResources += result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { socialResources += result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { mediaResources += result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { economicResources += result; }
+                
+                //cardsOnHand2.Remove(selectedCards1[1][i]);
+            }
+            for (int i = 0; i < selectedTargetCards[2].Count; i++)
+            {
+                int result = 0;
+                card = NetworkGameController.instance.cardList1[selectedTargetCards[2][i]];
+            
+                if (int.TryParse(card.PoliticoValue, out result))
+                { politicalResources += result; }
+                if (int.TryParse(card.SocialValue, out result))
+                { socialResources += result; }
+                if (int.TryParse(card.MidiaticoValue, out result))
+                { mediaResources += result; }
+                if (int.TryParse(card.EconomicoValue, out result))
+                { economicResources += result; }
+                
+                //cardsOnHand3.Remove(selectedCards1[2][i]);
+            }    
+            
             cardsOnHand1.AddRange(selectedTargetCards[0]);
             cardsOnHand2.AddRange(selectedTargetCards[1]);
             cardsOnHand3.AddRange(selectedTargetCards[2]);
 
+            #endregion
+
+            NetworkGameUI.Instance.RpcRefreshPlayerCards();
+            
             ResetAuctionProposer();
         }
         catch (Exception e)
