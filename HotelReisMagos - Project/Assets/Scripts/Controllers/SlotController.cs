@@ -13,6 +13,7 @@ public enum SlotReward
 
 public class SlotController : MonoBehaviour
 {
+    [SerializeField] private Button button;
     [SerializeField] private string id;
     [SerializeField] private int actToUnlock;
     [SerializeField] private int actNumber, actId;
@@ -21,6 +22,15 @@ public class SlotController : MonoBehaviour
     [SerializeField] private bool giveLuckCard;
     [Tooltip("Minimum and max reward, inclusive and exclusive, respectively.")]
     [SerializeField] private int minReward = 10, maxReward = 16;
+
+    [SerializeField] private Image resourcePreview;
+
+    [Header("Sprites")] 
+    [SerializeField] 
+    private Sprite economic;
+
+    [SerializeField] private Sprite social, media, political;
+    
     
 
     public static Dictionary<string, SlotController> slots = new Dictionary<string, SlotController>();
@@ -56,6 +66,11 @@ public class SlotController : MonoBehaviour
 
     public void RegisterSlot(SlotController slot)
     {
+        if (!button)
+        {
+            button = GetComponent<Button>();
+        }
+        
         SlotController value;
         if (slots.TryGetValue(slot.ID, out value))
         {
@@ -82,9 +97,25 @@ public class SlotController : MonoBehaviour
         {
             if (val == actToUnlock)
             {
-                GetComponent<Button>().interactable = true;
+                button.interactable = true;
             }
         };
+
+        switch (rewardType)
+        {
+            case SlotReward.EconomicalResource:
+                resourcePreview.sprite = economic;
+                break;
+            case SlotReward.MediaResource:
+                resourcePreview.sprite = media;
+                break;
+            case SlotReward.PoliticalResource:
+                resourcePreview.sprite = political;
+                break;
+            case SlotReward.SocialResource:
+                resourcePreview.sprite = social;
+                break;
+        }
     }
 
     private void Start()
@@ -148,5 +179,13 @@ public class SlotController : MonoBehaviour
         slotImage.color = Color.white;
 
         slotImage.raycastTarget = true;
+    }
+
+    public void TryPreviewResource(bool enable)
+    {
+        if (button.interactable)
+        {
+            resourcePreview.gameObject.SetActive(enable);
+        }
     }
 }
