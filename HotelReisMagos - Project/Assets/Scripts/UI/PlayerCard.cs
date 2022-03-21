@@ -80,6 +80,10 @@ public class PlayerCard : MonoBehaviour
         {
             isMyPlayerIcon.gameObject.SetActive(true);
         }
+        else
+        {
+            isMyPlayerIcon.gameObject.SetActive(false);
+        }
 
 
     }
