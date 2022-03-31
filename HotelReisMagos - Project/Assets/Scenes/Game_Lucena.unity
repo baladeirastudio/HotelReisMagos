@@ -28830,7 +28830,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 8bec457463a477b4ca46aa0bc698968c, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.025
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -30838,6 +30838,21 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 2.2017832
       objectReference: {fileID: 0}
+    - target: {fileID: 6257575722414615808, guid: 0af1fd909f65116478ba2b3c865d106c,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6257575722414615808, guid: 0af1fd909f65116478ba2b3c865d106c,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.80829024
+      objectReference: {fileID: 0}
+    - target: {fileID: 6257575722414615808, guid: 0af1fd909f65116478ba2b3c865d106c,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6265368072659716516, guid: 0af1fd909f65116478ba2b3c865d106c,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -30872,6 +30887,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 7661555351630987704, guid: 0af1fd909f65116478ba2b3c865d106c,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.3764706
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0af1fd909f65116478ba2b3c865d106c, type: 3}
